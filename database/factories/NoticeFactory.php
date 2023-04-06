@@ -1,0 +1,29 @@
+<?php
+
+namespace Database\Factories;
+
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
+use App\Consts\NoticeConst;
+
+class NoticeFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition()
+    {
+        $statuses = NoticeConst::RECRUIT_TYPES;
+        
+        return [
+            'header' => 'サンプル見出し' . fake()->realText(20),
+            'content' => 'サンプル本文' . fake()->realText(990),
+            'publish_date' => fake()->dateTimeBetween('-3 months','+1 week'),
+            'status' => fake()->randomKey($statuses),
+
+        ];
+    }        
+}
