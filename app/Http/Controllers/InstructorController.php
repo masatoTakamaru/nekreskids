@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\InstructorRequest;
+use App\Http\Requests\InstructorStep1Request;
 use App\Consts\UserConst;
 use App\Models\Instructor;
 use Carbon\Carbon;
@@ -30,6 +30,8 @@ class InstructorController extends Controller
         'cert',
         'gender',
         'zip',
+        'pref',
+        'city',
         'address',
         'tel',
         'keep',
@@ -62,7 +64,7 @@ class InstructorController extends Controller
         ]);
     }
 
-    public function step1Send(InstructorRequest $request)
+    public function step1Send(InstructorStep1Request $request)
     {
         $arrData = json_decode($request->jsonData, true);
         $instructor = array_merge($arrData, $request->only($this->formItems));

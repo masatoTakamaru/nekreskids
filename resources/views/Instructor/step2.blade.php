@@ -14,19 +14,19 @@
           </div>
           <div>
             <label for="" class="pref">都道府県</label>
-            <input type="text" name="pref" class="" placeholder="東京都">
+            <input type="text" name="pref" class="" placeholder="東京都" value="{{ old('pref', $instructor['pref'])}}">
           </div>
           <div>
             <label for="" class="city">市区町村</label>
-            <input type="text" name="city" class="" placeholder="新宿区">
+            <input type="text" name="city" class="" placeholder="新宿区" value="{{ old('city', $instructor['city'])}}">
           </div>
           <div>
             <label for="address" class="">町域・番地・建物名など</label>
-            <input type="text" name="address" class="" placeholder="西新宿２－８－１">
+            <input type="text" name="address" class="" placeholder="西新宿２－８－１" value="{{ old('address', $instructor['address'])}}">
           </div>
           <div>
             <label for="tel" class="">電話番号</label>
-            <input type="text" name="tel" class="" placeholder="08012345678">
+            <input type="text" name="tel" class="" placeholder="08012345678" value="{{ old('tel', $instructor['tel'])}}">
           </div>
           <div>
             <button type="submit" name="transition" class="" value="back">前に戻る</button>

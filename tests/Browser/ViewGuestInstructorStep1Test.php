@@ -17,8 +17,7 @@ class ViewGuestInstructorStep1Test extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/')
-                ->assertPresent('#email')
-                ;
+                ->assertSee('ネクレスキッズ');
         });
     }
 }
