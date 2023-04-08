@@ -42,3 +42,19 @@ $("#birth3").on("change", () => {
     const date = new Date($("#birth1").val(), $("#birth2").val() - 1, $("#birth3").val());
     $("#birth").val(date);
 });
+
+
+/*
+    アコーディオンメニュー
+*/
+
+document.addEventListener("DOMContentLoaded", () => {
+    const titles = document.querySelectorAll('.js-accordion-title');
+    titles.forEach((title) => {
+        const content = title.nextElementSibling;
+        title.addEventListener('click', () => {
+            title.classList.toggle('is-active');
+            content.classList.toggle('is-open');
+        });
+    });
+});

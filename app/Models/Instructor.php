@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class Instructor extends Model
 {
@@ -20,7 +21,7 @@ class Instructor extends Model
         'activities',
         'other_activities',
         'ontime',
-        'act_prefcity',
+        'act_prefcities',
         'gender',
         'zip',
         'pref',
@@ -31,14 +32,25 @@ class Instructor extends Model
 
     ];
 
+    public $arrModelItems = null;
+    public $arrEmpty = null;
+
+    public function __construct()
+    {
+        $this->arrModelItems = $this->fillable;
+        $this->arrEmpty = array_fill_keys($this->fillable, null);
+        $this->arrEmpty['activities'] = [];
+        $this->arrEmpty['act_prefcities'] = [];
+    }
+
     public function searches()
     {
         return $this->hasMany(Search::class);
     }
 
-
     public function user()
     {
         return $this->belongsTo(User::class);
     }
+
 }

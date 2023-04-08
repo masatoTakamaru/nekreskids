@@ -4,64 +4,79 @@ namespace App\Consts;
 
 class AddressConst
 {
+    const AREAS = [
+        'hokkaidoTohoku' => '北海道・東北',
+        'kanto' => '関東',
+        'chubu' => '中部',
+        'kinki' => '近畿',
+        'chugokuShikoku' => '中国・四国',
+        'kyushuOkinawa' => '九州・沖縄'
+    ];
 
     const PREFECTURES = [
-        'all' => '全ての都道府県',
-        'hokkaido' => '北海道',
-        'aomori' => '青森県',
-        'iwate' => '岩手県',
-        'miyagi' => '宮城県',
-        'akita' => '秋田県',
-        'yamagata' => '山形県',
-        'fukushima' => '福島県',
-        'ibaraki' => '茨城県',
-        'tochigi' => '栃木県',
-        'gunma' => '群馬県',
-        'saitama' => '埼玉県',
-        'chiba' => '千葉県',
-        'tokyo' => '東京都',
-        'kanagawa' => '神奈川県',
-        'niigata' => '新潟県',
-        'toyama' => '富山県',
-        'ishikawa' => '石川県',
-        'fukui' => '福井県',
-        'yamanashi' => '山梨県',
-        'nagano' => '長野県',
-        'gifu' => '岐阜県',
-        'shizuoka' => '静岡県',
-        'aichi' => '愛知県',
-        'mie' => '三重県',
-        'shiga' => '滋賀県',
-        'kyoto' => '京都府',
-        'osaka' => '大阪府',
-        'hyogo' => '兵庫県',
-        'nara' => '奈良県',
-        'wakayama' => '和歌山県',
-        'tottori' => '鳥取県',
-        'shimane' => '島根県',
-        'okayama' => '岡山県',
-        'hiroshima' => '広島県',
-        'yamaguchi' => '山口県',
-        'tokushima' => '徳島県',
-        'kagawa' => '香川県',
-        'ehime' => '愛媛県',
-        'kochi' => '高知県',
-        'fukuoka' => '福岡県',
-        'saga' => '佐賀県',
-        'nagasaki' => '長崎県',
-        'kumamoto' => '熊本県',
-        'oita' => '大分県',
-        'miyazaki' => '宮崎県',
-        'kagoshima' => '鹿児島県',
-        'okinawa' => '沖縄県',
+        'hokkaidoTohoku' => [
+            'hokkaido' => '北海道',
+            'aomori' => '青森県',
+            'iwate' => '岩手県',
+            'miyagi' => '宮城県',
+            'akita' => '秋田県',
+            'yamagata' => '山形県',
+            'fukushima' => '福島県',
+        ],
+        'kanto' => [
+            'ibaraki' => '茨城県',
+            'tochigi' => '栃木県',
+            'gunma' => '群馬県',
+            'saitama' => '埼玉県',
+            'chiba' => '千葉県',
+            'tokyo' => '東京都',
+            'kanagawa' => '神奈川県',
+        ],
+        'chubu' => [
+            'niigata' => '新潟県',
+            'toyama' => '富山県',
+            'ishikawa' => '石川県',
+            'fukui' => '福井県',
+            'yamanashi' => '山梨県',
+            'nagano' => '長野県',
+            'gifu' => '岐阜県',
+            'shizuoka' => '静岡県',
+            'aichi' => '愛知県',
+        ],
+        'kinki' => [
+            'mie' => '三重県',
+            'shiga' => '滋賀県',
+            'kyoto' => '京都府',
+            'osaka' => '大阪府',
+            'hyogo' => '兵庫県',
+            'nara' => '奈良県',
+            'wakayama' => '和歌山県',
+        ],
+        'chugokuShikoku' => [
+            'tottori' => '鳥取県',
+            'shimane' => '島根県',
+            'okayama' => '岡山県',
+            'hiroshima' => '広島県',
+            'yamaguchi' => '山口県',
+            'tokushima' => '徳島県',
+            'kagawa' => '香川県',
+            'ehime' => '愛媛県',
+            'kochi' => '高知県',
+        ],
+        'kyushuOkinawa' => [
+            'fukuoka' => '福岡県',
+            'saga' => '佐賀県',
+            'nagasaki' => '長崎県',
+            'kumamoto' => '熊本県',
+            'oita' => '大分県',
+            'miyazaki' => '宮崎県',
+            'kagoshima' => '鹿児島県',
+            'okinawa' => '沖縄県',
+        ],
     ];
 
     const CITIES = [
-        'all' => [
-            'all' => '全ての市区町村',
-        ],
         'hokkaido' => [
-            'all' => '全ての市区町村',
             'sapporoshi' => '札幌市',
             'hakodateshi' => '函館市',
             'otarushi' => '小樽市',
@@ -250,7 +265,6 @@ class AddressConst
 
         ],
         'aomori' => [
-            'all' => '全ての市区町村',
             'aomorishi' => '青森市',
             'hirosakishi' => '弘前市',
             'hachinoheshi' => '八戸市',
@@ -293,7 +307,6 @@ class AddressConst
             'shingomura' => '新郷村',
         ],
         'iwate' => [
-            'all' => '全ての市区町村',
             'moriokashi' => '盛岡市',
             'miyakoshi' => '宮古市',
             'ofunatoshi' => '大船渡市',
@@ -329,7 +342,6 @@ class AddressConst
             'ichinohemachi' => '一戸町',
         ],
         'miyagi' => [
-            'all' => '全ての市区町村',
             'sendaishi' => '仙台市',
             'ishinomakishi' => '石巻市',
             'shiogamashi' => '塩竈市',
@@ -367,7 +379,6 @@ class AddressConst
             'minamisanrikucho' => '南三陸町',
         ],
         'akita' => [
-            'all' => '全ての市区町村',
             'akitashi' => '秋田市',
             'noshiroshi' => '能代市',
             'yokoteshi' => '横手市',
@@ -395,7 +406,6 @@ class AddressConst
             'higashinarusemura' => '東成瀬村',
         ],
         'yamagata' => [
-            'all' => '全ての市区町村',
             'yamagatashi' => '山形市',
             'yonezawashi' => '米沢市',
             'tsuruokashi' => '鶴岡市',
@@ -433,7 +443,6 @@ class AddressConst
             'yuzamachi' => '遊佐町',
         ],
         'fukushima' => [
-            'all' => '全ての市区町村',
             'fukushimashi' => '福島市',
             'aizuwakamatsushi' => '会津若松市',
             'koriyamashi' => '郡山市',
@@ -495,7 +504,6 @@ class AddressConst
             'iitatemura' => '飯舘村',
         ],
         'ibaraki' => [
-            'all' => '全ての市区町村',
             'mitoshi' => '水戸市',
             'hitachishi' => '日立市',
             'tsuchiurashi' => '土浦市',
@@ -542,7 +550,6 @@ class AddressConst
             'tonemachi' => '利根町',
         ],
         'tochigi' => [
-            'all' => '全ての市区町村',
             'utsunomiyashi' => '宇都宮市',
             'ashikagashi' => '足利市',
             'tochigishi' => '栃木市',
@@ -570,7 +577,6 @@ class AddressConst
             'nakagawamachi' => '那珂川町',
         ],
         'gunma' => [
-            'all' => '全ての市区町村',
             'maebashishi' => '前橋市',
             'takasakishi' => '高崎市',
             'kiryushi' => '桐生市',
@@ -608,7 +614,6 @@ class AddressConst
             'oramachi' => '邑楽町',
         ],
         'saitama' => [
-            'all' => '全ての市区町村',
             'saitamashi' => 'さいたま市',
             'kawagoeshi' => '川越市',
             'kumagayashi' => '熊谷市',
@@ -674,7 +679,6 @@ class AddressConst
             'matsubushimachi' => '松伏町',
         ],
         'chiba' => [
-            'all' => '全ての市区町村',
             'chibashi' => '千葉市',
             'choshishi' => '銚子市',
             'ichikawashi' => '市川市',
@@ -731,7 +735,6 @@ class AddressConst
             'kiyonammachi' => '鋸南町',
         ],
         'tokyo' => [
-            'all' => '全ての市区町村',
             'chiyodaku' => '千代田区',
             'chuoku' => '中央区',
             'minatoku' => '港区',
@@ -796,7 +799,6 @@ class AddressConst
             'ogasawaramura' => '小笠原村',
         ],
         'kanagawa' => [
-            'all' => '全ての市区町村',
             'yokohamashi' => '横浜市',
             'kawasakishi' => '川崎市',
             'sagamiharashi' => '相模原市',
@@ -832,7 +834,6 @@ class AddressConst
             'kiyokawamura' => '清川村',
         ],
         'niigata' => [
-            'all' => '全ての市区町村',
             'niigatashi' => '新潟市',
             'nagaokashi' => '長岡市',
             'sanjoshi' => '三条市',
@@ -865,7 +866,6 @@ class AddressConst
             'awashimauramura' => '粟島浦村',
         ],
         'toyama' => [
-            'all' => '全ての市区町村',
             'toyamashi' => '富山市',
             'takaokashi' => '高岡市',
             'uozushi' => '魚津市',
@@ -883,7 +883,6 @@ class AddressConst
             'asahimachi' => '朝日町',
         ],
         'ishikawa' => [
-            'all' => '全ての市区町村',
             'kanazawashi' => '金沢市',
             'nanaoshi' => '七尾市',
             'komatsushi' => '小松市',
@@ -905,7 +904,6 @@ class AddressConst
             'notocho' => '能登町',
         ],
         'fukui' => [
-            'all' => '全ての市区町村',
             'fukuishi' => '福井市',
             'tsurugashi' => '敦賀市',
             'obamashi' => '小浜市',
@@ -925,7 +923,6 @@ class AddressConst
             'wakasacho' => '若狭町',
         ],
         'yamanashi' => [
-            'all' => '全ての市区町村',
             'kofushi' => '甲府市',
             'fujiyoshidashi' => '富士吉田市',
             'tsurushi' => '都留市',
@@ -955,7 +952,6 @@ class AddressConst
             'tabayamamura' => '丹波山村',
         ],
         'nagano' => [
-            'all' => '全ての市区町村',
             'naganoshi' => '長野市',
             'matsumotoshi' => '松本市',
             'uedashi' => '上田市',
@@ -1035,7 +1031,6 @@ class AddressConst
             'sakaemura' => '栄村',
         ],
         'gifu' => [
-            'all' => '全ての市区町村',
             'gifushi' => '岐阜市',
             'ogakishi' => '大垣市',
             'takayamashi' => '高山市',
@@ -1080,7 +1075,6 @@ class AddressConst
             'shirakawamura' => '白川村',
         ],
         'shizuoka' => [
-            'all' => '全ての市区町村',
             'shizuokashi' => '静岡市',
             'hamamatsushi' => '浜松市',
             'numazushi' => '沼津市',
@@ -1118,7 +1112,6 @@ class AddressConst
             'morimachi' => '森町',
         ],
         'aichi' => [
-            'all' => '全ての市区町村',
             'nagoyashi' => '名古屋市',
             'toyohashishi' => '豊橋市',
             'okazakishi' => '岡崎市',
@@ -1175,7 +1168,6 @@ class AddressConst
             'toyonemura' => '豊根村',
         ],
         'mie' => [
-            'all' => '全ての市区町村',
             'tsushi' => '津市',
             'yokkaichishi' => '四日市市',
             'iseshi' => '伊勢市',
@@ -1207,7 +1199,6 @@ class AddressConst
             'kihocho' => '紀宝町',
         ],
         'shiga' => [
-            'all' => '全ての市区町村',
             'otsushi' => '大津市',
             'hikoneshi' => '彦根市',
             'nagahamashi' => '長浜市',
@@ -1229,7 +1220,6 @@ class AddressConst
             'tagacho' => '多賀町',
         ],
         'kyoto' => [
-            'all' => '全ての市区町村',
             'kyotoshi' => '京都市',
             'fukuchiyamashi' => '福知山市',
             'maizurushi' => '舞鶴市',
@@ -1258,7 +1248,6 @@ class AddressConst
             'yosanocho' => '与謝野町',
         ],
         'osaka' => [
-            'all' => '全ての市区町村',
             'osakashi' => '大阪市',
             'sakaishi' => '堺市',
             'kishiwadashi' => '岸和田市',
@@ -1304,7 +1293,6 @@ class AddressConst
             'chihayaakasakamura' => '千早赤阪村',
         ],
         'hyogo' => [
-            'all' => '全ての市区町村',
             'kobeshi' => '神戸市',
             'himejishi' => '姫路市',
             'amagasakishi' => '尼崎市',
@@ -1348,7 +1336,6 @@ class AddressConst
             'shinonsencho' => '新温泉町',
         ],
         'nara' => [
-            'all' => '全ての市区町村',
             'narashi' => '奈良市',
             'yamatotakadashi' => '大和高田市',
             'yamatokoriyamashi' => '大和郡山市',
@@ -1390,7 +1377,6 @@ class AddressConst
             'higashiyoshinomura' => '東吉野村',
         ],
         'wakayama' => [
-            'all' => '全ての市区町村',
             'wakayamashi' => '和歌山市',
             'kainanshi' => '海南市',
             'hashimotoshi' => '橋本市',
@@ -1423,7 +1409,6 @@ class AddressConst
             'kushimotocho' => '串本町',
         ],
         'tottori' => [
-            'all' => '全ての市区町村',
             'tottorishi' => '鳥取市',
             'yonagoshi' => '米子市',
             'kurayoshishi' => '倉吉市',
@@ -1445,7 +1430,6 @@ class AddressConst
             'kofucho' => '江府町',
         ],
         'shimane' => [
-            'all' => '全ての市区町村',
             'matsueshi' => '松江市',
             'hamadashi' => '浜田市',
             'izumoshi' => '出雲市',
@@ -1467,7 +1451,6 @@ class AddressConst
             'okinoshimacho' => '隠岐の島町',
         ],
         'okayama' => [
-            'all' => '全ての市区町村',
             'okayamashi' => '岡山市',
             'kurashikishi' => '倉敷市',
             'tsuyamashi' => '津山市',
@@ -1497,7 +1480,6 @@ class AddressConst
             'kibichuocho' => '吉備中央町',
         ],
         'hiroshima' => [
-            'all' => '全ての市区町村',
             'hiroshimashi' => '広島市',
             'kureshi' => '呉市',
             'takeharashi' => '竹原市',
@@ -1523,7 +1505,6 @@ class AddressConst
             'jinsekikogencho' => '神石高原町',
         ],
         'yamaguchi' => [
-            'all' => '全ての市区町村',
             'shimonosekishi' => '下関市',
             'ubeshi' => '宇部市',
             'yamaguchishi' => '山口市',
@@ -1545,7 +1526,6 @@ class AddressConst
             'abucho' => '阿武町',
         ],
         'tokushima' => [
-            'all' => '全ての市区町村',
             'tokushimashi' => '徳島市',
             'narutoshi' => '鳴門市',
             'komatsushimashi' => '小松島市',
@@ -1572,7 +1552,6 @@ class AddressConst
             'higashimiyoshicho' => '東みよし町',
         ],
         'kagawa' => [
-            'all' => '全ての市区町村',
             'takamatsushi' => '高松市',
             'marugameshi' => '丸亀市',
             'sakaideshi' => '坂出市',
@@ -1592,7 +1571,6 @@ class AddressConst
             'mannocho' => 'まんのう町',
         ],
         'ehime' => [
-            'all' => '全ての市区町村',
             'matsuyamashi' => '松山市',
             'imabarishi' => '今治市',
             'uwajimashi' => '宇和島市',
@@ -1615,7 +1593,6 @@ class AddressConst
             'ainancho' => '愛南町',
         ],
         'kochi' => [
-            'all' => '全ての市区町村',
             'kochishi' => '高知市',
             'murotoshi' => '室戸市',
             'akishi' => '安芸市',
@@ -1652,7 +1629,6 @@ class AddressConst
             'kuroshiocho' => '黒潮町',
         ],
         'fukuoka' => [
-            'all' => '全ての市区町村',
             'kitakyushushi' => '北九州市',
             'fukuokashi' => '福岡市',
             'omutashi' => '大牟田市',
@@ -1715,7 +1691,6 @@ class AddressConst
             'chikujomachi' => '築上町',
         ],
         'saga' => [
-            'all' => '全ての市区町村',
             'sagashi' => '佐賀市',
             'karatsushi' => '唐津市',
             'tosushi' => '鳥栖市',
@@ -1738,7 +1713,6 @@ class AddressConst
             'taracho' => '太良町',
         ],
         'nagasaki' => [
-            'all' => '全ての市区町村',
             'nagasakishi' => '長崎市',
             'saseboshi' => '佐世保市',
             'shimabarashi' => '島原市',
@@ -1762,7 +1736,6 @@ class AddressConst
             'shinkamigotocho' => '新上五島町',
         ],
         'kumamoto' => [
-            'all' => '全ての市区町村',
             'kumamotoshi' => '熊本市',
             'yatsushiroshi' => '八代市',
             'hitoyoshishi' => '人吉市',
@@ -1810,7 +1783,6 @@ class AddressConst
             'reihokumachi' => '苓北町',
         ],
         'oita' => [
-            'all' => '全ての市区町村',
             'oitashi' => '大分市',
             'beppushi' => '別府市',
             'nakatsushi' => '中津市',
@@ -1831,7 +1803,6 @@ class AddressConst
             'kusumachi' => '玖珠町',
         ],
         'miyazaki' => [
-            'all' => '全ての市区町村',
             'miyazakishi' => '宮崎市',
             'miyakonojoshi' => '都城市',
             'nobeokashi' => '延岡市',
@@ -1860,7 +1831,6 @@ class AddressConst
             'gokasecho' => '五ヶ瀬町',
         ],
         'kagoshima' => [
-            'all' => '全ての市区町村',
             'kagoshimashi' => '鹿児島市',
             'kanoyashi' => '鹿屋市',
             'makurazakishi' => '枕崎市',
@@ -1906,7 +1876,6 @@ class AddressConst
             'yoroncho' => '与論町',
         ],
         'okinawa' => [
-            'all' => '全ての市区町村',
             'nahashi' => '那覇市',
             'ginowanshi' => '宜野湾市',
             'ishigakishi' => '石垣市',
