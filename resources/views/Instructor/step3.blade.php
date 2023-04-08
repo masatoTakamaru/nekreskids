@@ -34,8 +34,8 @@
               <div class="accordion__title js-accordion-title">{{ $areaValue }}</div>
               <div class="accordion__content">
                 @foreach($arrPrefs[$areaKey] as $prefKey => $prefValue)
-                <div class="accordion__title js-accordion-title">{{ $prefValue }}</div>
-                <div class="accordion__content">
+                <div class="accordion__title accordion-pref js-accordion-title">{{ $prefValue }}</div>
+                <div class="accordion__content accordion-city">
                   @foreach($arrCities[$prefKey] as $cityKey => $cityValue)
                   <input id="{{ $prefKey . $cityKey }}" type="checkbox"
                     class="accordon__content-item" value="{{ $cityKey }}">

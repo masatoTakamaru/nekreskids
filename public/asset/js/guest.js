@@ -48,13 +48,25 @@ $("#birth3").on("change", () => {
     アコーディオンメニュー
 */
 
+/*
 document.addEventListener("DOMContentLoaded", () => {
     const titles = document.querySelectorAll('.js-accordion-title');
     titles.forEach((title) => {
         const content = title.nextElementSibling;
         title.addEventListener('click', () => {
             title.classList.toggle('is-active');
-            content.classList.toggle('is-open');
+            //content.classList.toggle('is-open');
+            $(this).next().slideToggle();
+        });
+    });
+});
+*/
+
+$(window).on('load', () => {
+    $('.js-accordion-title').each((index, element) => {
+        $(element).on('click', () => {
+            $(element).toggleClass('is-active');
+            $(element).next().slideToggle(300);
         });
     });
 });

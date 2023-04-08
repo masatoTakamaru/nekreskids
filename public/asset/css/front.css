@@ -48,20 +48,24 @@ body {
 }
 
 .accordion__container {
-  width: 300px;
-  margin: 0 auto;
+  width: 540px;
 }
 .accordion__title {
-  background-color: #000;
-  border: 1px solid transparent;
-  color: #fff;
-  font-size: 1.25em;
-  padding: 0.625em 0.625em 0.625em 2em;
+  border: 2px solid transparent;
+  padding: 0.25em 0.5em;
   position: relative;
   cursor: pointer;
+  color: white;
   -webkit-user-select: none;
      -moz-user-select: none;
           user-select: none;
+  background-color: hsl(81, 62%, 50%);
+}
+.accordion-pref {
+  background-color: hsl(160, 62%, 60%);
+}
+.accordion-city {
+  background-color: #fff;
 }
 .accordion__title::before, .accordion__title::after {
   content: "";
@@ -89,17 +93,11 @@ body {
 .accordion__content {
   border-left: 1px solid transparent;
   border-right: 1px solid transparent;
-  padding: 0 1.5em;
-  line-height: 0;
-  height: 0;
   overflow: hidden;
-  opacity: 0;
-  transition-duration: 0.3s;
+  display: none;
 }
 .accordion__content.is-open {
   border: 1px solid #00aaa7;
-  padding: 0.625em 1.5em;
   line-height: normal;
   height: auto;
-  opacity: 1;
 }
