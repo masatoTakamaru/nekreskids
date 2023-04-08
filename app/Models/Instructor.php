@@ -32,15 +32,11 @@ class Instructor extends Model
 
     ];
 
-    public $arrModelItems = null;
-    public $arrEmpty = null;
+    public $arrItems = null;
 
     public function __construct()
     {
-        $this->arrModelItems = $this->fillable;
-        $this->arrEmpty = array_fill_keys($this->fillable, null);
-        $this->arrEmpty['activities'] = [];
-        $this->arrEmpty['act_prefcities'] = [];
+        $this->arrItems = $this->fillable;
     }
 
     public function searches()

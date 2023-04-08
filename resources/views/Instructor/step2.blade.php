@@ -11,31 +11,31 @@
           <div>
             <label for="zip" class="">郵便番号</label>
             <input type="text" name="zip" id="zip" class="" placeholder="1638001"
-              value="{{ old('zip', $arrData['zip'])}}">
+              value="{{ old('zip', $objData['zip'])}}">
             @error('zip') <p class="alert">{{ $message }}</p> @enderror
           </div>
           <div>
             <label for="" class="pref">都道府県</label>
             <input type="text" name="pref" id="pref" class="" placeholder="東京都"
-              value="{{ old('pref', $arrData['pref'])}}">
+              value="{{ old('pref', $objData['pref'])}}">
             @error('pref') <p class="alert">{{ $message }}</p> @enderror
           </div>
           <div>
             <label for="" class="city">市区町村</label>
             <input type="text" name="city" id="city" class="" placeholder="新宿区"
-              value="{{ old('city', $arrData['city'])}}">
+              value="{{ old('city', $objData['city'])}}">
             @error('city') <p class="alert">{{ $message }}</p> @enderror
           </div>
           <div>
             <label for="address" class="">町域・番地・建物名など</label>
             <input type="text" name="address" id="address" class="" placeholder="西新宿２－８－１"
-              value="{{ old('address', $arrData['address'])}}">
+              value="{{ old('address', $objData['address'])}}">
             @error('address') <p class="alert">{{ $message }}</p> @enderror
           </div>
           <div>
             <label for="tel" class="">電話番号</label>
             <input type="text" name="tel" class="" placeholder="08012345678"
-              value="{{ old('tel', $arrData['tel'])}}">
+              value="{{ old('tel', $objData['tel'])}}">
             @error('tel') <p class="alert">{{ $message }}</p> @enderror
           </div>
           <div>

@@ -17,42 +17,40 @@ use Carbon\Carbon;
 
 class InstructorController extends Controller
 {
-    private $arrEmpty = null;
-    private $arrModelItems = [];
+    private $objEmpty = null;
+    private $arrItems = [];
 
     public function __construct()
     {
-        $arr = new Instructor();
-        $this->arrEmpty = $arr->arrEmpty;
-        $this->arrEmpty['email'] = null;
-        $this->arrEmpty['password'] = null;
-        $this->arrEmpty['birth'] = new Carbon();
-        $this->arrEmpty['avatar'] = null;   //アバター画像のbase64文字列を格納
-        $this->arrEmpty['gender'] = 'male';
-        $this->arrEmpty['activities'] = [];
-        $this->arrEmpty['actPref'] = null;
-        $this->arrModelItems = $arr->arrModelItems;
-        $this->arrModelItems += [
+        $model = new Instructor();
+        $this->objEmpty = $model;
+        $this->arrItems = $model->arrItems;
+        $this->arrItems += [
             'email',
             'password',
             'avatar',
             'actPref',
         ];
+        foreach($model->arrItems as $value) {
+            $this->objEmpty[$value] = null;
+        }
+        $this->objEmpty['birth'] = new Carbon();
+        $this->objEmpty['gender'] = 'male';
+        $this->objEmpty['activities'] = [];
     }
 
     public function step1(Request $request)
     {
         //初期化
-        $arrData = $this->arrEmpty;
-        $jsonData = json_encode($arrData);
-
+        $objData = $this->objEmpty;
+        $jsonData = json_encode($objData);
         if ($request->session()->has('jsonData')) {
             $jsonData = $request->session()->get('jsonData');
-            $arrData = json_decode($jsonData, true);
+            $objData = json_decode($jsonData, true);
         }
 
         return view('Instructor.step1', [
-            'arrData' => $arrData,
+            'objData' => $objData,
             'jsonData' => $jsonData,
             'genders' => UserConst::GENDERS,
         ]);
@@ -60,9 +58,9 @@ class InstructorController extends Controller
 
     public function step1Send(Request $request)
     {
-        $arrData = json_decode($request->jsonData, true);
-        $arrData = array_merge($arrData, $request->only($this->arrModelItems));
-        $jsonData = json_encode($arrData);
+        $objData = json_decode($request->jsonData, true);
+        $objData = array_merge($objData, $request->only($this->arrModelItems));
+        $jsonData = json_encode($objData);
 
         //アバター画像をstorageに保存
         if ($request->has('avatar')) {
@@ -81,25 +79,25 @@ class InstructorController extends Controller
     public function step2(Request $request)
     {
         //初期化
-        $arrData = $this->arrEmpty;
-        $jsonData = json_encode($arrData);
+        $objData = $this->objEmpty;
+        $jsonData = json_encode($objData);
 
         if ($request->session()->has('jsonData')) {
             $jsonData = $request->session()->get('jsonData');
-            $arrData = json_decode($jsonData, true);
+            $objData = json_decode($jsonData, true);
         }
 
         return view('Instructor.step2', [
-            'arrData' => $arrData,
+            'objData' => $objData,
             'jsonData' => $jsonData,
         ]);
     }
 
     public function step2Send(Request $request)
     {
-        $arrData = json_decode($request->jsonData, true);
-        $arrData = array_merge($arrData, $request->only($this->arrModelItems));
-        $jsonData = json_encode($arrData);
+        $objData = json_decode($request->jsonData, true);
+        $objData = array_merge($objData, $request->only($this->arrModelItems));
+        $jsonData = json_encode($objData);
 
         if ($request->transition === 'prev') {
             return redirect('/instructor/step1')->with('jsonData', $jsonData);
@@ -114,16 +112,16 @@ class InstructorController extends Controller
     public function step3(Request $request)
     {
         //初期化
-        $arrData = $this->arrEmpty;
-        $jsonData = json_encode($arrData);
+        $objData = $this->objEmpty;
+        $jsonData = json_encode($objData);
 
         if ($request->session()->has('jsonData')) {
             $jsonData = $request->session()->get('jsonData');
-            $arrData = json_decode($jsonData, true);
+            $objData = json_decode($jsonData, true);
         }
 
         return view('Instructor.step3', [
-            'arrData' => $arrData,
+            'objData' => $objData,
             'jsonData' => $jsonData,
             'arrActivities' => RecruitConst::ACTIVITIES,
             'arrAreas' => AddressConst::AREAS,
@@ -134,9 +132,9 @@ class InstructorController extends Controller
 
     public function step3Send(Request $request)
     {
-        $arrData = json_decode($request->jsonData, true);
-        $arrData = array_merge($arrData, $request->only($this->arrModelItems));
-        $jsonData = json_encode($arrData);
+        $objData = json_decode($request->jsonData, true);
+        $objData = array_merge($objData, $request->only($this->arrModelItems));
+        $jsonData = json_encode($objData);
 
         if ($request->transition === 'prev') {
             return redirect('/instructor/step2')->with('jsonData', $jsonData);
@@ -150,7 +148,7 @@ class InstructorController extends Controller
 
     public function confirm(Request $request)
     {
-        $arrData = $this->arrEmpty;
+        $objData = $this->arrEmpty;
         if (!empty($request->old())) {
             $instructor = array_merge($instructor, $request->old());
 

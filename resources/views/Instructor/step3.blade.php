@@ -13,7 +13,7 @@
             <div class="actWrapper" id="actWrapper">
               @foreach($arrActivities as $key => $value)
               <input type="checkbox" name="activities[]" id="{{ $key }}" class="edit__checkbox" value="{{ $key }}"
-                @if(old('activities', $arrData['activities'])===$key) checked="checked" @endif>
+                @if(old('activities', $objData['activities'])===$key) checked="checked" @endif>
               <label for="{{ $key }}" class="">{{ $value }}</label>
               @endforeach
               @error('activities') <p class="alert">{{ $message }}</p> @enderror
