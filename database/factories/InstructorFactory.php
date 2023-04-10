@@ -37,7 +37,6 @@ class InstructorFactory extends Factory
             $act_city = fake()->randomElement(array_keys($cities[$pref]));
             $act_areas[] = ['pref' => $act_pref, 'city' => $act_city];
         }
-
         //avatar画像
         $sourceDir = base_path('/assets/avatar_seed');
         $targetDir = 'avatars';
