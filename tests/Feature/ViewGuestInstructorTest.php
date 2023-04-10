@@ -57,7 +57,48 @@ class ViewGuestInstructorTest extends TestCase
             ->assertSee($ir->name_kana)
             ->assertSee($ir->birth)
             ->assertSee($ir->gender)
-            ->assertSee($ir->avatar_url)
-            ;
+            ->assertSee($ir->avatar_url);
+    }
+
+    /**
+     * @test
+     */
+    public function 指導員ユーザー登録ページ２入力欄表示確認(): void
+    {
+        $response = $this->get('/instructor/step2');
+        $response->assertOk()
+            ->assertSee("name=\"zip\"", $escaped = false)
+            ->assertSee("name=\"pref\"", $escaped = false)
+            ->assertSee("name=\"city\"", $escaped = false)
+            ->assertSee("name=\"address\"", $escaped = false)
+            ->assertSee("name=\"tel\"", $escaped = false)
+            ->assertSee("前に戻る")
+            ->assertSee("次に進む");
+    }
+
+    /**
+     * @test
+     */
+    public function 指導員ユーザー登録ページ２セッションが存在する場合の入力確認(): void
+    {
+        $user = User::factory()->create(['role' => 1]);
+        $ir = Instructor::factory()->create(['user_id' => $user->id]);
+        $data = [
+            'zip' => $ir->zip,
+            'pref' => $ir->pref,
+            'city' => $ir->city,
+            'address' => $ir->address,
+            'tel' => $ir->tel,
+        ];
+        $jsonData = json_encode($data);
+
+        $response = $this->withSession(['jsonData' => $jsonData])
+            ->get('/instructor/step2');
+        $response->assertOk()
+            ->assertSee($ir->zip)
+            ->assertSee($ir->pref)
+            ->assertSee($ir->city)
+            ->assertSee($ir->address)
+            ->assertSee($ir->tel);
     }
 }

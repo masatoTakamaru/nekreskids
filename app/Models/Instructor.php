@@ -32,10 +32,11 @@ class Instructor extends Model
 
     ];
 
-    public $arrItems = null;
+    public $arrItems = [];
 
-    public function __construct()
+    public function __construct(array $attributes = [])
     {
+        parent::__construct($attributes);   
         $this->arrItems = $this->fillable;
     }
 
