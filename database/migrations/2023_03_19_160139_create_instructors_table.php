@@ -23,7 +23,7 @@ return new class extends Migration
             $table->text('activities')->nullable()->comment('指導できる活動');
             $table->string('other_activities', 255)->nullable()->comment('指導できる活動（その他）');
             $table->string('ontime', 255)->nullable()->comment('指導できる曜日や時間帯');
-            $table->text('act_prefcities')->nullable()->comment('指導できる都道府県市区町村');
+            $table->text('act_areas')->nullable()->comment('指導できる都道府県市区町村');
             $table->date('birth')->nullable(false)->comment('生年月日');
             $table->string('cert', 255)->nullable()->comment('所有資格');
             $table->string('gender', 128)->nullable(false)->comment('性別');

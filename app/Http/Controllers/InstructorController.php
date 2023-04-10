@@ -25,18 +25,18 @@ class InstructorController extends Controller
         $model = new Instructor();
         $this->objEmpty = $model;
         $this->arrItems = $model->arrItems;
-        $this->arrItems += [
+        $this->arrItems = array_merge($this->arrItems, [
             'email',
             'password',
             'avatar',
             'actPref',
-        ];
-        foreach($model->arrItems as $value) {
-            $this->objEmpty[$value] = null;
+        ]);
+        foreach ($this->arrItems as $value) {
+            $this->objEmpty->$value = null;
         }
-        $this->objEmpty['birth'] = new Carbon();
-        $this->objEmpty['gender'] = 'male';
-        $this->objEmpty['activities'] = [];
+        $this->objEmpty->birth = new Carbon();
+        $this->objEmpty->gender = 'male';
+        $this->objEmpty->activities = [];
     }
 
     public function step1(Request $request)
@@ -46,7 +46,7 @@ class InstructorController extends Controller
         $jsonData = json_encode($objData);
         if ($request->session()->has('jsonData')) {
             $jsonData = $request->session()->get('jsonData');
-            $objData = json_decode($jsonData, true);
+            $objData = (object) json_decode($jsonData, true);
         }
 
         return view('Instructor.step1', [
@@ -58,8 +58,8 @@ class InstructorController extends Controller
 
     public function step1Send(Request $request)
     {
-        $objData = json_decode($request->jsonData, true);
-        $objData = array_merge($objData, $request->only($this->arrModelItems));
+        $arrData = json_decode($request->jsonData, true);
+        $objData = (object) array_merge($arrData, $request->only($this->arrItems));
         $jsonData = json_encode($objData);
 
         //アバター画像をstorageに保存
@@ -84,7 +84,7 @@ class InstructorController extends Controller
 
         if ($request->session()->has('jsonData')) {
             $jsonData = $request->session()->get('jsonData');
-            $objData = json_decode($jsonData, true);
+            $objData = (object) json_decode($jsonData, true);
         }
 
         return view('Instructor.step2', [
@@ -95,8 +95,8 @@ class InstructorController extends Controller
 
     public function step2Send(Request $request)
     {
-        $objData = json_decode($request->jsonData, true);
-        $objData = array_merge($objData, $request->only($this->arrModelItems));
+        $arrData = json_decode($request->jsonData, true);
+        $objData = (object) array_merge($arrData, $request->only($this->arrItems));
         $jsonData = json_encode($objData);
 
         if ($request->transition === 'prev') {
@@ -117,23 +117,22 @@ class InstructorController extends Controller
 
         if ($request->session()->has('jsonData')) {
             $jsonData = $request->session()->get('jsonData');
-            $objData = json_decode($jsonData, true);
+            $objData = (object) json_decode($jsonData, true);
         }
 
         return view('Instructor.step3', [
             'objData' => $objData,
             'jsonData' => $jsonData,
             'arrActivities' => RecruitConst::ACTIVITIES,
-            'arrAreas' => AddressConst::AREAS,
-            'arrPrefs' => AddressConst::PREFECTURES,
-            'arrCities' => AddressConst::CITIES,
+            'arrPrefs' => ['' => '選択して下さい'] + AddressConst::PREFECTURES,
+            'arrCities' => json_encode(['' => ['未選択']] + AddressConst::CITIES),
         ]);
     }
 
     public function step3Send(Request $request)
     {
-        $objData = json_decode($request->jsonData, true);
-        $objData = array_merge($objData, $request->only($this->arrModelItems));
+        $arrData = json_decode($request->jsonData, true);
+        $objData = (object) array_merge($arrData, $request->only($this->arrItems));
         $jsonData = json_encode($objData);
 
         if ($request->transition === 'prev') {
@@ -148,7 +147,7 @@ class InstructorController extends Controller
 
     public function confirm(Request $request)
     {
-        $objData = $this->arrEmpty;
+        $objData = $this->objEmpty;
         if (!empty($request->old())) {
             $instructor = array_merge($instructor, $request->old());
 

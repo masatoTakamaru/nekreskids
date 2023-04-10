@@ -8,64 +8,66 @@
       <div>
         <form action="/instructor/step3" method="post">
           @csrf
-          <div>
-            <p for="" class="">指導できる活動</p>
-            <div class="actWrapper" id="actWrapper">
+          <div class="edit__item">
+            <p class="edit__label">指導できる活動</p>
+            <div class="edit__checkboxWrapper" id="edit__checkboxWrapper">
               @foreach($arrActivities as $key => $value)
-              <input type="checkbox" name="activities[]" id="{{ $key }}" class="edit__checkbox" value="{{ $key }}"
-                @if(old('activities', $objData['activities'])===$key) checked="checked" @endif>
-              <label for="{{ $key }}" class="">{{ $value }}</label>
+              <div class="edit__checkboxItem">
+                <input type="checkbox" name="activities[]" id="{{ $key }}" class="edit__checkbox" value="{{ $key }}"
+                  @if(old('activities')===$key||in_array($key, $objData->activities)) checked="checked" @endif>
+                <label for="{{ $key }}" class="">{{ $value }}</label>
+              </div>
               @endforeach
               @error('activities') <p class="alert">{{ $message }}</p> @enderror
             </div>
           </div>
-          <div>
-            <label for="" class="">指導できる活動（その他）</label>
-            <input type="text" name="" class="">
+          <div class="edit__item">
+            <label for="other_activities" class="edit__label">指導できる活動<br>（その他）</label>
+            <input type="text" name="other_activities" class="">
           </div>
-          <div>
-            <label for="" class="">指導できる時間帯</label>
-            <input type="text" name="" class="" placeholder="平日１７：００～１９：００など">
+          <div class="edit__item">
+            <label for="ontime" class="edit__label">指導できる曜日<br>や時間帯</label>
+            <input type="text" name="ontime" class="" placeholder="平日１７：００～１９：００など">
           </div>
-          <div>
-            <p class="">指導できる都道府県</p>
-            <div class="accordion__container">
-              @foreach($arrAreas as $areaKey => $areaValue)
-              <div class="accordion__title js-accordion-title">{{ $areaValue }}</div>
-              <div class="accordion__content">
-                @foreach($arrPrefs[$areaKey] as $prefKey => $prefValue)
-                <div class="accordion__title accordion-pref js-accordion-title">{{ $prefValue }}</div>
-                <div class="accordion__content accordion-city">
-                  @foreach($arrCities[$prefKey] as $cityKey => $cityValue)
-                  <input id="{{ $prefKey . $cityKey }}" type="checkbox"
-                    class="accordon__content-item" value="{{ $cityKey }}">
-                  <label for="{{ $prefKey . $cityKey }}">{{ $cityValue }}</label>
-                  @endforeach
+          <div class="edit__item">
+            <label for="actAreas" class="edit__label">指導できる地域</label>
+            <div>
+              <div class="edit__actPrefCities" id="actAreas">
+                <div id="actArea1">
+                  <select id="pref1">
+                    @foreach($arrPrefs as $key => $value)
+                    <option class="" value="{{ $key }}">{{ $value }}</option>
+                    @endforeach
+                  </select>
+                  <select name="city1" id="city1"></select>
                 </div>
-                @endforeach
               </div>
-              @endforeach
+              <img id="edit__iconPrefAdd" class="edit__icon" src="/asset/image/common/square-plus-solid.svg">
+              <img class="edit__icon" src="/asset/image/common/square-minus-solid.svg">
             </div>
           </div>
-          <div>
-            <label for="" class="">指導できる市区町村</label>
-            <input type="text" name="" class="">
+          <div class="edit__item">
+            <label for="cert" class="edit__label">所有資格</label>
+            <input type="text" name="cert" class="">
           </div>
-          <div>
-            <label for="" class="">所有資格</label>
-            <input type="text" name="" class="">
+          <div class="edit__item">
+            <label for="pr" class="edit__label">自己紹介</label>
+            <div>
+              <textarea name="pr" class="pr_content" id="pr_content" cols="50" rows="10"></textarea>
+              <p class="edit__prCount" id="pr_count"></p>
+            </div>
           </div>
-          <div>
-            <label for="" class="">自己紹介</label>
-            <input type="file" name="" class="">
-          </div>
-          <div>
-            <button type="submit" name="transition" class="" value="prev">前に戻る</button>
-            <button type="submit" name="transition" class="" value="confirm">確認画面へ</button>
-          </div>
-          <input type="hidden" name="jsonData" value="{{ old('jsonData', $jsonData) }}">
-        </form>
       </div>
+      <div>
+        <button type="submit" name="transition" class="" value="prev">前に戻る</button>
+        <button type="submit" name="transition" class="" value="confirm">確認画面へ</button>
+      </div>
+      <input type="hidden" name="jsonData" value="{{ old('jsonData', $jsonData) }}">
+      </form>
+    </div>
     </div>
   </article>
+  <script>
+    const arrCities = <?php echo $arrCities; ?>;
+  </script>
 </x-guest-layout>

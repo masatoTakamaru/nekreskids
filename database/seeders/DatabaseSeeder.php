@@ -29,7 +29,11 @@ class DatabaseSeeder extends Seeder
 
         $amount = 30;
 
-        \App\Models\User::factory()->create(['email' => 'admin@example.com', 'password' => 'password', 'role' => 3]);
+        \App\Models\User::factory()->create([
+            'email' => 'admin@example.com',
+            'password' => 'password',
+            'role' => 3
+        ]);
         \App\Models\User::factory($amount)->hasInstructor(1)->create(['role' => 1]);
         $schools = \App\Models\User::factory($amount)->hasSchool(1)->create(['role' => 2]);
         $schools->each(function ($school_user) {
@@ -43,6 +47,5 @@ class DatabaseSeeder extends Seeder
         \App\Models\KeepRecruit::factory($amount)->create();
         \App\Models\Notice::factory($amount)->create();
         \App\Models\Inquiry::factory($amount)->create();
-
     }
 }

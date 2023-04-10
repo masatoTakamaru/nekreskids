@@ -1,6 +1,8 @@
-/*
-    生年月日
-*/
+/**
+ * 
+ * 生年月日
+ * 
+ */
 
 $(window).on("load", () => {
     const now = new Date();
@@ -43,30 +45,83 @@ $("#birth3").on("change", () => {
     $("#birth").val(date);
 });
 
+/**
+ * 
+ * 指導員ユーザー登録市区町村表示
+ * 
+ */
 
-/*
-    アコーディオンメニュー
-*/
+const actAreasElem = $('#actAreas');
+const iconPrefAddElem = $('#edit__iconPrefAdd');
+let areaLength = 1;
 
-/*
-document.addEventListener("DOMContentLoaded", () => {
-    const titles = document.querySelectorAll('.js-accordion-title');
-    titles.forEach((title) => {
-        const content = title.nextElementSibling;
-        title.addEventListener('click', () => {
-            title.classList.toggle('is-active');
-            //content.classList.toggle('is-open');
-            $(this).next().slideToggle();
-        });
+iconPrefAddElem.on('click', () => {
+    const actAreaElem = $('<div>', {
+        id: `actArea${areaLength + 1}`
     });
+    const prefElem = $(`#pref${areaLength}`).clone()
+        .attr('id', `pref${areaLength + 1}`)
+        .val('')
+        .appendTo(actAreaElem);
+    const citiesElem = $(`#city${areaLength}`).clone()
+        .attr('name', `city${areaLength + 1}`)
+        .attr('id', `city${areaLength + 1}`)
+        .empty()
+        .appendTo(actAreaElem);
+    actAreaElem.appendTo(actAreasElem);
+    areaLength++;
+    $(`#pref${areaLength}`).on('load change', { id: areaLength }, setCities);
 });
-*/
+
+const setCities = (event) => {
+    const id = event.data.id;
+    const prefValue = $(`#pref${id}`).val();
+    const cities = arrCities[prefValue];
+console.log(cities);
+    const cityElem = $(`#city${id}`);
+    cityElem.empty();
+    if (cities) {
+        Object.keys(cities).forEach((key) => {
+            const optionElem = $('<option>', {
+                value: key
+            }).text(cities[key]).appendTo(cityElem);
+        });
+    }
+}
+
+$(window).on('load', { id: 1 }, setCities);
+$('#pref1').on('change', { id: 1 }, setCities);
+
+/**
+ * 
+ * 指導員ユーザー登録PR文字数カウンター
+ * 
+ */
+
+const maxLength = 200;
+const pr_content = $('#pr_content');
+const pr_count = $('#pr_count');
 
 $(window).on('load', () => {
-    $('.js-accordion-title').each((index, element) => {
-        $(element).on('click', () => {
-            $(element).toggleClass('is-active');
-            $(element).next().slideToggle(300);
-        });
-    });
+    pr_count.text(`あと${maxLength}文字`);
 });
+
+pr_content.on('input', () => {
+    const text = pr_content.val().replace(/(\r\n|\n|\r)/gm, "");
+    if (text.length >= maxLength) {
+        pr_content.attr('readonly', true);
+    } else {
+        pr_content.removeAttr('readonly');
+    }
+    const len = maxLength - text.length;
+    pr_count.text(`あと${len}文字`);
+});
+
+pr_content.on('keydown', (e) => {
+    if (pr_content.attr('readonly')) {
+        if (e.keyCode === 8 || e.keyCode === 46) {
+            pr_content.removeAttr('readonly');
+        }
+    }
+});
+

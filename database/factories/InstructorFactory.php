@@ -23,21 +23,19 @@ class InstructorFactory extends Factory
     public function definition()
     {
         $activities = RecruitConst::ACTIVITIES;
-        $areas = AddressConst::AREAS;
         $prefs = AddressConst::PREFECTURES;
         $cities = AddressConst::CITIES;
         $genders = UserConst::GENDERS;
-        $act_prefcities = [];
+        $act_areas = [];
         $loop = mt_rand(0, 15);
 
-        $prefs = fake()->randomElement(array_keys($areas));
         $pref = fake()->randomElement(array_keys($prefs));
         $city = fake()->randomElement(array_keys($cities[$pref]));
 
         for ($i = 0; $i <= $loop; $i++) {
             $act_pref = fake()->randomElement(array_keys($prefs));
             $act_city = fake()->randomElement(array_keys($cities[$pref]));
-            $act_prefcities[] = ['pref' => $act_pref, 'city' => $act_city];
+            $act_areas[] = ['pref' => $act_pref, 'city' => $act_city];
         }
 
         //avatar画像
@@ -68,7 +66,7 @@ class InstructorFactory extends Factory
             'activities' => mt_rand(0, 4) ? json_encode(fake()->randomElements(array_keys($activities), mt_rand(0, 5))) : null,
             'other_activities' => mt_rand(0, 4) ? '指導できる活動その他' . fake()->realText(100) : null,
             'ontime' => mt_rand(0, 4) ? '指導できる曜日や時間帯' . fake()->realText(100) : null,
-            'act_prefcities' => !empty($act_prefcities) ? json_encode($act_prefcities) : null,
+            'act_areas' => !empty($act_areas) ? json_encode($act_areas) : null,
             'birth' => fake()->date(),
             'cert' => mt_rand(0, 4) ? '所有資格' . fake()->realText(100) : null,
             'gender' => fake()->randomElement($genders),
