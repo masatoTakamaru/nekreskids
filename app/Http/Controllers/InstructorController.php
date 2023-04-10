@@ -125,7 +125,7 @@ class InstructorController extends Controller
             'jsonData' => $jsonData,
             'arrActivities' => RecruitConst::ACTIVITIES,
             'arrPrefs' => ['' => '選択して下さい'] + AddressConst::PREFECTURES,
-            'arrCities' => json_encode(['' => ['未選択']] + AddressConst::CITIES),
+            'arrCities' => json_encode(AddressConst::CITIES),
         ]);
     }
 

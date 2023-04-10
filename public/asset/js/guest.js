@@ -59,30 +59,33 @@ iconPrefAddElem.on('click', () => {
     const actAreaElem = $('<div>', {
         id: `actArea${areaLength + 1}`
     });
-    const prefElem = $(`#pref${areaLength}`).clone()
+    $(`#pref${areaLength}`).clone()
         .attr('id', `pref${areaLength + 1}`)
         .val('')
         .appendTo(actAreaElem);
-    const citiesElem = $(`#city${areaLength}`).clone()
+    $(`#city${areaLength}`).clone()
         .attr('name', `city${areaLength + 1}`)
         .attr('id', `city${areaLength + 1}`)
         .empty()
         .appendTo(actAreaElem);
     actAreaElem.appendTo(actAreasElem);
     areaLength++;
-    $(`#pref${areaLength}`).on('load change', { id: areaLength }, setCities);
+    $(`#pref${areaLength}`).on('change', { id: areaLength }, setCities);
+    $(`#pref${areaLength}`).trigger('change'); //強制イベント発火
 });
 
 const setCities = (event) => {
     const id = event.data.id;
-    const prefValue = $(`#pref${id}`).val();
-    const cities = arrCities[prefValue];
-console.log(cities);
+    const prefElem = $(`#pref${id}`);
+    prefElem.attr('name', `act_areas[${id}][pref]`);
+    let cities = { null: '未選択' };
+    Object.assign(cities, arrCities[prefElem.val()]);
     const cityElem = $(`#city${id}`);
+    cityElem.attr('name', `act_areas[${id}][city]`)
     cityElem.empty();
     if (cities) {
         Object.keys(cities).forEach((key) => {
-            const optionElem = $('<option>', {
+            $('<option>', {
                 value: key
             }).text(cities[key]).appendTo(cityElem);
         });

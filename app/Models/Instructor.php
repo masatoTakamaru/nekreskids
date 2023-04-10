@@ -21,7 +21,7 @@ class Instructor extends Model
         'activities',
         'other_activities',
         'ontime',
-        'act_prefcities',
+        'act_areas',
         'gender',
         'zip',
         'pref',

@@ -42,8 +42,10 @@
                   <select name="city1" id="city1"></select>
                 </div>
               </div>
-              <img id="edit__iconPrefAdd" class="edit__icon" src="/asset/image/common/square-plus-solid.svg">
-              <img class="edit__icon" src="/asset/image/common/square-minus-solid.svg">
+              <div class="edit__icon">
+                <div id="edit__iconPrefAdd" class="edit__icon square_plus"></div>
+                <div id="edit__iconPrefAdd" class="edit__icon square_minus"></div>
+              </div>
             </div>
           </div>
           <div class="edit__item">

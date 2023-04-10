@@ -78,7 +78,7 @@ body {
         .cities {
             display: flex;
             flex-wrap: wrap;
-            width: 360px;    
+            width: 360px;
         }
     }
 
@@ -92,8 +92,32 @@ body {
     }
 
     &__icon {
-        width: 20px;
-        height: 20px;
-        margin-top: 5px;
+        display: flex;
+        margin: 3px 0;
     }
+}
+
+.square_plus {
+    width: 20px;
+    height: 20px;
+    background-image: url(image/square-plus-solid.svg);
+    background-repeat: no-repeat;
+}
+
+.square_plus:hover {
+    background-image: url(image/square-plus-solid-active.svg);
+    transition: 0.3s;
+}
+
+.square_minus {
+    width: 20px;
+    height: 20px;
+    margin-left: 3px;
+    background-image: url(image/square-minus-solid.svg);
+    background-repeat: no-repeat;
+}
+
+.square_minus:hover {
+    background-image: url(image/square-minus-solid-active.svg);
+    transition: 0.3s;
 }
