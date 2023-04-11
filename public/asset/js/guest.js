@@ -53,11 +53,13 @@ $("#birth3").on("change", () => {
 
 const actAreasElem = $('#actAreas');
 const iconPrefAddElem = $('#edit__iconPrefAdd');
+const iconPrefRemoveElem = $('#edit__iconPrefRemove');
 let areaLength = 1;
 
 iconPrefAddElem.on('click', () => {
     const actAreaElem = $('<div>', {
-        id: `actArea${areaLength + 1}`
+        id: `actArea${areaLength + 1}`,
+        class: 'edit__actArea'
     });
     $(`#pref${areaLength}`).clone()
         .attr('id', `pref${areaLength + 1}`)
@@ -70,9 +72,19 @@ iconPrefAddElem.on('click', () => {
         .appendTo(actAreaElem);
     actAreaElem.appendTo(actAreasElem);
     areaLength++;
+    if (areaLength === 2) iconPrefRemoveElem.toggle();
+    if (areaLength === 5) iconPrefAddElem.toggle();
     $(`#pref${areaLength}`).on('change', { id: areaLength }, setCities);
     $(`#pref${areaLength}`).trigger('change'); //強制イベント発火
 });
+
+iconPrefRemoveElem.on('click', () => {
+    $(`#actArea${areaLength}`).remove();
+    areaLength--;
+    if (areaLength === 1) iconPrefRemoveElem.toggle();
+    if (areaLength === 4) iconPrefAddElem.toggle();
+});
+
 
 const setCities = (event) => {
     const id = event.data.id;
