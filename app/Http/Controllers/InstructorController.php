@@ -141,22 +141,20 @@ class InstructorController extends Controller
         if ($request->transition === 'confirm') {
             return redirect('/instructor/confirm')->with($jsonData);
         }
-
-        return;
     }
 
     public function confirm(Request $request)
     {
-        $objData = $this->objEmpty;
-        if (!empty($request->old())) {
-            $instructor = array_merge($instructor, $request->old());
+        if ($request->session()->has('jsonData')) {
+            $jsonData = $request->session()->get('jsonData');
+            $objData = (object) json_decode($jsonData, true);
 
-            return view('Instructor.confirm', [
-                'instructor' => $instructor,
-                'data' => json_encode($instructor),
+            return view('Instructor.step3', [
+                'objData' => $objData,
+                'jsonData' => $jsonData,
             ]);
         }
 
-        return;
+        abort(401);
     }
 }
