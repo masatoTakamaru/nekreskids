@@ -29,16 +29,7 @@ class Instructor extends Model
         'address',
         'tel',
         'keep',
-
     ];
-
-    public $arrItems = [];
-
-    public function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);   
-        $this->arrItems = $this->fillable;
-    }
 
     public function searches()
     {
@@ -50,4 +41,17 @@ class Instructor extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function getFillable() {
+        return $this->fillable;
+    }
+
+    /**
+     * モデルのプロパティを連想配列でまとめて格納する
+     */
+    public function setProps($props): void
+    {
+        foreach ($props as $key => $value) {
+            $this->$key = $value;
+        }
+    }
 }

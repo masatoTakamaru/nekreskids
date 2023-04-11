@@ -18,25 +18,24 @@ use Carbon\Carbon;
 class InstructorController extends Controller
 {
     private $objEmpty = null;
-    private $arrItems = [];
+    private $arrFillable = [];
 
     public function __construct()
     {
         $model = new Instructor();
-        $this->objEmpty = $model;
-        $this->arrItems = $model->arrItems;
-        $this->arrItems = array_merge($this->arrItems, [
+
+        $this->arrFillable = array_merge($model->getFillable(), [
             'email',
             'password',
             'avatar',
             'actPref',
         ]);
-        foreach ($this->arrItems as $value) {
-            $this->objEmpty->$value = null;
-        }
-        $this->objEmpty->birth = new Carbon();
-        $this->objEmpty->gender = 'male';
-        $this->objEmpty->activities = [];
+        $model->setProps(array_fill_keys($this->arrFillable, null));
+        $model->birth = new Carbon();
+        $model->gender = 'male';
+        $model->activities = [];
+
+        $this->objEmpty = $model;
     }
 
     public function step1(Request $request)
@@ -46,7 +45,8 @@ class InstructorController extends Controller
         $jsonData = json_encode($objData);
         if ($request->session()->has('jsonData')) {
             $jsonData = $request->session()->get('jsonData');
-            $objData = (object) json_decode($jsonData, true);
+            $objData = new Instructor;
+            $objData->setProps(json_decode($jsonData, true));
         }
 
         return view('Instructor.step1', [
@@ -59,8 +59,7 @@ class InstructorController extends Controller
     public function step1Send(Request $request)
     {
         $arrData = json_decode($request->jsonData, true);
-        $objData = (object) array_merge($arrData, $request->only($this->arrItems));
-        $jsonData = json_encode($objData);
+        $jsonData = json_encode(array_merge($arrData, $request->only($this->arrFillable)));
 
         //アバター画像をstorageに保存
         if ($request->has('avatar')) {
@@ -84,7 +83,8 @@ class InstructorController extends Controller
 
         if ($request->session()->has('jsonData')) {
             $jsonData = $request->session()->get('jsonData');
-            $objData = (object) json_decode($jsonData, true);
+            $objData = new Instructor;
+            $objData->setProps(json_decode($jsonData, true));
         }
 
         return view('Instructor.step2', [
@@ -96,8 +96,7 @@ class InstructorController extends Controller
     public function step2Send(Request $request)
     {
         $arrData = json_decode($request->jsonData, true);
-        $objData = (object) array_merge($arrData, $request->only($this->arrItems));
-        $jsonData = json_encode($objData);
+        $jsonData = json_encode(array_merge($arrData, $request->only($this->arrFillable)));
 
         if ($request->transition === 'prev') {
             return redirect('/instructor/step1')->with('jsonData', $jsonData);
@@ -117,7 +116,8 @@ class InstructorController extends Controller
 
         if ($request->session()->has('jsonData')) {
             $jsonData = $request->session()->get('jsonData');
-            $objData = (object) json_decode($jsonData, true);
+            $objData = new Instructor;
+            $objData->setProps(json_decode($jsonData, true));
         }
 
         return view('Instructor.step3', [
@@ -132,14 +132,12 @@ class InstructorController extends Controller
     public function step3Send(Request $request)
     {
         $arrData = json_decode($request->jsonData, true);
-        $objData = (object) array_merge($arrData, $request->only($this->arrItems));
-        $jsonData = json_encode($objData);
-
+        $jsonData = json_encode(array_merge($arrData, $request->only($this->arrFillable)));
         if ($request->transition === 'prev') {
             return redirect('/instructor/step2')->with('jsonData', $jsonData);
         }
         if ($request->transition === 'confirm') {
-            return redirect('/instructor/confirm')->with($jsonData);
+            return redirect('/instructor/confirm')->with('jsonData', $jsonData);
         }
     }
 
@@ -147,14 +145,15 @@ class InstructorController extends Controller
     {
         if ($request->session()->has('jsonData')) {
             $jsonData = $request->session()->get('jsonData');
-            $objData = (object) json_decode($jsonData, true);
+            $objData = new Instructor;
+            $objData->setProps(json_decode($jsonData, true));
 
-            return view('Instructor.step3', [
+            return view('Instructor.confirm', [
                 'objData' => $objData,
                 'jsonData' => $jsonData,
             ]);
         }
 
-        abort(401);
+        abort(404);
     }
 }
