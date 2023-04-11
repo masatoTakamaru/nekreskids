@@ -41,10 +41,6 @@ class Instructor extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function getFillable() {
-        return $this->fillable;
-    }
-
     /**
      * モデルのプロパティを連想配列でまとめて格納する
      */
