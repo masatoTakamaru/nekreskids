@@ -17,32 +17,35 @@ use Carbon\Carbon;
 
 class InstructorController extends Controller
 {
-    private $objEmpty = null;
-    private $arrFillable = [];
+    private $objInit = null;    //初期化済みオブジェクト
+    private $fillable = [];     //メソッド間の受け渡し項目
 
     public function __construct()
     {
         $model = new Instructor();
-
-        $this->arrFillable = array_merge($model->getFillable(), [
+        //メソッド間の受け渡し項目を追加する場合はここに記入
+        $this->fillable = array_merge($model->getFillable(), [
             'email',
             'password',
             'avatar',
             'actPref',
         ]);
-        $model->setProps(array_fill_keys($this->arrFillable, null));
+        //全項目にnullを代入
+        $model->setProps(array_fill_keys($this->fillable, null));
+        //プロパティに初期値を与える場合はここに記入
         $model->birth = new Carbon();
         $model->gender = 'male';
         $model->activities = [];
 
-        $this->objEmpty = $model;
+        $this->objInit = $model;
     }
 
     public function step1(Request $request)
     {
         //初期化
-        $objData = $this->objEmpty;
+        $objData = $this->objInit;
         $jsonData = json_encode($objData);
+        //セッションが存在する場合セッション値を反映
         if ($request->session()->has('jsonData')) {
             $jsonData = $request->session()->get('jsonData');
             $objData = new Instructor;
@@ -59,7 +62,7 @@ class InstructorController extends Controller
     public function step1Send(Request $request)
     {
         $arrData = json_decode($request->jsonData, true);
-        $jsonData = json_encode(array_merge($arrData, $request->only($this->arrFillable)));
+        $jsonData = json_encode(array_merge($arrData, $request->only($this->fillable)));
 
         //アバター画像をstorageに保存
         if ($request->has('avatar')) {
@@ -71,16 +74,14 @@ class InstructorController extends Controller
         if ($request->transition === 'next') {
             return redirect('/instructor/step2')->with('jsonData', $jsonData);
         }
-
-        return;
     }
 
     public function step2(Request $request)
     {
         //初期化
-        $objData = $this->objEmpty;
+        $objData = $this->objInit;
         $jsonData = json_encode($objData);
-
+        //セッションが存在する場合セッション値を反映
         if ($request->session()->has('jsonData')) {
             $jsonData = $request->session()->get('jsonData');
             $objData = new Instructor;
@@ -96,7 +97,7 @@ class InstructorController extends Controller
     public function step2Send(Request $request)
     {
         $arrData = json_decode($request->jsonData, true);
-        $jsonData = json_encode(array_merge($arrData, $request->only($this->arrFillable)));
+        $jsonData = json_encode(array_merge($arrData, $request->only($this->fillable)));
 
         if ($request->transition === 'prev') {
             return redirect('/instructor/step1')->with('jsonData', $jsonData);
@@ -104,16 +105,14 @@ class InstructorController extends Controller
         if ($request->transition === 'next') {
             return redirect('/instructor/step3')->with('jsonData', $jsonData);
         }
-
-        return;
     }
 
     public function step3(Request $request)
     {
         //初期化
-        $objData = $this->objEmpty;
+        $objData = $this->objInit;
         $jsonData = json_encode($objData);
-
+        //セッションが存在する場合セッション値を反映
         if ($request->session()->has('jsonData')) {
             $jsonData = $request->session()->get('jsonData');
             $objData = new Instructor;
@@ -132,7 +131,7 @@ class InstructorController extends Controller
     public function step3Send(Request $request)
     {
         $arrData = json_decode($request->jsonData, true);
-        $jsonData = json_encode(array_merge($arrData, $request->only($this->arrFillable)));
+        $jsonData = json_encode(array_merge($arrData, $request->only($this->fillable)));
         if ($request->transition === 'prev') {
             return redirect('/instructor/step2')->with('jsonData', $jsonData);
         }
@@ -154,6 +153,6 @@ class InstructorController extends Controller
             ]);
         }
 
-        abort(404);
+        abort(404);  //セッションが存在しない場合ページを表示しない
     }
 }
