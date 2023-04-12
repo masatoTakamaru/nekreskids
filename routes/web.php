@@ -11,7 +11,7 @@ Route::get('/privacy',[App\Http\Controllers\PrivacyController::class, 'index']);
 Route::get('/inquiry/create',[App\Http\Controllers\InquiryController::class, 'create']);
 Route::put('/inquiry/create',[App\Http\Controllers\InquiryController::class, 'send']);
 Route::get('/inquiry/confirm',[App\Http\Controllers\InquiryController::class, 'confirm']);
-Route::post('/inquiry/confirm',[App\Http\Controllers\InquiryController::class, 'store']);
+Route::post('/inquiry/confirm',[App\Http\Controllers\InquiryController::class, 'insert']);
 Route::get('/inquiry/complete',[App\Http\Controllers\InquiryController::class, 'complete']);
 Route::get('/about',[App\Http\Controllers\AboutController::class, 'index']);
 Route::get('/faq',[App\Http\Controllers\FaqController::class, 'index']);
@@ -24,13 +24,13 @@ Route::post('/instructor/step2',[App\Http\Controllers\InstructorController::clas
 Route::get('/instructor/step3',[App\Http\Controllers\InstructorController::class, 'step3']);
 Route::post('/instructor/step3',[App\Http\Controllers\InstructorController::class, 'step3Send']);
 Route::get('/instructor/confirm',[App\Http\Controllers\InstructorController::class, 'confirm']);
-Route::post('/instructor/confirm',[App\Http\Controllers\InstructorController::class, 'store']);
+Route::post('/instructor/confirm',[App\Http\Controllers\InstructorController::class, 'insert']);
 Route::get('/instructor/complete',[App\Http\Controllers\InstructorController::class, 'complete']);
 
 Route::get('/school/create',[App\Http\Controllers\SchoolController::class, 'create']);
 Route::post('/school/create',[App\Http\Controllers\SchoolController::class, 'send']);
 Route::get('/school/confirm',[App\Http\Controllers\SchoolController::class, 'confirm']);
-Route::post('/school/confirm',[App\Http\Controllers\SchoolController::class, 'store']);
+Route::post('/school/confirm',[App\Http\Controllers\SchoolController::class, 'insert']);
 Route::get('/school/complete',[App\Http\Controllers\SchoolController::class, 'complete']);
 
 Route::get('/instructor/index',[App\Http\Controllers\InstructorController::class, 'index']);
@@ -44,13 +44,13 @@ Route::get('/school/edit',[App\Http\Controllers\SchoolController::class, 'edit']
 Route::patch('/school/edit',[App\Http\Controllers\SchoolController::class, 'update']);
 
 Route::get('/message/index',[App\Http\Controllers\MessageController::class, 'message']);
-Route::post('/message/index',[App\Http\Controllers\SchoolController::class, 'store']);
+Route::post('/message/index',[App\Http\Controllers\SchoolController::class, 'insert']);
 Route::patch('/message/index',[App\Http\Controllers\SchoolController::class, 'update']);
 Route::delete('/message/index',[App\Http\Controllers\SchoolController::class, 'destroy']);
 
 Route::get('/recruit/create',[App\Http\Controllers\RecruitController::class, 'create']);
-Route::post('/recruit/create',[App\Http\Controllers\RecruitController::class, 'store']);
-Route::get('/recruit/show',[App\Http\Controllers\RecruitController::class, 'show']);
+Route::post('/recruit/create',[App\Http\Controllers\RecruitController::class, 'insert']);
+Route::get('/recruit/show',[App\Http\Controllers\RecruitController::class, 'detail']);
 Route::get('/recruit/edit',[App\Http\Controllers\RecruitController::class, 'edit']);
 Route::patch('/recruit/edit',[App\Http\Controllers\RecruitController::class, 'update']);
 
@@ -70,24 +70,24 @@ Route::prefix('/admin')->group(function () {
 
     Route::get('/instructor/index',[App\Http\Controllers\Admin\InstructorController::class, 'index']);
     Route::get('/instructor/create',[App\Http\Controllers\Admin\InstructorController::class, 'create']);
-    Route::post('/instructor/create',[App\Http\Controllers\Admin\InstructorController::class, 'store']);
-    Route::get('/instructor/show',[App\Http\Controllers\Admin\InstructorController::class, 'show']);
+    Route::post('/instructor/create',[App\Http\Controllers\Admin\InstructorController::class, 'insert']);
+    Route::get('/instructor/show',[App\Http\Controllers\Admin\InstructorController::class, 'detail']);
     Route::delete('/instructor/show',[App\Http\Controllers\Admin\InstructorController::class, 'destroy']);
     Route::get('/instructor/edit',[App\Http\Controllers\Admin\InstructorController::class, 'edit']);
     Route::patch('/instructor/edit',[App\Http\Controllers\Admin\InstructorController::class, 'update']);
 
     Route::get('/school/index',[App\Http\Controllers\Admin\SchoolController::class, 'index']);
     Route::get('/school/create',[App\Http\Controllers\Admin\SchoolController::class, 'create']);
-    Route::post('/school/create',[App\Http\Controllers\Admin\SchoolController::class, 'store']);
-    Route::get('/school/show',[App\Http\Controllers\Admin\SchoolController::class, 'show']);
+    Route::post('/school/create',[App\Http\Controllers\Admin\SchoolController::class, 'insert']);
+    Route::get('/school/show',[App\Http\Controllers\Admin\SchoolController::class, 'detail']);
     Route::delete('/school/show',[App\Http\Controllers\Admin\SchoolController::class, 'destroy']);
     Route::get('/school/edit',[App\Http\Controllers\Admin\SchoolController::class, 'edit']);
     Route::patch('/school/edit',[App\Http\Controllers\Admin\SchoolController::class, 'update']);
 
     Route::get('/recruit/index',[App\Http\Controllers\Admin\RecruitController::class, 'index']);
     Route::get('/recruit/create',[App\Http\Controllers\Admin\RecruitController::class, 'create']);
-    Route::post('/recruit/create',[App\Http\Controllers\Admin\RecruitController::class, 'store']);
-    Route::get('/recruit/show',[App\Http\Controllers\Admin\RecruitController::class, 'show']);
+    Route::post('/recruit/create',[App\Http\Controllers\Admin\RecruitController::class, 'insert']);
+    Route::get('/recruit/show',[App\Http\Controllers\Admin\RecruitController::class, 'detail']);
     Route::delete('/recruit/show',[App\Http\Controllers\Admin\RecruitController::class, 'destroy']);
     Route::get('/recruit/edit',[App\Http\Controllers\Admin\RecruitController::class, 'edit']);
     Route::patch('/recruit/edit',[App\Http\Controllers\Admin\RecruitController::class, 'update']);
@@ -103,18 +103,18 @@ Route::prefix('/admin')->group(function () {
 
     Route::get('/notice/index',[App\Http\Controllers\Admin\NoticeController::class, 'index']);
     Route::get('/notice/create',[App\Http\Controllers\Admin\NoticeController::class, 'create']);
-    Route::post('/notice/create',[App\Http\Controllers\Admin\NoticeController::class, 'store']);
-    Route::get('/notice/show',[App\Http\Controllers\Admin\NoticeController::class, 'show']);
+    Route::post('/notice/create',[App\Http\Controllers\Admin\NoticeController::class, 'insert']);
+    Route::get('/notice/show',[App\Http\Controllers\Admin\NoticeController::class, 'detail']);
     Route::delete('/notice/show',[App\Http\Controllers\Admin\NoticeController::class, 'destroy']);
     Route::get('/notice/edit',[App\Http\Controllers\Admin\NoticeController::class, 'edit']);
     Route::patch('/notice/edit',[App\Http\Controllers\Admin\NoticeController::class, 'update']);
 
     Route::get('/message/index',[App\Http\Controllers\Admin\MessageController::class, 'index']);
-    Route::get('/message/show',[App\Http\Controllers\Admin\MessageController::class, 'show']);
+    Route::get('/message/show',[App\Http\Controllers\Admin\MessageController::class, 'detail']);
     Route::delete('/message/show',[App\Http\Controllers\Admin\MessageController::class, 'destroy']);
 
     Route::get('/inquiry/index',[App\Http\Controllers\Admin\InquiryController::class, 'index']);
-    Route::get('/inquiry/show',[App\Http\Controllers\Admin\InquiryController::class, 'show']);
+    Route::get('/inquiry/show',[App\Http\Controllers\Admin\InquiryController::class, 'detail']);
     Route::delete('/inquiry/show',[App\Http\Controllers\Admin\InquiryController::class, 'destroy']);
 
 });
