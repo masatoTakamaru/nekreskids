@@ -22,7 +22,6 @@ class School extends Model
         'tel2',
         'charge',
         'score',
-
     ];
 
     public function school_scores()
@@ -41,6 +40,15 @@ public function user()
     return $this->belongsTo(User::class);
 }
 
+    /**
+     * モデルのプロパティを連想配列でまとめて格納する
+     */
+    public function setAttrs($attrs): void
+    {
+        foreach ($attrs as $key => $value) {
+            $this->$key = $value;
+        }
+    }
 
 
 }
