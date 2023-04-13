@@ -1,7 +1,31 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
+
+if (!isset($_SERVER['REQUEST_URI'])) return;
+
+$arrUrl = explode('/', $_SERVER['REQUEST_URI']);
+
+$action = 'index';
+$dir = null;
+if ($arrUrl[1] != 'admin' && $arrUrl[1] != 'logout' && isset($arrUrl[2])) {
+    $arrUrlChild = explode('?', $arrUrl[2]);
+    $action = $arrUrlChild[0];
+    $dir = '/' . $arrUrl[2];
+}
+$pass = 'App\Http\Controllers\\';
+$pass .= Str::studly($arrUrl[1]) . 'Controller'::class;
+Route::get('/' . $arrUrl[1] . $dir, [$pass, $action]);
+Route::post('/' . $arrUrl[1] . $dir, [$pass, $action]);
+Route::patch('/' . $arrUrl[1] . $dir, [$pass, $action]);
+Route::delete('/' . $arrUrl[1] . $dir, [$pass, $action]);
+if (!isset($arrUrl[2]) && $arrUrl[1] === 'admin') {
+    Route::get('admin', function () {
+        return view('admin.dashboard');
+    })->middleware('auth');
+}
+/*
 
 Route::get('/',[App\Http\Controllers\IndexController::class, 'index']);
 Route::get('/index',[App\Http\Controllers\IndexController::class, 'index']);
@@ -129,4 +153,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+*/
+
+require __DIR__ . '/auth.php';
