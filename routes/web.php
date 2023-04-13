@@ -16,6 +16,9 @@ if ($arrUrl[1] != 'admin' && $arrUrl[1] != 'logout' && isset($arrUrl[2])) {
 }
 $pass = 'App\Http\Controllers\\';
 $pass .= Str::studly($arrUrl[1]) . 'Controller'::class;
+/**
+ * 例 /user/create ⇒
+ */
 Route::get('/' . $arrUrl[1] . $dir, [$pass, $action]);
 Route::post('/' . $arrUrl[1] . $dir, [$pass, $action]);
 Route::patch('/' . $arrUrl[1] . $dir, [$pass, $action]);
@@ -25,6 +28,16 @@ if (!isset($arrUrl[2]) && $arrUrl[1] === 'admin') {
         return view('admin.dashboard');
     })->middleware('auth');
 }
+
+
+
+
+
+
+
+
+
+
 /*
 
 Route::get('/',[App\Http\Controllers\IndexController::class, 'index']);
