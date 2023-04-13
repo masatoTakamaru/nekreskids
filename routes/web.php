@@ -8,6 +8,10 @@ if (!isset($_SERVER['REQUEST_URI'])) return;
 $arrUrl = explode('/', $_SERVER['REQUEST_URI']);
 $action = 'index';
 $dir = null;
+if ($arrUrl[1] === 'user' || $arrUrl[1] === 'admin') {
+    
+}
+
 if ($arrUrl[1] != 'admin' && $arrUrl[1] != 'logout' && isset($arrUrl[2])) {
     $arrUrlChild = explode('?', $arrUrl[2]);
     $action = $arrUrlChild[0];
