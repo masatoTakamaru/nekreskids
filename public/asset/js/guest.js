@@ -103,11 +103,11 @@ const setCities = (event) => {
     }
 }
 
-const setArea = (id) => {
+const createArea = (id) => {
     const actAreaElem = $('<div>', {
         id: `actArea${id}`,
         class: 'edit__actArea'
-    });
+    }).appendTo(actAreasElem);
     const prefElem = $('<select>', {
         id: `pref${id}`,
         name: `act_areas[${id}][pref]`,
@@ -122,27 +122,16 @@ const setArea = (id) => {
         id: `city${id}`,
         name: `act_areas[${id}][city]`
     }).appendTo(actAreaElem);
-    Object.keys(arrCities[prefElem.val()]).forEach((key) => {
+    Object.keys(Object.keys(arrCities[prefElem.val()])).forEach((key) => {
         const option = $('<option>', {
             class: ''
         }).val(key);
         option.text(arrCities[key]).appendTo(cityElem);
     });
-    $(`#city${areaLength}`).clone()
-        .attr('name', `city${areaLength + 1}`)
-        .attr('id', `city${areaLength + 1}`)
-        .empty()
-        .appendTo(actAreaElem);
-    actAreaElem.appendTo(actAreasElem);
-    areaLength++;
-    if (areaLength === 2) iconPrefRemoveElem.toggle();
-    if (areaLength === 5) iconPrefAddElem.toggle();
-    $(`#pref${areaLength}`).on('change', { id: areaLength }, setCities);
-    $(`#pref${areaLength}`).trigger('change'); //強制イベント発火
 }
 
 Object.keys(arrActAreas).forEach((index) => {
-    setArea(index);
+    createArea(index);
 });
 areaLength = arrActAreas.length;
 
