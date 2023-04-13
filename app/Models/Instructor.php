@@ -44,7 +44,7 @@ class Instructor extends Model
     /**
      * モデルのプロパティを連想配列でまとめて格納する
      */
-    public function setProps($props): void
+    public function setAttrs($props): void
     {
         foreach ($props as $key => $value) {
             $this->$key = $value;

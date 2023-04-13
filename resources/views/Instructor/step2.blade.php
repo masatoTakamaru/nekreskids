@@ -39,8 +39,8 @@
             @error('tel') <p class="alert">{{ $message }}</p> @enderror
           </div>
           <div>
-            <button type="submit" name="transition" class="" value="prev">前に戻る</button>
-            <button type="submit" name="transition" class="" value="next">次に進む</button>
+            <button type="submit" name="transition" class="" value="step1">前に戻る</button>
+            <button type="submit" name="transition" class="" value="step3">次に進む</button>
           </div>
           <input type="hidden" name="jsonData" value="{{ old('jsonData', $jsonData) }}">
         </form>

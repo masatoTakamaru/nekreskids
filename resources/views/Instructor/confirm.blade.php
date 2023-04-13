@@ -73,7 +73,7 @@
         <form action="/instructor/confirm" method="post">
           @csrf
           <div>
-            <button type="submit" name="transition" class="" value="prev">前に戻る</button>
+            <button type="submit" name="transition" class="" value="step3">前に戻る</button>
             <button type="submit" name="transition" class="" value="complete">登録する</button>
           </div>   
           <input type="hidden" name="jsonData" value="{{ $jsonData }}">

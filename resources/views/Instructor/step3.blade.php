@@ -50,7 +50,7 @@
           </div>
       </div>
       <div>
-        <button type="submit" name="transition" class="" value="prev">前に戻る</button>
+        <button type="submit" name="transition" class="" value="step2">前に戻る</button>
         <button type="submit" name="transition" class="" value="confirm">確認画面へ</button>
       </div>
       <input type="hidden" name="jsonData" value="{{ old('jsonData', $jsonData) }}">

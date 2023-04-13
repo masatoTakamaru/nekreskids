@@ -21,7 +21,6 @@ class InstructorController extends Controller
     private $objInit = null;    //初期化済みオブジェクト
     private $fillableExt = [];     //メソッド間の受け渡し項目
 
-
     public function __construct()
     {
         $model = new Instructor();
@@ -33,7 +32,7 @@ class InstructorController extends Controller
             'actPref',
         ]);
         //全項目にnullを代入
-        $model->setProps(array_fill_keys($this->fillableExt, null));
+        $model->setAttrs(array_fill_keys($this->fillableExt, null));
         //プロパティに初期値を与える場合はここに記入
         $model->birth = new Carbon();
         $model->gender = 'male';
@@ -45,15 +44,25 @@ class InstructorController extends Controller
 
     public function step1(Request $request)
     {
-        //初期化
+        if (!$request->isMethod('get') && !$request->isMethod('post')) abort(404);
+
+        if ($request->isMethod('post')) {
+            $arrData = json_decode($request->jsonData, true);
+            $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
+
+            if ($request->has('transition')) {
+                return redirect('/instructor/' . $request->transition)->with('jsonData', $jsonData);
+            }
+        }
+
+        // getの場合
         $objData = $this->objInit;
         $jsonData = json_encode($objData);
         //セッションが存在する場合セッション値を反映
         if ($request->session()->has('jsonData')) {
             $jsonData = $request->session()->get('jsonData');
-            $model = new Instructor;
-            $objData = $model->make($this->fillableExt);
-            $objData->setProps(json_decode($jsonData, true));
+            $objData = new Instructor;
+            $objData->setAttrs(json_decode($jsonData, true));
         }
 
         return view('Instructor.step1', [
@@ -63,33 +72,27 @@ class InstructorController extends Controller
         ]);
     }
 
-    public function step1Send(Request $request)
-    {
-        $arrData = json_decode($request->jsonData, true);
-        $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
-
-        //アバター画像をstorageに保存
-        if ($request->has('avatar')) {
-            $data = base64_decode(str_replace('data:image/png;base64,', '', $request->avatar));
-            Storage::put('avatars/01.png', $data);
-            //$instructor['avatar_url'] = $path;
-        }
-
-        if ($request->transition === 'next') {
-            return redirect('/instructor/step2')->with('jsonData', $jsonData);
-        }
-    }
-
     public function step2(Request $request)
     {
-        //初期化
+        if (!$request->isMethod('get') && !$request->isMethod('post')) abort(404);
+
+        if ($request->isMethod('post')) {
+            $arrData = json_decode($request->jsonData, true);
+            $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
+
+            if ($request->has('transition')) {
+                return redirect('/instructor/' . $request->transition)->with('jsonData', $jsonData);
+            }
+        }
+
+        //getの場合
         $objData = $this->objInit;
         $jsonData = json_encode($objData);
         //セッションが存在する場合セッション値を反映
         if ($request->session()->has('jsonData')) {
             $jsonData = $request->session()->get('jsonData');
             $objData = new Instructor;
-            $objData->setProps(json_decode($jsonData, true));
+            $objData->setAttrs(json_decode($jsonData, true));
         }
 
         return view('Instructor.step2', [
@@ -98,29 +101,26 @@ class InstructorController extends Controller
         ]);
     }
 
-    public function step2Send(Request $request)
-    {
-        $arrData = json_decode($request->jsonData, true);
-        $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
-
-        if ($request->transition === 'prev') {
-            return redirect('/instructor/step1')->with('jsonData', $jsonData);
-        }
-        if ($request->transition === 'next') {
-            return redirect('/instructor/step3')->with('jsonData', $jsonData);
-        }
-    }
-
     public function step3(Request $request)
     {
-        //初期化
+        if (!$request->isMethod('get') && !$request->isMethod('post')) abort(404);
+
+        if ($request->isMethod('post')) {
+            $arrData = json_decode($request->jsonData, true);
+            $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
+            if ($request->has('transition')) {
+                return redirect('/instructor/' . $request->transition)->with('jsonData', $jsonData);
+            }
+        }
+
+        //getの場合
         $objData = $this->objInit;
         $jsonData = json_encode($objData);
         //セッションが存在する場合セッション値を反映
         if ($request->session()->has('jsonData')) {
             $jsonData = $request->session()->get('jsonData');
             $objData = new Instructor;
-            $objData->setProps(json_decode($jsonData, true));
+            $objData->setAttrs(json_decode($jsonData, true));
         }
 
         return view('Instructor.step3', [
@@ -133,51 +133,51 @@ class InstructorController extends Controller
         ]);
     }
 
-    public function step3Send(Request $request)
-    {
-        $arrData = json_decode($request->jsonData, true);
-        $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
-        if ($request->transition === 'prev') {
-            return redirect('/instructor/step2')->with('jsonData', $jsonData);
-        }
-        if ($request->transition === 'confirm') {
-            return redirect('/instructor/confirm')->with('jsonData', $jsonData);
-        }
-    }
-
     public function confirm(Request $request)
     {
-        if ($request->session()->has('jsonData')) {
-            $jsonData = $request->session()->get('jsonData');
-            $objData = new Instructor;
-            $objData->setProps(json_decode($jsonData, true));
+        if (!$request->isMethod('get') && !$request->isMethod('post')) abort(404);
+        if (!$request->session()->has('jsonData')) abort(404);
 
-            $objData->address = $objData->pref . $objData->city . $objData->address;
-            $objData->activities = implode(' ', $objData->activities);
-            $actAreas = [];
-            foreach ($objData->act_areas as $actArea) {
-                $actAreas[] = $actArea['pref'] . $actArea['city'];
+        if ($request->isMethod('post')) {
+            $arrData = json_decode($request->jsonData, true);
+            $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
+            if ($request->has('transition')) {
+                return redirect('/instructor/' . $request->transition)->with('jsonData', $jsonData);
             }
-            $objData->act_areas = implode('<br>', $actAreas);
 
-            return view('Instructor.confirm', [
-                'objData' => $objData,
-                'jsonData' => $jsonData,
-            ]);
-        }
+            //アバター画像をstorageに保存
+            /*
+            if ($request->has('avatar')) {
+                $data = base64_decode(str_replace('data:image/png;base64,', '', $request->avatar));
+                Storage::put('avatars/01.png', $data);
+                //$instructor['avatar_url'] = $path;
+            }
+            */
 
-        abort(404);  //セッションが存在しない場合ページを表示しない
-    }
-
-    public function insert(Request $request)
-    {
-        $arrData = json_decode($request->jsonData, true);
-        $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
-        if ($request->transition === 'prev') {
-            return redirect('/instructor/step3')->with('jsonData', $jsonData);
-        }
-        if ($request->transition === 'confirm') {
             return redirect('/instructor/complete')->with('jsonData', $jsonData);
         }
+
+        //getの場合
+        $jsonData = $request->session()->get('jsonData');
+        $objData = new Instructor;
+        $objData->setAttrs(json_decode($jsonData, true));
+
+        //表示用データを整形
+        $objData->address = $objData->pref . $objData->city . $objData->address;
+        $objData->activities = implode(' ', $objData->activities);
+        $actAreas = [];
+        foreach ($objData->act_areas as $actArea) {
+            $actAreas[] = $actArea['pref'] . $actArea['city'];
+        }
+        $objData->act_areas = implode('<br>', $actAreas);
+
+        return view('Instructor.confirm', [
+            'objData' => $objData,
+            'jsonData' => $jsonData,
+        ]);
+    }
+
+    public function complete(Request $request)
+    {
     }
 }

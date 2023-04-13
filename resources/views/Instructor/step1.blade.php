@@ -54,7 +54,7 @@
             </div>
           </div>
           <div>
-            <button type="submit" name="transition" class="editSubmit" value="next">次に進む</button>
+            <button type="submit" name="transition" class="editSubmit" value="step2">次に進む</button>
           </div>
           <input type="hidden" name="jsonData" value="{{ old('jsonData', $jsonData) }}">
         </form>
