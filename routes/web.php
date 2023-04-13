@@ -6,7 +6,6 @@ use Illuminate\Support\Str;
 if (!isset($_SERVER['REQUEST_URI'])) return;
 
 $arrUrl = explode('/', $_SERVER['REQUEST_URI']);
-
 $action = 'index';
 $dir = null;
 if ($arrUrl[1] != 'admin' && $arrUrl[1] != 'logout' && isset($arrUrl[2])) {
@@ -17,7 +16,7 @@ if ($arrUrl[1] != 'admin' && $arrUrl[1] != 'logout' && isset($arrUrl[2])) {
 $pass = 'App\Http\Controllers\\';
 $pass .= Str::studly($arrUrl[1]) . 'Controller'::class;
 /**
- * 例 /user/create ⇒
+ * 例 /user/create ⇒　[App\Http\Controllers\UserController::class, 'create']
  */
 Route::get('/' . $arrUrl[1] . $dir, [$pass, $action]);
 Route::post('/' . $arrUrl[1] . $dir, [$pass, $action]);
