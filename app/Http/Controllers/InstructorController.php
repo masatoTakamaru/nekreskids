@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -18,24 +19,26 @@ use Carbon\Carbon;
 class InstructorController extends Controller
 {
     private $objInit = null;    //初期化済みオブジェクト
-    private $fillable = [];     //メソッド間の受け渡し項目
+    private $fillableExt = [];     //メソッド間の受け渡し項目
+
 
     public function __construct()
     {
         $model = new Instructor();
         //メソッド間の受け渡し項目を追加する場合はここに記入
-        $this->fillable = array_merge($model->getFillable(), [
+        $this->fillableExt = array_merge($model->getfillable(), [
             'email',
             'password',
             'avatar',
             'actPref',
         ]);
         //全項目にnullを代入
-        $model->setProps(array_fill_keys($this->fillable, null));
+        $model->setProps(array_fill_keys($this->fillableExt, null));
         //プロパティに初期値を与える場合はここに記入
         $model->birth = new Carbon();
         $model->gender = 'male';
         $model->activities = [];
+        $model->act_areas = ['1' => ['pref' => '', 'city' => '']];
 
         $this->objInit = $model;
     }
@@ -48,7 +51,8 @@ class InstructorController extends Controller
         //セッションが存在する場合セッション値を反映
         if ($request->session()->has('jsonData')) {
             $jsonData = $request->session()->get('jsonData');
-            $objData = new Instructor;
+            $model = new Instructor;
+            $objData = $model->make($this->fillableExt);
             $objData->setProps(json_decode($jsonData, true));
         }
 
@@ -62,7 +66,7 @@ class InstructorController extends Controller
     public function step1Send(Request $request)
     {
         $arrData = json_decode($request->jsonData, true);
-        $jsonData = json_encode(array_merge($arrData, $request->only($this->fillable)));
+        $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
 
         //アバター画像をstorageに保存
         if ($request->has('avatar')) {
@@ -97,7 +101,7 @@ class InstructorController extends Controller
     public function step2Send(Request $request)
     {
         $arrData = json_decode($request->jsonData, true);
-        $jsonData = json_encode(array_merge($arrData, $request->only($this->fillable)));
+        $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
 
         if ($request->transition === 'prev') {
             return redirect('/instructor/step1')->with('jsonData', $jsonData);
@@ -123,15 +127,16 @@ class InstructorController extends Controller
             'objData' => $objData,
             'jsonData' => $jsonData,
             'arrActivities' => RecruitConst::ACTIVITIES,
-            'arrPrefs' => ['' => '選択して下さい'] + AddressConst::PREFECTURES,
-            'arrCities' => json_encode(AddressConst::CITIES),
+            'arrActAreas' => json_encode($objData->act_areas),
+            'arrPrefs' => json_encode(['' => '選択して下さい'] + AddressConst::PREFECTURES),
+            'arrCities' => json_encode(['' => '未選択'] + AddressConst::CITIES),
         ]);
     }
 
     public function step3Send(Request $request)
     {
         $arrData = json_decode($request->jsonData, true);
-        $jsonData = json_encode(array_merge($arrData, $request->only($this->fillable)));
+        $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
         if ($request->transition === 'prev') {
             return redirect('/instructor/step2')->with('jsonData', $jsonData);
         }
@@ -147,6 +152,14 @@ class InstructorController extends Controller
             $objData = new Instructor;
             $objData->setProps(json_decode($jsonData, true));
 
+            $objData->address = $objData->pref . $objData->city . $objData->address;
+            $objData->activities = implode(' ', $objData->activities);
+            $actAreas = [];
+            foreach ($objData->act_areas as $actArea) {
+                $actAreas[] = $actArea['pref'] . $actArea['city'];
+            }
+            $objData->act_areas = implode('<br>', $actAreas);
+
             return view('Instructor.confirm', [
                 'objData' => $objData,
                 'jsonData' => $jsonData,
@@ -154,5 +167,17 @@ class InstructorController extends Controller
         }
 
         abort(404);  //セッションが存在しない場合ページを表示しない
+    }
+
+    public function insert(Request $request)
+    {
+        $arrData = json_decode($request->jsonData, true);
+        $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
+        if ($request->transition === 'prev') {
+            return redirect('/instructor/step3')->with('jsonData', $jsonData);
+        }
+        if ($request->transition === 'confirm') {
+            return redirect('/instructor/complete')->with('jsonData', $jsonData);
+        }
     }
 }
