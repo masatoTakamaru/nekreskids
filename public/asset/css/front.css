@@ -103,3 +103,9 @@ body {
   background-image: url(image/square-minus-solid-active.svg);
   transition: 0.3s;
 }
+
+.detail__item {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  width: 480px;
+}

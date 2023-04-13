@@ -31,16 +31,7 @@
           </div>
           <div class="edit__item">
             <label for="actAreas" class="edit__label">指導できる地域</label>
-            <div class="edit__actPrefCities" id="actAreas">
-              <div id="actArea1" class="edit__actArea">
-                <select id="pref1">
-                  @foreach($arrPrefs as $key => $value)
-                  <option class="" value="{{ $key }}">{{ $value }}</option>
-                  @endforeach
-                </select>
-                <select name="city1" id="city1"></select>
-              </div>
-            </div>
+            <div class="edit__actPrefCities" id="actAreas"></div>
             <div class="edit__icon">
               <div id="edit__iconPrefAdd" class="edit__icon square_plus"></div>
               <div id="edit__iconPrefRemove" class="edit__icon square_minus"></div>
@@ -67,7 +58,10 @@
     </div>
     </div>
   </article>
+  @php $arrActareas = old('act_areas') ?? $arrActAreas @endphp
   <script>
+    const arrActAreas = <?php echo $arrActAreas; ?>;
+    const arrPrefs = <?php echo $arrPrefs; ?>;
     const arrCities = <?php echo $arrCities; ?>;
   </script>
 </x-guest-layout>

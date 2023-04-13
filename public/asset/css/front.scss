@@ -117,3 +117,11 @@ body {
         transition: 0.3s;
     }
 }
+
+.detail {
+    &__item {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        width: 480px;
+    }
+}
