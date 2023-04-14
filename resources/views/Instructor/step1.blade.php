@@ -54,7 +54,7 @@
             </div>
           </div>
           <div>
-            <button type="submit" name="transition" class="editSubmit" value="step2">次に進む</button>
+            <button type="submit" name="transit" class="editSubmit" value="step2">次に進む</button>
           </div>
           <input type="hidden" name="jsonData" value="{{ old('jsonData', $jsonData) }}">
         </form>
@@ -63,22 +63,10 @@
     </div>
   </article>
 </x-guest-layout>
+<script>
+  setBirthday();
+</script>
 <script src="/asset/js/sendResizedImg.js"></script>
 <script>
-  const sri = new sendResizedImg('avatar_preview', 'avatar_upload', 'avatar');
-  sri.create({
-    mode: "crop",                    //モード(nocrop|crop|original)
-    preview: {
-        maxWidth: 200,                  //プレビュー画像の最大幅
-        maxHeight: 200,                 //プレビュー画像の最大高さ
-        imgInit: null,                  //画像読み込み前の初期画像(ファイル名|base64文字列)
-                                        //省略可。この場合デフォルト画像が表示される
-    },
-    send: {
-        maxWidth: 200,                  //送信画像の最大幅
-        maxHeight: 200,                 //送信画像の最大高さ
-        format: "jpg",                  //画像形式(jpeg|png)
-        quality: 0.9,                   //画質(0.0～1.0)
-    }
-});
+  setResizedImg();
 </script>
