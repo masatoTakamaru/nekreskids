@@ -50,18 +50,24 @@
           </div>
       </div>
       <div>
-        <button type="submit" name="transition" class="" value="step2">前に戻る</button>
-        <button type="submit" name="transition" class="" value="confirm">確認画面へ</button>
+        <button type="submit" name="transit" class="" value="step2">前に戻る</button>
+        <button type="submit" name="transit" class="" value="confirm">確認画面へ</button>
       </div>
       <input type="hidden" name="jsonData" value="{{ old('jsonData', $jsonData) }}">
       </form>
     </div>
     </div>
   </article>
-  @php $arrActareas = old('act_areas') ?? $arrActAreas @endphp
+  @php
+  $arrActareas = old('act_areas') ?? $arrActAreas;
+  @endphp
   <script>
-    const arrActAreas = <?php echo $arrActAreas; ?>;
-    const arrPrefs = <?php echo $arrPrefs; ?>;
-    const arrCities = <?php echo $arrCities; ?>;
+    const objActAreas = <?php echo $arrActAreas; ?>;
+    const objPrefs = <?php echo $arrPrefs; ?>;
+    const objCities = <?php echo $arrCities; ?>;
   </script>
 </x-guest-layout>
+<script>
+  setActArea();
+  setPrCharsLimit();
+</script>

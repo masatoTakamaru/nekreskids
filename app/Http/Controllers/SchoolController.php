@@ -60,7 +60,7 @@ class SchoolController extends Controller
         $arrData = json_decode($request->jsonData, true);
         $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
 
-        if ($request->transition === 'confirm') {
+        if ($request->url === 'confirm') {
             return redirect('/instructor/confirm')->with('jsonData', $jsonData);
         }
     }

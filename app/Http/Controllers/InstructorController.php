@@ -50,8 +50,8 @@ class InstructorController extends Controller
             $arrData = json_decode($request->jsonData, true);
             $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
 
-            if ($request->has('transition')) {
-                return redirect('/instructor/' . $request->transition)->with('jsonData', $jsonData);
+            if ($request->has('transit')) {
+                return redirect('/instructor/' . $request->transit)->with('jsonData', $jsonData);
             }
         }
 
@@ -80,8 +80,8 @@ class InstructorController extends Controller
             $arrData = json_decode($request->jsonData, true);
             $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
 
-            if ($request->has('transition')) {
-                return redirect('/instructor/' . $request->transition)->with('jsonData', $jsonData);
+            if ($request->has('transit')) {
+                return redirect('/instructor/' . $request->transit)->with('jsonData', $jsonData);
             }
         }
 
@@ -108,8 +108,8 @@ class InstructorController extends Controller
         if ($request->isMethod('post')) {
             $arrData = json_decode($request->jsonData, true);
             $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
-            if ($request->has('transition')) {
-                return redirect('/instructor/' . $request->transition)->with('jsonData', $jsonData);
+            if ($request->has('transit')) {
+                return redirect('/instructor/' . $request->transit)->with('jsonData', $jsonData);
             }
         }
 
@@ -122,7 +122,6 @@ class InstructorController extends Controller
             $objData = new Instructor;
             $objData->setAttrs(json_decode($jsonData, true));
         }
-
         return view('Instructor.step3', [
             'objData' => $objData,
             'jsonData' => $jsonData,
@@ -136,13 +135,12 @@ class InstructorController extends Controller
     public function confirm(Request $request)
     {
         if (!$request->isMethod('get') && !$request->isMethod('post')) abort(404);
-        if (!$request->session()->has('jsonData')) abort(404);
 
         if ($request->isMethod('post')) {
             $arrData = json_decode($request->jsonData, true);
             $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
-            if ($request->has('transition')) {
-                return redirect('/instructor/' . $request->transition)->with('jsonData', $jsonData);
+            if ($request->has('transit')) {
+                return redirect('/instructor/' . $request->transit)->with('jsonData', $jsonData);
             }
 
             //アバター画像をstorageに保存
