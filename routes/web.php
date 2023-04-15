@@ -32,6 +32,7 @@ if (!isset($arrUrl[2]) && $arrUrl[1] === 'admin') {
     })->middleware('auth');
 }
 
+Route::get('/',[App\Http\Controllers\IndexController::class, 'index']);
 
 
 
@@ -43,8 +44,6 @@ if (!isset($arrUrl[2]) && $arrUrl[1] === 'admin') {
 
 /*
 
-Route::get('/',[App\Http\Controllers\IndexController::class, 'index']);
-Route::get('/index',[App\Http\Controllers\IndexController::class, 'index']);
 
 Route::get('/privacy',[App\Http\Controllers\PrivacyController::class, 'index']);
 

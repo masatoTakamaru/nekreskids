@@ -55,7 +55,6 @@ class InstructorController extends Controller
                 return redirect('/instructor/' . $request->transit)->with('jsonData', $jsonData);
             }
         }
-
         // getの場合
         $objData = $this->objInit;
         $jsonData = json_encode($objData);
@@ -65,7 +64,6 @@ class InstructorController extends Controller
             $objData = new Instructor;
             $objData->setAttrs(json_decode($jsonData, true));
         }
-
         return view('Instructor.step1', [
             'objData' => $objData,
             'jsonData' => $jsonData,
@@ -193,10 +191,8 @@ class InstructorController extends Controller
         $objData->activities = json_encode($objData->activities);
         $objData->act_areas = json_encode($objData->act_areas);
 
-        dd($objData->except(['user_id'])->toArray());
-
         $model = new User;
-        $model->create([
+        $user = $model->create([
             'name' => $objData->name,
             'email' => $objData->email,
             'password' => bcrypt($objData->password),
@@ -204,7 +200,7 @@ class InstructorController extends Controller
         ]);
 
         $arrData = $objData->toArray();
-        $model->instructor()->create($arrData);
+        $user->instructor()->create($arrData);
 
         return view('Instructor.complete');
     }

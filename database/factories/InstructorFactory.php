@@ -27,15 +27,15 @@ class InstructorFactory extends Factory
         $cities = AddressConst::CITIES;
         $genders = UserConst::GENDERS;
         $act_areas = [];
-        $loop = mt_rand(0, 15);
+        $loop = mt_rand(1, 5);
 
         $pref = fake()->randomElement(array_keys($prefs));
         $city = fake()->randomElement(array_keys($cities[$pref]));
 
-        for ($i = 0; $i <= $loop; $i++) {
+        for ($i = 1; $i <= $loop; $i++) {
             $act_pref = fake()->randomElement(array_keys($prefs));
             $act_city = fake()->randomElement(array_keys($cities[$pref]));
-            $act_areas[] = ['pref' => $act_pref, 'city' => $act_city];
+            $act_areas[] = [$i => ['pref' => $act_pref, 'city' => $act_city]];
         }
         //avatar画像
         $sourceDir = base_path('/assets/avatar_seed');
