@@ -11,8 +11,7 @@
         </div>
         <div class="detail__item">
           <span class="">パスワード</span>
-          <span class="">{{ preg_replace('/(.)/', '*', $objData->password) }}<br>
-            セキュリティーのため非表示</span>
+          <span class="">セキュリティーのため非表示</span>
         </div>
         <div class="detail__item">
           <span class="">氏名</span>
@@ -32,7 +31,7 @@
         </div>
         <div class="detail__item">
           <span class="">アバター画像</span>
-          <span class="">{{ $objData->avatar_url }}</span>
+          <img src="{{ $objData->avatar }}">
         </div>
         <div class="detail__item">
           <span class="">郵便番号</span>

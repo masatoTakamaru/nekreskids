@@ -6,14 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use App\Consts\RecruitConst;
-use App\Models\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InstructorStep1Request;
 use App\Http\Requests\InstructorStep2Request;
 use App\Consts\AddressConst;
 use App\Consts\UserConst;
 use App\Models\Instructor;
+use App\Models\User;
 use Carbon\Carbon;
 
 class InstructorController extends Controller
@@ -34,7 +35,7 @@ class InstructorController extends Controller
         //全項目にnullを代入
         $model->setAttrs(array_fill_keys($this->fillableExt, null));
         //プロパティに初期値を与える場合はここに記入
-        $model->birth = new Carbon();
+        $model->birth = Carbon::now()->format('Y-m-d');
         $model->gender = 'male';
         $model->activities = [];
         $model->act_areas = ['1' => ['pref' => '', 'city' => '']];
@@ -134,6 +135,7 @@ class InstructorController extends Controller
 
     public function confirm(Request $request)
     {
+        if ($request->isMethod('get') && !$request->session()->has('jsonData')) abort(404);
         if (!$request->isMethod('get') && !$request->isMethod('post')) abort(404);
 
         if ($request->isMethod('post')) {
@@ -142,15 +144,6 @@ class InstructorController extends Controller
             if ($request->has('transit')) {
                 return redirect('/instructor/' . $request->transit)->with('jsonData', $jsonData);
             }
-
-            //アバター画像をstorageに保存
-            /*
-            if ($request->has('avatar')) {
-                $data = base64_decode(str_replace('data:image/png;base64,', '', $request->avatar));
-                Storage::put('avatars/01.png', $data);
-                //$instructor['avatar_url'] = $path;
-            }
-            */
 
             return redirect('/instructor/complete')->with('jsonData', $jsonData);
         }
@@ -161,11 +154,16 @@ class InstructorController extends Controller
         $objData->setAttrs(json_decode($jsonData, true));
 
         //表示用データを整形
+        $objData->gender = UserConst::GENDERS[$objData->gender];
         $objData->address = $objData->pref . $objData->city . $objData->address;
-        $objData->activities = implode(' ', $objData->activities);
+        $activities = [];
+        foreach ($objData->activities as $key) {
+            $activities[] = RecruitConst::ACTIVITIES[$key];
+        }
+        $objData->activities = implode(' ', $activities);
         $actAreas = [];
         foreach ($objData->act_areas as $actArea) {
-            $actAreas[] = $actArea['pref'] . $actArea['city'];
+            $actAreas[] = AddressConst::PREFECTURES[$actArea['pref']] . AddressConst::CITIES[$actArea['pref']][$actArea['city']];
         }
         $objData->act_areas = implode('<br>', $actAreas);
 
@@ -177,5 +175,37 @@ class InstructorController extends Controller
 
     public function complete(Request $request)
     {
+        if (!$request->isMethod('get')) abort(404);
+        if ($request->isMethod('get') && !$request->session()->has('jsonData')) abort(404);
+
+        //getの場合
+        $jsonData = $request->session()->get('jsonData');
+        $objData = new Instructor;
+        $objData->setAttrs(json_decode($jsonData, true));
+
+        //アバター画像をstorageに保存
+        if ($objData->avatar) {
+            $data = base64_decode(str_replace('data:image/png;base64,', '', $objData->avatar));
+            $path = Storage::put("avatars/{Str::uuid()}.png", $data);
+            $objData->avatar_url = $path;
+        }
+
+        $objData->activities = json_encode($objData->activities);
+        $objData->act_areas = json_encode($objData->act_areas);
+
+        dd($objData->except(['user_id'])->toArray());
+
+        $model = new User;
+        $model->create([
+            'name' => $objData->name,
+            'email' => $objData->email,
+            'password' => bcrypt($objData->password),
+            'role' => 1,
+        ]);
+
+        $arrData = $objData->toArray();
+        $model->instructor()->create($arrData);
+
+        return view('Instructor.complete');
     }
 }

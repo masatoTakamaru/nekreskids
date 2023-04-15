@@ -63,10 +63,8 @@
     </div>
   </article>
 </x-guest-layout>
-<script>
-  setBirthday();
-</script>
 <script src="/asset/js/sendResizedImg.js"></script>
 <script>
+  setBirthday();
   setResizedImg();
 </script>

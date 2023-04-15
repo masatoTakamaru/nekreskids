@@ -15,34 +15,36 @@ const setBirthday = () => {
         const date = new Date(birth1, birth2, 0);
 
         for (let i = year; i >= 1940; i--) {
-            option_txt = `<option value="${i}" ${i === birth1 ? "selected" : null}>${i}</option>`;
-            $("#birth1").append(option_txt);
+            const elem = $(`<option value="${i}">${i}</option>`).appendTo("#birth1");
+            if (i === birth1) elem.prop('selected', true);
         }
 
         for (let i = 1; i <= 12; i++) {
-            option_txt = `<option value="${i}" ${i === birth2 ? "selected" : null}>${i}</option>`;
-            $("#birth2").append(option_txt);
+            const elem = $(`<option value="${i}">${i}</option>`).appendTo("#birth2");
+            if (i === birth2) elem.prop('selected', true);
         }
 
         for (let i = 1; i <= date.getDate(); i++) {
-            option_txt = `<option value="${i}" ${i === birth3 ? "selected" : null}>${i}</option>`;
-            $("#birth3").append(option_txt);
+            const elem = $(`<option value="${i}">${i}</option>`).appendTo("#birth3");
+            if (i === birth3) elem.prop('selected', true);
         }
     });
 
     $("#birth1,#birth2").on("change", () => {
-        const firstDay = new Date($("#birth1").val(), $("#birth2").val() - 1, 1);
-        const lastDay = new Date($("#birth1").val(), $("#birth2").val(), 0);
+        const beginOfMonth = new Date($("#birth1").val(), $("#birth2").val() - 1, 1);
+        const endOfMonth = new Date($("#birth1").val(), $("#birth2").val(), 0);
+        const year = beginOfMonth.getFullYear();
+        const month = beginOfMonth.getMonth() + 1;
+        const day = beginOfMonth.getDate();
         $("#birth3").empty();
-        for (let i = 1; i <= lastDay.getDate(); i++) {
-            const option_txt = `<option value="${i}">${i}</option>`;
-            $("#birth3").append(option_txt);
+        for (let i = 1; i <= endOfMonth.getDate(); i++) {
+            $("#birth3").append(`<option value="${i}">${i}</option>`);
         }
-        $("#birth").val(firstDay);
+        $("#birth").val(`${year}-${month}-${day}`);
     });
 
     $("#birth3").on("change", () => {
-        const date = new Date($("#birth1").val(), $("#birth2").val() - 1, $("#birth3").val());
+        const date = `${$("#birth1").val()}-${$("#birth2").val()}-${$("#birth3").val()}`;
         $("#birth").val(date);
     });
 }
@@ -78,74 +80,62 @@ const setResizedImg = () => {
  * 
  */
 
-const setActArea = () => {
+const setActArea = (obj) => {
+    const objActAreas = obj.actAreas;
+    const objPrefs = obj.prefs;
+    const objCities = obj.cities;
     const actAreasElem = $('#actAreas');
     const iconPrefAddElem = $('#edit__iconPrefAdd');
     const iconPrefRemoveElem = $('#edit__iconPrefRemove');
     let areaLength = Object.keys(objActAreas).length;
+
+    const createArea = (id) => {
+        if (!objActAreas[id]) objActAreas[id] = { pref: '', city: '' };
+        const actAreaElem = $(`<div id="actArea${id}" class: "edit__actArea"></div>`).appendTo(actAreasElem);
+        if (id > 1) actAreaElem.hide();
+        const prefElem = $(`<select id="pref${id}" name="act_areas[${id}][pref]"></select>`).appendTo(actAreaElem);
+        Object.keys(objPrefs).forEach((key) => {
+            const option = $(`<option value="${key}">${objPrefs[key]}</option>`).appendTo(prefElem);
+            if (key === objActAreas[id].pref) option.prop('selected', true);
+        });
+        const cityElem = $(`<select id="city${id}" name="act_areas[${id}][city]"></select>`).appendTo(actAreaElem);
+        prefElem.on('change', () => { setCities(id) });
+        setCities(id);
+        if (id > 1) actAreaElem.slideDown();
+    }
+
+    const setCities = (id) => {
+        let cities = objCities[$(`#pref${id}`).val()];
+        const cityElem = $(`#city${id}`);
+        cityElem.empty();
+        if (cities) {
+            Object.keys(cities).forEach((key) => {
+                const option = $(`<option value="${key}">${cities[key]}</option>`).appendTo(cityElem);
+                if (key === objActAreas[id].city) option.prop('selected', true);
+            });
+        }
+    }
 
     iconPrefAddElem.on('click', () => {
         areaLength++;
         createArea(areaLength);
         if (areaLength === 2) iconPrefRemoveElem.toggle();
         if (areaLength === 5) iconPrefAddElem.toggle();
-        $(`#pref${areaLength}`).on('change', { id: areaLength }, setCities);
-        $(`#pref${areaLength}`).trigger('change'); //強制イベント発火
+        $(`#pref${areaLength}`).on('change', () => { setCities(areaLength); });
+        setCities(areaLength);
     });
 
     iconPrefRemoveElem.on('click', () => {
-        $(`#actArea${areaLength}`).remove();
+        const actArea = $(`#actArea${areaLength}`);
+        actArea.slideUp().queue(() => { actArea.remove(); });
         areaLength--;
+        console.log(areaLength);
         if (areaLength === 1) iconPrefRemoveElem.toggle();
         if (areaLength === 4) iconPrefAddElem.toggle();
     });
 
-    const setCities = (event) => {
-        const id = event.data.id;
-        const prefElem = $(`#pref${id}`);
-        prefElem.attr('name', `act_areas[${id}][pref]`);
-        let cities = objCities[prefElem.val()];
-        const cityElem = $(`#city${id}`);
-        cityElem.attr('name', `act_areas[${id}][city]`)
-        cityElem.empty();
-        if (cities) {
-            Object.keys(cities).forEach((key) => {
-                $('<option>', {
-                    value: key
-                }).text(cities[key]).appendTo(cityElem);
-            });
-        }
-    }
-
-    const createArea = (id) => {
-        const actAreaElem = $('<div>', {
-            id: `actArea${id}`,
-            class: 'edit__actArea'
-        }).appendTo(actAreasElem);
-        const prefElem = $('<select>', {
-            id: `pref${id}`,
-            name: `act_areas[${id}][pref]`,
-        }).val('').appendTo(actAreaElem);
-        Object.keys(objPrefs).forEach((key) => {
-            const option = $('<option>', {
-                class: ''
-            }).val(key);
-            if (key === objActAreas[id].pref) option.prop('selected', true);
-            option.text(objPrefs[key]).appendTo(prefElem);
-        });
-        const cityElem = $('<select>', {
-            id: `city${id}`,
-            name: `act_areas[${id}][city]`
-        }).appendTo(actAreaElem);
-        prefElem.on('change', { id: id }, setCities);
-        $(`#pref${id}`).trigger('change'); //強制イベント発火
-    }
-
-    Object.keys(objActAreas).forEach((index) => {
-        createArea(index);
-    });
+    Object.keys(objActAreas).forEach((index) => { createArea(index); });
 }
-
 
 /**
  * 

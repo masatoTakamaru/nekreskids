@@ -13,6 +13,6 @@ class UserConst
     const GENDERS = [
         'male' => '男性',
         'female' => '女性',
-        'other' => 'その他',
+        'other' => '選択しない',
     ];
 }

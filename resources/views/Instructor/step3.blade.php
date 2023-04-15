@@ -23,11 +23,11 @@
           </div>
           <div class="edit__item">
             <label for="other_activities" class="edit__label">指導できる活動<br>（その他）</label>
-            <input type="text" name="other_activities" class="">
+            <input type="text" name="other_activities" class="" value="{{ old('other_activities', $objData->other_activities) }}">
           </div>
           <div class="edit__item">
             <label for="ontime" class="edit__label">指導できる曜日<br>や時間帯</label>
-            <input type="text" name="ontime" class="" placeholder="平日１７：００～１９：００など">
+            <input type="text" name="ontime" class="" placeholder="平日１７：００～１９：００など" value="{{ old('ontime', $objData->ontime) }}">
           </div>
           <div class="edit__item">
             <label for="actAreas" class="edit__label">指導できる地域</label>
@@ -39,12 +39,12 @@
           </div>
           <div class="edit__item">
             <label for="cert" class="edit__label">所有資格</label>
-            <input type="text" name="cert" class="">
+            <input type="text" name="cert" class="" value="{{ old('cert', $objData->cert) }}">
           </div>
           <div class="edit__item">
             <label for="pr" class="edit__label">自己紹介</label>
             <div>
-              <textarea name="pr" class="pr_content" id="pr_content" cols="50" rows="10"></textarea>
+              <textarea name="pr" class="pr_content" id="pr_content" cols="50" rows="10">{{ old('pr_content', $objData->pr) }}</textarea>
               <p class="edit__prCount" id="pr_count"></p>
             </div>
           </div>
@@ -58,16 +58,12 @@
     </div>
     </div>
   </article>
-  @php
-  $arrActareas = old('act_areas') ?? $arrActAreas;
-  @endphp
-  <script>
-    const objActAreas = <?php echo $arrActAreas; ?>;
-    const objPrefs = <?php echo $arrPrefs; ?>;
-    const objCities = <?php echo $arrCities; ?>;
-  </script>
 </x-guest-layout>
 <script>
-  setActArea();
+  setActArea({
+    'actAreas': <?php echo old('act_areas', $arrActAreas); ?>,
+    'prefs': <?php echo $arrPrefs; ?>,
+    'cities': <?php echo $arrCities; ?>
+  });
   setPrCharsLimit();
 </script>
