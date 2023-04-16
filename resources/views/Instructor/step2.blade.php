@@ -34,8 +34,7 @@
           </div>
           <div>
             <label for="tel" class="">電話番号</label>
-            <input type="text" name="tel" class="" placeholder="08012345678"
-              value="{{ old('tel', $objData->tel)}}">
+            <input type="text" name="tel" class="" placeholder="08012345678" value="{{ old('tel', $objData->tel)}}">
             @error('tel') <p class="alert">{{ $message }}</p> @enderror
           </div>
           <div>
@@ -48,12 +47,6 @@
     </div>
   </article>
 </x-guest-layout>
-<script type="text/javascript" src="//jpostal-1006.appspot.com/jquery.jpostal.js"></script>
 <script>
-  $(window).on('load', ()=> {
-    $('#zip').jpostal({
-      postcode : ['#zip'],
-      address : {'#pref' : '%3', "#city" : '%4', '#address' : '%5'}
-    });
-  });
+  setJpostal();
 </script>

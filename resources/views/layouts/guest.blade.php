@@ -35,6 +35,7 @@
     </main>
   </main>
   <script src="/asset/bootstrap-5.0.2-dist/js/bootstrap.bundle.min.js"></script>
+  <script type="text/javascript" src="//jpostal-1006.appspot.com/jquery.jpostal.js"></script>
   <script src="/asset/js/guest.js"></script>
 </body>
 </html>

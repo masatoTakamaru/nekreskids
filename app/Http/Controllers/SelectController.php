@@ -8,8 +8,8 @@ use App\Http\Controllers\Controller;
 
 class SelectController extends Controller
 {
-    public function select()
+    public function index()
     {
-        return view('select');
+        return view('/select');
     }
 }

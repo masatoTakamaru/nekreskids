@@ -1,11 +1,26 @@
 /**
  * 
+ * jPostal呼び出し
+ * 
+ */
+
+function setJpostal() {
+    $(window).on('load', function () {
+        $('#zip').jpostal({
+            postcode: ['#zip'],
+            address: { '#pref': '%3', "#city": '%4', '#address': '%5' }
+        });
+    });
+}
+
+/**
+ * 
  * 生年月日
  * 
  */
 
-const setBirthday = () => {
-    $(window).on("load", () => {
+function setBirthday() {
+    $(window).on("load", function () {
         const now = new Date();
         const year = now.getFullYear();
         const date_init = new Date($("#birth").val());
@@ -30,7 +45,7 @@ const setBirthday = () => {
         }
     });
 
-    $("#birth1,#birth2").on("change", () => {
+    $("#birth1,#birth2").on("change", function () {
         const beginOfMonth = new Date($("#birth1").val(), $("#birth2").val() - 1, 1);
         const endOfMonth = new Date($("#birth1").val(), $("#birth2").val(), 0);
         const year = beginOfMonth.getFullYear();
@@ -55,7 +70,7 @@ const setBirthday = () => {
  * 
  */
 
-const setResizedImg = () => {
+function setResizedImg() {
     const sri = new sendResizedImg('avatar_preview', 'avatar_upload', 'avatar');
     sri.create({
         mode: "crop",       //モード(nocrop|crop|original)
@@ -80,7 +95,7 @@ const setResizedImg = () => {
  * 
  */
 
-const setActArea = (obj) => {
+function setActArea(obj) {
     const objActAreas = obj.actAreas;
     const objPrefs = obj.prefs;
     const objCities = obj.cities;
@@ -89,43 +104,43 @@ const setActArea = (obj) => {
     const iconPrefRemoveElem = $('#edit__iconPrefRemove');
     let areaLength = Object.keys(objActAreas).length;
 
-    const createArea = (id) => {
+    function createArea(id) {
         if (!objActAreas[id]) objActAreas[id] = { pref: '', city: '' };
         const actAreaElem = $(`<div id="actArea${id}" class: "edit__actArea"></div>`).appendTo(actAreasElem);
         if (id > 1) actAreaElem.hide();
         const prefElem = $(`<select id="pref${id}" name="act_areas[${id}][pref]"></select>`).appendTo(actAreaElem);
-        Object.keys(objPrefs).forEach((key) => {
+        Object.keys(objPrefs).forEach(function (key) {
             const option = $(`<option value="${key}">${objPrefs[key]}</option>`).appendTo(prefElem);
             if (key === objActAreas[id].pref) option.prop('selected', true);
         });
         const cityElem = $(`<select id="city${id}" name="act_areas[${id}][city]"></select>`).appendTo(actAreaElem);
-        prefElem.on('change', () => { setCities(id) });
+        prefElem.on('change', function () { setCities(id) });
         setCities(id);
         if (id > 1) actAreaElem.slideDown();
     }
 
-    const setCities = (id) => {
+    function setCities(id) {
         let cities = objCities[$(`#pref${id}`).val()];
         const cityElem = $(`#city${id}`);
         cityElem.empty();
         if (cities) {
-            Object.keys(cities).forEach((key) => {
+            Object.keys(cities).forEach(function (key) {
                 const option = $(`<option value="${key}">${cities[key]}</option>`).appendTo(cityElem);
                 if (key === objActAreas[id].city) option.prop('selected', true);
             });
         }
     }
 
-    iconPrefAddElem.on('click', () => {
+    iconPrefAddElem.on('click', function () {
         areaLength++;
         createArea(areaLength);
         if (areaLength === 2) iconPrefRemoveElem.toggle();
         if (areaLength === 5) iconPrefAddElem.toggle();
-        $(`#pref${areaLength}`).on('change', () => { setCities(areaLength); });
+        $(`#pref${areaLength}`).on('change', function () { setCities(areaLength); });
         setCities(areaLength);
     });
 
-    iconPrefRemoveElem.on('click', () => {
+    iconPrefRemoveElem.on('click', function () {
         const actArea = $(`#actArea${areaLength}`);
         actArea.slideUp().queue(() => { actArea.remove(); });
         areaLength--;
@@ -134,7 +149,7 @@ const setActArea = (obj) => {
         if (areaLength === 4) iconPrefAddElem.toggle();
     });
 
-    Object.keys(objActAreas).forEach((index) => { createArea(index); });
+    Object.keys(objActAreas).forEach(function (index) { createArea(index); });
 }
 
 /**
@@ -143,16 +158,16 @@ const setActArea = (obj) => {
  * 
  */
 
-const setPrCharsLimit = () => {
+function setPrCharsLimit() {
     const maxLength = 200;
     const pr_content = $('#pr_content');
     const pr_count = $('#pr_count');
 
-    $(window).on('load', () => {
+    $(window).on('load', function () {
         pr_count.text(`あと${maxLength}文字`);
     });
 
-    pr_content.on('input', () => {
+    pr_content.on('input', function () {
         const text = pr_content.val().replace(/(\r\n|\n|\r)/gm, "");
         if (text.length >= maxLength) {
             pr_content.attr('readonly', true);
@@ -163,7 +178,7 @@ const setPrCharsLimit = () => {
         pr_count.text(`あと${len}文字`);
     });
 
-    pr_content.on('keydown', (e) => {
+    pr_content.on('keydown', function (e) {
         if (pr_content.attr('readonly')) {
             if (e.keyCode === 8 || e.keyCode === 46) {
                 pr_content.removeAttr('readonly');
@@ -171,6 +186,4 @@ const setPrCharsLimit = () => {
         }
     });
 }
-
-
 

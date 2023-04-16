@@ -61,9 +61,9 @@
 </x-guest-layout>
 <script>
   setActArea({
-    'actAreas': <?php echo old('act_areas', $arrActAreas); ?>,
-    'prefs': <?php echo $arrPrefs; ?>,
-    'cities': <?php echo $arrCities; ?>
+    'actAreas': <?php echo old('act_areas', $jsonActAreas); ?>,
+    'prefs': <?php echo $jsonPrefs; ?>,
+    'cities': <?php echo $jsonCities; ?>
   });
   setPrCharsLimit();
 </script>

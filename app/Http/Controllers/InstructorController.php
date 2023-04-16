@@ -20,25 +20,26 @@ use Carbon\Carbon;
 class InstructorController extends Controller
 {
     private $objInit = null;    //初期化済みオブジェクト
-    private $fillableExt = [];     //メソッド間の受け渡し項目
+    private $fillableExt = [];  //メソッド間の受け渡し項目
 
     public function __construct()
     {
         $model = new Instructor();
-        //メソッド間の受け渡し項目を追加する場合はここに記入
-        $this->fillableExt = array_merge($model->getfillable(), [
+        $this->fillableExt = array_merge($model->getFillable(), [
+            /*  メソッド間の受け渡し項目を追加する場合はここに記入  */
             'email',
             'password',
             'avatar',
             'actPref',
+            /*  ここまで  */
         ]);
-        //全項目にnullを代入
         $model->setAttrs(array_fill_keys($this->fillableExt, null));
-        //プロパティに初期値を与える場合はここに記入
+        /*  初期値を与える場合はここに記入  */
         $model->birth = Carbon::now()->format('Y-m-d');
         $model->gender = 'male';
         $model->activities = [];
         $model->act_areas = ['1' => ['pref' => '', 'city' => '']];
+        /*  ここまで  */
 
         $this->objInit = $model;
     }
@@ -125,16 +126,16 @@ class InstructorController extends Controller
             'objData' => $objData,
             'jsonData' => $jsonData,
             'arrActivities' => RecruitConst::ACTIVITIES,
-            'arrActAreas' => json_encode($objData->act_areas),
-            'arrPrefs' => json_encode(['' => '選択して下さい'] + AddressConst::PREFECTURES),
-            'arrCities' => json_encode(['' => ['' => '未選択']] + AddressConst::CITIES),
+            'jsonActAreas' => json_encode($objData->act_areas),
+            'jsonPrefs' => json_encode(['' => '選択して下さい'] + AddressConst::PREFECTURES),
+            'jsonCities' => json_encode(['' => ['' => '未選択']] + AddressConst::CITIES),
         ]);
     }
 
     public function confirm(Request $request)
     {
-        if ($request->isMethod('get') && !$request->session()->has('jsonData')) abort(404);
         if (!$request->isMethod('get') && !$request->isMethod('post')) abort(404);
+        if ($request->isMethod('get') && !$request->session()->has('jsonData')) abort(404);
 
         if ($request->isMethod('post')) {
             $arrData = json_decode($request->jsonData, true);
@@ -151,7 +152,7 @@ class InstructorController extends Controller
         $objData = new Instructor;
         $objData->setAttrs(json_decode($jsonData, true));
 
-        //表示用データを整形
+        /*  表示用データを整形する場合はここ  */
         $objData->gender = UserConst::GENDERS[$objData->gender];
         $objData->address = $objData->pref . $objData->city . $objData->address;
         $activities = [];
@@ -164,6 +165,7 @@ class InstructorController extends Controller
             $actAreas[] = AddressConst::PREFECTURES[$actArea['pref']] . AddressConst::CITIES[$actArea['pref']][$actArea['city']];
         }
         $objData->act_areas = implode('<br>', $actAreas);
+        /*  ここまで  */
 
         return view('Instructor.confirm', [
             'objData' => $objData,
@@ -181,6 +183,7 @@ class InstructorController extends Controller
         $objData = new Instructor;
         $objData->setAttrs(json_decode($jsonData, true));
 
+        /*  保存データを整形する場合はここ  */
         //アバター画像をstorageに保存
         if ($objData->avatar) {
             $data = base64_decode(str_replace('data:image/png;base64,', '', $objData->avatar));
@@ -190,6 +193,7 @@ class InstructorController extends Controller
 
         $objData->activities = json_encode($objData->activities);
         $objData->act_areas = json_encode($objData->act_areas);
+        /*  ここまで  */
 
         $model = new User;
         $user = $model->create([

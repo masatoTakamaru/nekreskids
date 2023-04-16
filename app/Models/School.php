@@ -12,7 +12,6 @@ class School extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
         'name',
         'zip',
         'pref',
@@ -28,17 +27,17 @@ class School extends Model
     {
         return $this->hasMany(SchoolScore::class);
     }
-    
+
     public function recruits()
     {
         return $this->hasMany(Recruit::class);
     }
 
 
-public function user()
-{
-    return $this->belongsTo(User::class);
-}
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     /**
      * モデルのプロパティを連想配列でまとめて格納する
@@ -49,6 +48,4 @@ public function user()
             $this->$key = $value;
         }
     }
-
-
 }

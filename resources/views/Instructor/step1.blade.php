@@ -9,7 +9,7 @@
         @if(!empty($objData))
         <form action="/instructor/step1" method="post" enctype="multipart/form-data">
           @csrf
-          <div class="editTableList">
+          <div>
             <label for="email" class="editLabel">メールアドレス</label>
             <input type="text" name="email" id="email" class="editInput" value="{{ old('email', $objData->email) }}">
             @error('email') <p class="alert">{{ $message }}</p> @enderror
