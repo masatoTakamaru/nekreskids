@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
@@ -25,44 +24,35 @@ use Illuminate\Support\Str;
  * ■□■□■□■□■□■□■□■□■□■□■■□■□■□■□■□■□■□■□■
  */
 
-//初期値
-$uri = Request::capture()->path();
-$arrUrl = explode('/', $uri);
-$action = 'index';
-$path = 'App\Http\Controllers\\';
+Route::any('/{url}', function () {
+    $arrUrl = explode('/', request()->getRequestUri());
+    $action = 'index';
+    $path = 'App\Http\Controllers\\';
+    switch (true) {
+        case empty($arrUrl[1]):
+            //0階層構成
+            $path .= 'IndexController';
+            break;
+        case !empty($arrUrl[1]) && empty($arrUrl[2]):
+            //1階層構成
+            $path .= $arrUrl[1] . 'Controller';
+            break;
+        case !empty($arrUrl[2]):
+            //2階層構成
+            $path .= Str::studly($arrUrl[1]) . 'Controller';
+            $action = $arrUrl[2];
+            break;
+        case !empty($arrUrl[3]) && empty($arrUrl[4]):
+            //3階層構成
+            $path .= Str::studly($arrUrl[1]) . '\\' . Str::studly($arrUrl[2]) . 'Controller';
+            $action = $arrUrl[3];
+            break;
+        default:
+            abort(404);
+            break;
+    }
 
-//ミドルウェアauthが必要なディレクトリの処理
-if ($arrUrl[0] === 'user' || $arrUrl[0] === 'admin') {
-}
-
-switch (true) {
-    case empty($arrUrl[0]):
-        //0階層構成
-        $url = '';
-        $path .= 'IndexController'::class;
-        break;
-    case !empty($arrUrl[0]) && empty($arrUrl[1]):
-        //1階層構成
-        $url = $arrUrl[0];
-        $path .= $arrUrl[0] . 'Controller'::class;
-        break;
-    case !empty($arrUrl[1]):
-        //2階層構成
-        $url = $arrUrl[0] . '/' . $arrUrl[1];
-        $path .= Str::studly($arrUrl[0]) . 'Controller'::class;
-        $action = $arrUrl[1];
-        break;
-    case !empty($arrUrl[2]) && empty($arrUrl[3]):
-        //3階層構成
-        $url = $arrUrl[0] . '/' . $arrUrl[1] . '/' . $arrUrl[2];
-        $path .= Str::studly($arrUrl[0]) . '\\' . Str::studly($arrUrl[1]) . 'Controller'::class;
-        $action = $arrUrl[2];
-        break;
-    default:
-        abort(404);
-        break;
-}
-
-Route::any("/{$url}", [$path, $action]);
+    return app()->call($path . '@' . $action);
+})->where('url', '.*');
 
 require __DIR__ . '/auth.php';

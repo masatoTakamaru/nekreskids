@@ -8,14 +8,14 @@ use App\Models\Notice;
 use App\Models\User;
 use App\Models\Instructor;
 
-class ViewGuestInstructorTest extends TestCase
+class ViewGuestSchoolTest extends TestCase
 {
     use RefreshDatabase;
 
     /**
      * @test
      */
-    public function 指導員ユーザー登録ページ１入力欄表示確認(): void
+    public function 学校ユーザー登録ページ１入力欄表示確認(): void
     {
         $data = [
             'email',

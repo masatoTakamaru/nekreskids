@@ -30,11 +30,12 @@ class ViewGuestIndexTest extends TestCase
 
         Notice::factory()->count(10)->create();
         $notices = Notice::orderBy('publish_date', 'desc')->get();
-
-        $response = $this->get('/index');
+        $response = $this->get('/');
+        $response->assertOk();
 
         $response->assertSee($notices[0]->header);
         $response->assertSee($notices[1]->header);
         $response->assertDontSee($notices[2]->header);
     }
+
 }
