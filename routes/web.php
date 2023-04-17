@@ -28,6 +28,11 @@ Route::any('/{url}', function () {
     $arrUrl = explode('/', request()->getRequestUri());
     $action = 'index';
     $path = 'App\Http\Controllers\\';
+
+    //middlewareが必要な項目はここで除外
+    if ($arrUrl[1] === 'user' || $arrUrl[1] === 'admin') return;
+    //ここまで
+
     switch (true) {
         case empty($arrUrl[1]):
             //0階層構成
