@@ -143,8 +143,6 @@ class InstructorController extends Controller
             if ($request->has('transit')) {
                 return redirect('/instructor/' . $request->transit)->with('jsonData', $jsonData);
             }
-
-            return redirect('/instructor/complete')->with('jsonData', $jsonData);
         }
 
         //getの場合
@@ -156,13 +154,17 @@ class InstructorController extends Controller
         $objData->gender = UserConst::GENDERS[$objData->gender];
         $objData->address = $objData->pref . $objData->city . $objData->address;
         $activities = [];
-        foreach ($objData->activities as $key) {
-            $activities[] = RecruitConst::ACTIVITIES[$key];
+        if (!empty($objData->activities)) {
+            foreach ($objData->activities as $key) {
+                $activities[] = RecruitConst::ACTIVITIES[$key];
+            }
+            $objData->activities = implode(' ', $activities);
         }
-        $objData->activities = implode(' ', $activities);
         $actAreas = [];
         foreach ($objData->act_areas as $actArea) {
-            $actAreas[] = AddressConst::PREFECTURES[$actArea['pref']] . AddressConst::CITIES[$actArea['pref']][$actArea['city']];
+            if(!empty($acrArea['pref']) && !empty($acrArea['city'])) {
+                $actAreas[] = AddressConst::PREFECTURES[$actArea['pref']] . AddressConst::CITIES[$actArea['pref']][$actArea['city']];
+            }
         }
         $objData->act_areas = implode('<br>', $actAreas);
         /*  ここまで  */

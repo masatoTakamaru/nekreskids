@@ -141,7 +141,7 @@ class ViewGuestInstructorTest extends TestCase
         $user = User::factory()->create(['role' => 1]);
         $ir = Instructor::factory()->create(['user_id' => $user->id]);
         $data = [
-            'activities' => json_decode($ir->activities,true),
+            'activities' => json_decode($ir->activities, true),
             'other_activities' => $ir->other_activities,
             'ontime' => $ir->ontime,
             'act_areas' => json_decode($ir->act_areas, true),
@@ -153,6 +153,57 @@ class ViewGuestInstructorTest extends TestCase
         $response = $this->withSession(['jsonData' => $jsonData])
             ->get('/instructor/step3');
         $response->assertOk()
+            ->assertSee($ir->other_activities)
+            ->assertSee($ir->ontime)
+            ->assertSee($ir->cert)
+            ->assertSee($ir->pr);
+    }
+
+    /**
+     * @test
+     */
+    public function 指導員ユーザー登録確認画面表示確認(): void
+    {
+        $user = User::factory()->create(['role' => 1]);
+        $ir = Instructor::factory()->create(['user_id' => $user->id]);
+        $data = [
+            'email' => $ir->user->email,
+            'password' => $ir->user->password,
+            'name' => $ir->name,
+            'name_kana' => $ir->name_kana,
+            'birth' => $ir->birth,
+            'gender' => $ir->gender,
+            'avatar' => null,
+            'avatar_url' => $ir->avatar_url,
+            'zip' => $ir->zip,
+            'pref' => $ir->pref,
+            'city' => $ir->city,
+            'address' => $ir->address,
+            'tel' => $ir->tel,
+            'activities' => json_decode($ir->activities, true),
+            'other_activities' => $ir->other_activities,
+            'ontime' => $ir->ontime,
+            'act_areas' => json_decode($ir->act_areas, true),
+            'cert' => $ir->cert,
+            'pr' => $ir->pr,
+        ];
+        $jsonData = json_encode($data);
+
+        $response = $this->withSession(['jsonData' => $jsonData])
+            ->get('/instructor/confirm');
+        $response->assertOk()
+            ->assertSee($ir->user->email)
+            ->assertDontSee($ir->user->password)
+            ->assertSee($ir->name)
+            ->assertSee($ir->name_kana)
+            ->assertSee($ir->birth)
+            ->assertSee($ir->gender)
+            ->assertSee($ir->avatar_url)
+            ->assertSee($ir->zip)
+            ->assertSee($ir->pref)
+            ->assertSee($ir->city)
+            ->assertSee($ir->address)
+            ->assertSee($ir->tel)
             ->assertSee($ir->other_activities)
             ->assertSee($ir->ontime)
             ->assertSee($ir->cert)
