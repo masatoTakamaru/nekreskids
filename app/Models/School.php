@@ -21,6 +21,7 @@ class School extends Model
         'tel2',
         'charge',
         'score',
+        'del_flg',
     ];
 
     public function school_scores()

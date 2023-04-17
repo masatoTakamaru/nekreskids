@@ -30,6 +30,7 @@ return new class extends Migration
             $table->string('status', 16)->nullable(false)->default('public')->comment('公開状況');
             $table->date('end_date')->nullable(false)->comment('募集期限日');
             $table->integer('keep')->nullable()->comment('気になるリスト登録数');
+            $table->integer('del_flg')->nullable(false);
 
 
             $table->softDeletes();

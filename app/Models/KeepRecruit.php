@@ -14,6 +14,7 @@ class KeepRecruit extends Model
     protected $fillable = [
         'instructor_id',
         'recruit_id',
+        'del_flg',
 
     ];
 

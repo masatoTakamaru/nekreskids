@@ -14,6 +14,7 @@ class KeepInstructor extends Model
     protected $fillable = [
         'school_id',
         'instructor_id',
+        'del_flg',
 
     ];
 

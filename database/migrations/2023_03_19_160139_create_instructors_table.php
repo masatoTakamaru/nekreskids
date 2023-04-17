@@ -33,7 +33,7 @@ return new class extends Migration
             $table->string('address', 255)->nullable(false)->comment('町域・番地・建物名など');
             $table->string('tel', 20)->nullable()->comment('電話番号');
             $table->integer('keep')->nullable()->comment('気になるリスト登録数');
-
+            $table->integer('del_flg')->nullable(false);
 
             $table->softDeletes();
             $table->timestamps();

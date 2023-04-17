@@ -14,7 +14,8 @@ class Search extends Model
     protected $fillable = [
         'instructor_id',
         'recruit_id',
-        'schooLid',
+        'school_id',
+        'del_flg',
 
     ];
 

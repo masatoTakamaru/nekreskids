@@ -24,6 +24,7 @@ class KeepInstructorFactory extends Factory
         return [
             'instructor_id' => $instructor->instructor->id,
             'school_id' => $school->school->id,
+            'del_flg' => mt_rand(0, 4) ? 1 : 0,
         ];
     }        
 }

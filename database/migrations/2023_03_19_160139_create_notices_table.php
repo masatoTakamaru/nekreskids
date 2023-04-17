@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('content')->nullable(false)->comment('お知らせ本文');
             $table->date('publish_date')->nullable(false)->comment('告知日');
             $table->string('status', 16)->nullable(false)->default('public')->comment('公開状況');
+            $table->integer('del_flg')->nullable(false);
 
 
             $table->softDeletes();

@@ -16,8 +16,6 @@ class SearchFactory extends Factory
     public function definition()
     {
         return [
-            'schooLid' => ,
-
         ];
     }        
 }

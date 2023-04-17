@@ -17,7 +17,8 @@ return new class extends Migration
             $table->id()->nullable(false);
             $table->integer('instructor_id')->nullable(false)->comment('指導員ID');
             $table->integer('recruit_id')->nullable(false)->comment('募集ID');
-            
+            $table->integer('del_flg')->nullable(false);
+      
 
             $table->softDeletes();
             $table->timestamps();

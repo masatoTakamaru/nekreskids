@@ -68,13 +68,14 @@ class InstructorFactory extends Factory
             'act_areas' => !empty($act_areas) ? json_encode($act_areas) : null,
             'birth' => fake()->date(),
             'cert' => mt_rand(0, 4) ? '所有資格' . fake()->realText(100) : null,
-            'gender' => fake()->randomElement(array_keys($genders)),
+            'gender' => fake()->randomKey($genders),
             'zip' => str_replace('-', '', fake()->postcode()),
             'pref' => $pref,
             'city' => $city,
             'address' => fake()->streetAddress(),
             'tel' => mt_rand(0, 4) ? str_replace('-', '', fake()->phoneNumber()) : null,
             'keep' => 0,
+            'del_flg' => mt_rand(0, 4) ? 1 : 0,
         ];
     }
 }

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('recipient')->nullable(false)->comment('受信ユーザーID');
             $table->string('message', 512)->nullable(false)->comment('メッセージ');
             $table->integer('read_flg')->nullable(false)->comment('既読フラグ');
+            $table->integer('del_flg')->nullable(false);
 
             $table->softDeletes();
             $table->timestamps();

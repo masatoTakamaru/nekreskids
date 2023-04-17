@@ -25,6 +25,7 @@ class KeepRecruitFactory extends Factory
         return [
             'instructor_id' => $user->instructor->id,
             'recruit_id' => $recruit->id,
+            'del_flg' => mt_rand(0, 4) ? 1 : 0,
         ];
     }
 }

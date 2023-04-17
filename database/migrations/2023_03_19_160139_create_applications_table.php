@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('recruit_id')->nullable(false)->comment('募集ID');
             $table->integer('instructor_id')->nullable(false)->comment('指導員ID');
             $table->string('message', 512)->nullable()->comment('メッセージ');
+            $table->integer('del_flg')->nullable(false);
 
 
             $table->softDeletes();

@@ -15,6 +15,7 @@ class Application extends Model
         'recruit_id',
         'instructor_id',
         'message',
+        'del_flg',
 
     ];
 

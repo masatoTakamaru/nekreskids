@@ -15,6 +15,7 @@ class SchoolScore extends Model
         'school_id',
         'instructor_id',
         'score',
+        'del_flg',
 
     ];
 

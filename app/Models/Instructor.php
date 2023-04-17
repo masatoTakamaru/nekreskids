@@ -31,6 +31,7 @@ class Instructor extends Model
         'address',
         'tel',
         'keep',
+        'del_flg',
     ];
 
     public function searches()

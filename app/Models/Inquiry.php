@@ -14,6 +14,7 @@ class Inquiry extends Model
     protected $fillable = [
         'email',
         'message',
+        'del_flg',
 
     ];
 

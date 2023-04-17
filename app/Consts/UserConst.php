@@ -15,4 +15,10 @@ class UserConst
         'female' => '女性',
         'other' => '選択しない',
     ];
+
+    const STATUS = [
+        'draft' => '下書き',
+        'public' => '公開',
+        'private' => '非公開',
+    ];
 }

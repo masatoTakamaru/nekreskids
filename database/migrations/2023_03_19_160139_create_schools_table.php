@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('tel2', 20)->nullable()->comment('電話番号２');
             $table->string('charge', 128)->nullable(false)->comment('担当者名');
             $table->float('score', 2, 1)->nullable(false)->comment('評価点');
+            $table->integer('del_flg')->nullable(false);
 
 
             $table->softDeletes();

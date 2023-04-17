@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id()->nullable(false);
             $table->string('email', 255)->nullable(false)->comment('メールアドレス');
             $table->text('message')->nullable(false)->comment('内容');
+            $table->integer('del_flg')->nullable(false);
 
 
             $table->softDeletes();

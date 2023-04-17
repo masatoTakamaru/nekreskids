@@ -27,6 +27,7 @@ class Recruit extends Model
         'status',
         'end_date',
         'keep',
+        'del_flg',
 
     ];
 

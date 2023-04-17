@@ -16,6 +16,7 @@ class Notice extends Model
         'content',
         'publish_date',
         'status',
+        'del_flg',
 
     ];
 

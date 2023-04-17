@@ -16,6 +16,7 @@ class Message extends Model
         'recipient',
         'message',
         'read_flg',
+        'del_flg',
 
     ];
 
