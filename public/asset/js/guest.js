@@ -1,5 +1,18 @@
 /**
  * 
+ * パスワード入力用アイコン切り替え
+ * 
+ */
+
+function togglePassIcon() {
+    $(window).on('load', function (){
+        $('#my-image').attr('src', '/asset/image/common/eye-solid.svg');
+        $('#my-image').attr('src', '/asset/image/common/eye-slash-solid.svg');
+    });
+}
+
+/**
+ * 
  * jPostal呼び出し
  * 
  */
