@@ -5,9 +5,18 @@
  */
 
 function togglePassIcon() {
-    $(window).on('load', function (){
-        $('#my-image').attr('src', '/asset/image/common/eye-solid.svg');
-        $('#my-image').attr('src', '/asset/image/common/eye-slash-solid.svg');
+    $(window).on('load', function () {
+        const iconElem = $('#password-icon');
+        const icon1 = '/asset/image/common/eye-solid.svg';
+        const icon2 = '/asset/image/common/eye-slash-solid.svg';
+        iconElem.attr('src', icon1);
+        iconElem.on('click', function () {
+            if (iconElem.attr('src') === icon1) {
+                iconElem.attr('src', icon2);
+            } else {
+                iconElem.attr('src', icon1);
+            }
+        });
     });
 }
 
