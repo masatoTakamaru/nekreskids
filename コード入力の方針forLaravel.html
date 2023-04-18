@@ -12,9 +12,12 @@
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
 </head>
 <style>
-  .container {
+  .container-lg {
     display: flex;
     gap: 20px;
+  }
+  nav {
+    width: 350px;
   }
   h3 {
     font-size: 20px;
@@ -22,12 +25,8 @@
 </style>
 
 <body>
-  <main class="container">
-    <nav class="nav flex-column">
-      <ul>
-        <li>配列はすべて連想配列とする</li>
-      </ul>
-    </nav>
+  <main class="container-lg">
+    <nav class="nav flex-column"></nav>
     <article>
       <section>
         <h3>配列はすべて連想配列とする</h3>
@@ -73,9 +72,9 @@ $arrSome = json_decode($fieldData, true);
     $(document).ready(function(){
       const h3List = $('main h3');
       const nav = $('nav');
-      const navList = $('<li></li>').appendTo(nav);
-      h3List.each(function(elem){
-        console.log(elem);
+      const navList = $('<ul></ul>').appendTo(nav);
+      h3List.each(function(){
+        const item = $(`<li>${$(this).text()}</li>`).appendTo(navList);
       });
     });
   </script>
