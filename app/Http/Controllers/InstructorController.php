@@ -51,7 +51,18 @@ class InstructorController extends Controller
         if ($request->isMethod('post')) {
             $arrData = json_decode($request->jsonData, true);
             $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
+            //下書き保存
+            if ($request->has('action') && $request->action === 'draft') {
+                $objData = $this->objInit;
+                $objData = new Instructor;
+                $objData->setAttrs(json_decode($jsonData, true));
 
+                return view('Instructor.draft-confirm', [
+                    'objData' => $objData,
+                    'jsonData' => $jsonData,
+                ]);
+            }
+            //ページ遷移
             if ($request->has('transit')) {
                 return redirect('/instructor/' . $request->transit)->with('jsonData', $jsonData);
             }
@@ -65,6 +76,7 @@ class InstructorController extends Controller
             $objData = new Instructor;
             $objData->setAttrs(json_decode($jsonData, true));
         }
+
         return view('Instructor.step1', [
             'objData' => $objData,
             'jsonData' => $jsonData,
@@ -79,7 +91,11 @@ class InstructorController extends Controller
         if ($request->isMethod('post')) {
             $arrData = json_decode($request->jsonData, true);
             $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
-
+            //下書き保存
+            if ($request->has('action') && $request->action === 'draft') {
+                $this->saveData($jsonData, 'draft');
+            }
+            //ページ遷移
             if ($request->has('transit')) {
                 return redirect('/instructor/' . $request->transit)->with('jsonData', $jsonData);
             }
@@ -108,6 +124,11 @@ class InstructorController extends Controller
         if ($request->isMethod('post')) {
             $arrData = json_decode($request->jsonData, true);
             $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
+            //下書き保存
+            if ($request->has('action') && $request->action === 'draft') {
+                $this->saveData($jsonData, 'draft');
+            }
+            //ページ遷移
             if ($request->has('transit')) {
                 return redirect('/instructor/' . $request->transit)->with('jsonData', $jsonData);
             }
@@ -140,6 +161,11 @@ class InstructorController extends Controller
         if ($request->isMethod('post')) {
             $arrData = json_decode($request->jsonData, true);
             $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
+            //下書き保存
+            if ($request->has('action') && $request->action === 'draft') {
+                $this->saveData($jsonData, 'draft');
+            }
+            //ページ遷移
             if ($request->has('transit')) {
                 return redirect('/instructor/' . $request->transit)->with('jsonData', $jsonData);
             }
@@ -162,7 +188,7 @@ class InstructorController extends Controller
         }
         $actAreas = [];
         foreach ($objData->act_areas as $actArea) {
-            if(!empty($acrArea['pref']) && !empty($acrArea['city'])) {
+            if (!empty($acrArea['pref']) && !empty($acrArea['city'])) {
                 $actAreas[] = AddressConst::PREFECTURES[$actArea['pref']] . AddressConst::CITIES[$actArea['pref']][$actArea['city']];
             }
         }
@@ -182,6 +208,13 @@ class InstructorController extends Controller
 
         //getの場合
         $jsonData = $request->session()->get('jsonData');
+        $this->saveData($jsonData, 'public');
+
+        return view('Instructor.complete');
+    }
+
+    private function saveData($jsonData, $status)
+    {
         $objData = new Instructor;
         $objData->setAttrs(json_decode($jsonData, true));
 
@@ -192,9 +225,10 @@ class InstructorController extends Controller
             $path = Storage::put("avatars/{Str::uuid()}.png", $data);
             $objData->avatar_url = $path;
         }
-
         $objData->activities = json_encode($objData->activities);
         $objData->act_areas = json_encode($objData->act_areas);
+        $objData->status = $status;
+        $objData->del_flg = 0;
         /*  ここまで  */
 
         $model = new User;
@@ -203,11 +237,11 @@ class InstructorController extends Controller
             'email' => $objData->email,
             'password' => bcrypt($objData->password),
             'role' => 1,
+            'status' => $objData->status,
+            'del_flg' => 0,
         ]);
 
         $arrData = $objData->toArray();
         $user->instructor()->create($arrData);
-
-        return view('Instructor.complete');
     }
 }

@@ -38,6 +38,7 @@
             @error('tel') <p class="alert">{{ $message }}</p> @enderror
           </div>
           <div>
+            <button type="submit" name="action" class="" value="draft">下書き保存</button>
             <button type="submit" name="transit" class="" value="step1">前に戻る</button>
             <button type="submit" name="transit" class="" value="step3">次に進む</button>
           </div>

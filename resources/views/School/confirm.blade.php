@@ -40,6 +40,7 @@
         <form action="/school/confirm" method="post">
           @csrf
           <div>
+            <button type="submit" name="action" class="" value="draft">下書き保存</button>
             <button type="submit" name="transit" class="" value="create">前に戻る</button>
             <button type="submit" name="transit" class="" value="complete">登録する</button>
           </div>
