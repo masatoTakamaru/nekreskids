@@ -26,7 +26,8 @@ class SchoolController extends Controller
             /*  メソッド間の受け渡し項目を追加する場合はここに記入  */
             'email',
             'password',
-            /*  ここまで  */]);
+            /*  ここまで  */
+        ]);
         $model->setAttrs(array_fill_keys($this->fillableExt, null));
         /*  初期値を与える場合はここに記入  */
         $model->score = 0;
@@ -42,7 +43,11 @@ class SchoolController extends Controller
         if ($request->isMethod('post')) {
             $arrData = json_decode($request->jsonData, true);
             $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
-
+            //下書き保存
+            if ($request->has('action') && $request->action === 'draft') {
+                return redirect('school/draft-complete')->with('jsonData', $jsonData);
+            }
+            //ページ遷移
             if ($request->has('transit')) {
                 return redirect('/school/' . $request->transit)->with('jsonData', $jsonData);
             }
@@ -70,6 +75,11 @@ class SchoolController extends Controller
         if ($request->isMethod('post')) {
             $arrData = json_decode($request->jsonData, true);
             $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
+            //下書き保存
+            if ($request->has('action') && $request->action === 'draft') {
+                return redirect('school/draft-complete')->with('jsonData', $jsonData);
+            }
+            //ページ遷移
             if ($request->has('transit')) {
                 return redirect('/school/' . $request->transit)->with('jsonData', $jsonData);
             }
@@ -105,18 +115,46 @@ class SchoolController extends Controller
         /*  保存データを整形する場合はここ  */
         /*  ここまで  */
 
+        $this->saveData($jsonData, 'public');
+
+        return view('school.complete');
+    }
+
+    public function draft_complete(Request $request)
+    {
+        if (!$request->isMethod('get')) abort(404);
+        if ($request->isMethod('get') && !$request->session()->has('jsonData')) abort(404);
+
+        //getの場合
+        $jsonData = $request->session()->get('jsonData');
+        $objData = new School;
+        $objData->setAttrs(json_decode($jsonData, true));
+        $this->saveData($objData, 'dtaft');
+
+        return view('school.draft-complete');
+    }
+
+    private function saveData($jsonData, $status)
+    {
+        $objData = new School;
+        $objData->setAttrs(json_decode($jsonData, true));
+
+        $objData->status = $status;
+        $objData->del_flg = 0;
+
         $model = new User;
         $user = $model->create([
             'name' => $objData->name,
             'email' => $objData->email,
             'password' => bcrypt($objData->password),
             'role' => 2,
+            'status' => $objData->status,
+            'del_flg' => 0,
         ]);
 
         $arrData = $objData->toArray();
         $user->school()->create($arrData);
 
-        return view('school.complete');
+        return;
     }
 }
-

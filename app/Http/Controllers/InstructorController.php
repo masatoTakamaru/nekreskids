@@ -243,5 +243,7 @@ class InstructorController extends Controller
 
         $arrData = $objData->toArray();
         $user->instructor()->create($arrData);
+
+        return;
     }
 }

@@ -125,3 +125,15 @@ body {
         width: 480px;
     }
 }
+
+.password__icon {
+    margin-left: 5px;
+
+    img {
+        display: none;
+    }
+}
+
+.isActive {
+    display: inline !important;
+}

@@ -14,7 +14,7 @@
           </div>
           <div>
             <label for="password" class="editLabel">パスワード</label>
-            <input type="password" name="password" class="editInput" value="{{ old('password', $objData->password) }}">
+            <input type="password" name="password" id="password" class="editInput" value="{{ old('password', $objData->password) }}"><span id="password__icon" class="password__icon"></span>
             @error('password') <p class="alert">{{ $message }}</p> @enderror
           </div>
           <div>
@@ -76,5 +76,6 @@
   </article>
 </x-guest-layout>
 <script>
-  setJpostal();  //blade側から関数を呼び出す
+  togglePassIcon();
+  setJpostal();
 </script>
