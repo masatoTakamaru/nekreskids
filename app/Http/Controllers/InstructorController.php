@@ -53,14 +53,7 @@ class InstructorController extends Controller
             $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
             //下書き保存
             if ($request->has('action') && $request->action === 'draft') {
-                $objData = $this->objInit;
-                $objData = new Instructor;
-                $objData->setAttrs(json_decode($jsonData, true));
-
-                return view('Instructor.draft-confirm', [
-                    'objData' => $objData,
-                    'jsonData' => $jsonData,
-                ]);
+                return redirect('instructor/draft-complete')->with('jsonData', $jsonData);
             }
             //ページ遷移
             if ($request->has('transit')) {
@@ -93,7 +86,7 @@ class InstructorController extends Controller
             $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
             //下書き保存
             if ($request->has('action') && $request->action === 'draft') {
-                $this->saveData($jsonData, 'draft');
+                return redirect('instructor/draft-complete')->with('jsonData', $jsonData);
             }
             //ページ遷移
             if ($request->has('transit')) {
@@ -126,7 +119,7 @@ class InstructorController extends Controller
             $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
             //下書き保存
             if ($request->has('action') && $request->action === 'draft') {
-                $this->saveData($jsonData, 'draft');
+                return redirect('instructor/draft-complete')->with('jsonData', $jsonData);
             }
             //ページ遷移
             if ($request->has('transit')) {
@@ -163,7 +156,7 @@ class InstructorController extends Controller
             $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
             //下書き保存
             if ($request->has('action') && $request->action === 'draft') {
-                $this->saveData($jsonData, 'draft');
+                return redirect('instructor/draft-complete')->with('jsonData', $jsonData);
             }
             //ページ遷移
             if ($request->has('transit')) {
@@ -213,37 +206,53 @@ class InstructorController extends Controller
         return view('Instructor.complete');
     }
 
+    public function draft_complete(Request $request)
+    {
+        if (!$request->isMethod('get')) abort(404);
+        if ($request->isMethod('get') && !$request->session()->has('jsonData')) abort(404);
+
+        //getの場合
+        $jsonData = $request->session()->get('jsonData');
+        $this->saveData($jsonData, 'draft');
+
+        return view('school.draft-complete');
+    }
+
+    /**
+     * ユーザー情報を保存する関数
+     * 
+     * @param string $jsonData json文字列化したuserとInstructorモデル
+     * @param string $status ステータス
+     * @return object $objResult 保存されたuserモデル
+     */
     private function saveData($jsonData, $status)
     {
         $objData = new Instructor;
         $objData->setAttrs(json_decode($jsonData, true));
+        $objData->password = bcrypt($objData->password);
+        $objData->role = 2;
+        $objData->status = $status;
+        $objData->del_flg = 0;
+        $objData->activities = json_encode($objData->activities);
+        $objData->act_areas = json_encode($objData->act_areas);
 
-        /*  保存データを整形する場合はここ  */
         //アバター画像をstorageに保存
         if ($objData->avatar) {
             $data = base64_decode(str_replace('data:image/png;base64,', '', $objData->avatar));
-            $path = Storage::put("avatars/{Str::uuid()}.png", $data);
-            $objData->avatar_url = $path;
+            $fileName = Str::uuid().'.png';
+            if(Storage::put("avatars/{$fileName}", $data)) {
+                $objData->avatar_url = $fileName;
+            }
         }
-        $objData->activities = json_encode($objData->activities);
-        $objData->act_areas = json_encode($objData->act_areas);
-        $objData->status = $status;
-        $objData->del_flg = 0;
-        /*  ここまで  */
 
-        $model = new User;
-        $user = $model->create([
-            'name' => $objData->name,
-            'email' => $objData->email,
-            'password' => bcrypt($objData->password),
-            'role' => 1,
-            'status' => $objData->status,
-            'del_flg' => 0,
-        ]);
+        $objResult = DB::transaction(function () use ($objData) {
+            $model = new User;
+            $arrData = $objData->toArray();
+            $user = $model->create($arrData);
+            $user->instructor()->create($arrData);
+            return $user;
+        });
 
-        $arrData = $objData->toArray();
-        $user->instructor()->create($arrData);
-
-        return;
+        return $objResult;
     }
 }

@@ -109,9 +109,6 @@ class SchoolController extends Controller
 
         //getの場合
         $jsonData = $request->session()->get('jsonData');
-        $objData = new School;
-        $objData->setAttrs(json_decode($jsonData, true));
-
         /*  保存データを整形する場合はここ  */
         /*  ここまで  */
 
@@ -127,34 +124,35 @@ class SchoolController extends Controller
 
         //getの場合
         $jsonData = $request->session()->get('jsonData');
-        $objData = new School;
-        $objData->setAttrs(json_decode($jsonData, true));
-        $this->saveData($objData, 'dtaft');
+        $this->saveData($jsonData, 'draft');
 
         return view('school.draft-complete');
     }
 
+    /**
+     * ユーザー情報を保存する関数
+     * 
+     * @param string $jsonData json文字列化したuserとschoolモデル
+     * @param string $status ステータス
+     * @return object $objResult 保存されたuserモデル
+     */
     private function saveData($jsonData, $status)
     {
         $objData = new School;
         $objData->setAttrs(json_decode($jsonData, true));
-
+        $objData->password = bcrypt($objData->password);
+        $objData->role = 2;
         $objData->status = $status;
         $objData->del_flg = 0;
 
-        $model = new User;
-        $user = $model->create([
-            'name' => $objData->name,
-            'email' => $objData->email,
-            'password' => bcrypt($objData->password),
-            'role' => 2,
-            'status' => $objData->status,
-            'del_flg' => 0,
-        ]);
+        $objResult = DB::transaction(function () use ($objData) {
+            $model = new User;
+            $arrData = $objData->toArray();
+            $user = $model->create($arrData);
+            $user->school()->create($arrData);
+            return $user;
+        });
 
-        $arrData = $objData->toArray();
-        $user->school()->create($arrData);
-
-        return;
+        return $objResult;
     }
 }
