@@ -16,7 +16,7 @@
           </div>
           <div>
             <label for="password" class="editLabel">パスワード</label>
-            <input type="password" name="password" class="editInput" value="{{ old('password', $objData->password) }}">
+            <input type="password" name="password" id="password" class="editInput" value="{{ old('password', $objData->password) }}"><span id="password__icon" class="password__icon"></span>
             @error('password') <p class="alert">{{ $message }}</p> @enderror
           </div>
           <div>
@@ -66,6 +66,7 @@
 </x-guest-layout>
 <script src="/asset/js/sendResizedImg.js"></script>
 <script>
+  togglePassIcon();
   setBirthday();
   setResizedImg();
 </script>

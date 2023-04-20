@@ -109,3 +109,14 @@ body {
   grid-template-columns: 1fr 2fr;
   width: 480px;
 }
+
+.password__icon {
+  margin-left: 5px;
+}
+.password__icon img {
+  display: none;
+}
+
+.isActive {
+  display: inline !important;
+}

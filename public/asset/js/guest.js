@@ -6,16 +6,18 @@
 
 function togglePassIcon() {
     $(window).on('load', function () {
-        const iconElem = $('#password-icon');
-        const icon1 = '/asset/image/common/eye-solid.svg';
-        const icon2 = '/asset/image/common/eye-slash-solid.svg';
-        iconElem.attr('src', icon1);
+        const passElem = $('#password');
+        const iconElem = $('#password__icon');
+        const icon1Elem = $('<img class="isActive" src="/asset/image/common/eye-solid.svg" width="20" height="20">').appendTo(iconElem);
+        const icon2Elem = $('<img src="/asset/image/common/eye-slash-solid.svg" width="20" height="20">').appendTo(iconElem);
         iconElem.on('click', function () {
-            if (iconElem.attr('src') === icon1) {
-                iconElem.attr('src', icon2);
+            if (icon1Elem.hasClass('isActive')) {
+                passElem.attr('type', 'text');
             } else {
-                iconElem.attr('src', icon1);
+                passElem.attr('type', 'password');
             }
+            icon1Elem.toggleClass('isActive');
+            icon2Elem.toggleClass('isActive');
         });
     });
 }
@@ -131,10 +133,10 @@ function setActArea(obj) {
         const actAreaElem = $(`<div id="actArea${id}" class: "edit__actArea"></div>`).appendTo(actAreasElem);
         if (id > 1) actAreaElem.hide();
         const prefElem = $(`<select id="pref${id}" name="act_areas[${id}][pref]"></select>`).appendTo(actAreaElem);
-        Object.keys(objPrefs).forEach(function (key) {
+        for (const key in objPrefs) {
             const option = $(`<option value="${key}">${objPrefs[key]}</option>`).appendTo(prefElem);
             if (key === objActAreas[id].pref) option.prop('selected', true);
-        });
+        }
         const cityElem = $(`<select id="city${id}" name="act_areas[${id}][city]"></select>`).appendTo(actAreaElem);
         prefElem.on('change', function () { setCities(id) });
         setCities(id);
@@ -146,10 +148,10 @@ function setActArea(obj) {
         const cityElem = $(`#city${id}`);
         cityElem.empty();
         if (cities) {
-            Object.keys(cities).forEach(function (key) {
+            for (const key in cities) {
                 const option = $(`<option value="${key}">${cities[key]}</option>`).appendTo(cityElem);
                 if (key === objActAreas[id].city) option.prop('selected', true);
-            });
+            }
         }
     }
 
@@ -171,7 +173,7 @@ function setActArea(obj) {
         if (areaLength === 4) iconPrefAddElem.toggle();
     });
 
-    Object.keys(objActAreas).forEach(function (index) { createArea(index); });
+    for (const index in objActAreas) { createArea(index); };
 }
 
 /**
