@@ -148,13 +148,8 @@ public function confirm(Request $request)
   
 <section>
 <h2>コントローラー</h2>
-<h3>同じページにpostする</h3>
-例えばcreate⇒confirm⇒completeの流れがあるとき、最初はcreateにgetでアクセスして、submitで同じcreateにpostでアクセスする。
-createメソッドの内部ではgetの場合とpostの場合で処理を分けて、postの場合は必要な処理を行ったあとconfirmにリダイレクトする。このときwith()でセッション値も渡す。
-次にリダイレクトしたconfirmはgetでアクセスすることになり、submitでconfirmにpostでアクセスする。
-あとは同様の処理で、completeにリダイレクトするという流れになる。
-patchやdeleteの場合も上と同様。原則としてgetとpostでメソッドを切り分ける書き方をしないという方針でいく。
-
+<h3>同じページにPOSTする</h3>
+例えばcreate→confirm→completeの流れがあるとき、create(GET)→create(POST)→confirm(GET)→confirm(POST)→complete(GET)という流れで進行していく。
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
