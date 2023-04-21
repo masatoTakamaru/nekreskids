@@ -49,4 +49,31 @@ class School extends Model
             $this->$key = $value;
         }
     }
+
+    /**
+     * ユーザー情報を保存する関数
+     * 
+     * @param string $jsonData json文字列化したuserとschoolモデル
+     * @param string $status ステータス
+     * @return object $objResult 保存されたuserモデル
+     */
+    public function createData($jsonData, $status)
+    {
+        $objData = new School;
+        $objData->setAttrs(json_decode($jsonData, true));
+        $objData->password = bcrypt($objData->password);
+        $objData->role = 2;
+        $objData->status = $status;
+        $objData->del_flg = 0;
+
+        $objResult = DB::transaction(function () use ($objData) {
+            $model = new User;
+            $arrData = $objData->toArray();
+            $user = $model->create($arrData);
+            $user->school()->create($arrData);
+            return $user;
+        });
+
+        return $objResult;
+    }
 }

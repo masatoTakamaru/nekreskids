@@ -53,4 +53,42 @@ class Instructor extends Model
             $this->$key = $value;
         }
     }
+
+        /**
+     * ユーザー情報を保存する関数
+     * 
+     * @param string $jsonData json文字列化したuserとInstructorモデル
+     * @param string $status ステータス
+     * @return object $objResult 保存されたuserモデル
+     */
+    public function createData($jsonData, $status)
+    {
+        $objData = new Instructor;
+        $objData->setAttrs(json_decode($jsonData, true));
+        $objData->password = bcrypt($objData->password);
+        $objData->role = 2;
+        $objData->status = $status;
+        $objData->del_flg = 0;
+        $objData->activities = json_encode($objData->activities);
+        $objData->act_areas = json_encode($objData->act_areas);
+
+        //アバター画像をstorageに保存
+        if ($objData->avatar) {
+            $data = base64_decode(str_replace('data:image/png;base64,', '', $objData->avatar));
+            $fileName = Str::uuid().'.png';
+            if(Storage::put("avatars/{$fileName}", $data)) {
+                $objData->avatar_url = $fileName;
+            }
+        }
+
+        $objResult = DB::transaction(function () use ($objData) {
+            $model = new User;
+            $arrData = $objData->toArray();
+            $user = $model->create($arrData);
+            $user->instructor()->create($arrData);
+            return $user;
+        });
+
+        return $objResult;
+    }
 }

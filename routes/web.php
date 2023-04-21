@@ -24,6 +24,13 @@ use Illuminate\Support\Str;
  * ■□■□■□■□■□■□■□■□■□■□■■□■□■□■□■□■□■□■□■
  */
 
+require __DIR__ . '/auth.php';
+
+Route::middleware('auth')->group(function () {
+    Route::get('/admin/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index']);
+    return;
+});
+
 Route::any('/{url}', function () {
     $arrUrl = explode('/', request()->getRequestUri());
     $action = 'index';
@@ -59,5 +66,3 @@ Route::any('/{url}', function () {
 
     return app()->call($path . '@' . $action);
 })->where('url', '.*');
-
-require __DIR__ . '/auth.php';

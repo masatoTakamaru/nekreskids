@@ -19,29 +19,28 @@ use Carbon\Carbon;
 
 class InstructorController extends Controller
 {
-    private $objInit = null;    //初期化済みオブジェクト
+    private $model = null;
     private $fillableExt = [];  //メソッド間の受け渡し項目
 
     public function __construct()
     {
-        $model = new Instructor();
-        $this->fillableExt = array_merge($model->getFillable(), [
-            /*  メソッド間の受け渡し項目を追加する場合はここに記入  */
+        $this->model = new Instructor();
+        $this->fillableExt = array_merge($this->model->getFillable(), [
+            /*-- メソッド間の受け渡し項目を追加する場合はここに記入 --*/
             'email',
             'password',
             'avatar',
             'actPref',
-            /*  ここまで  */
+            /*--------------------- ここまで ---------------------*/
         ]);
-        $model->setAttrs(array_fill_keys($this->fillableExt, null));
-        /*  初期値を与える場合はここに記入  */
-        $model->birth = Carbon::now()->format('Y-m-d');
-        $model->gender = 'male';
-        $model->activities = [];
-        $model->act_areas = ['1' => ['pref' => '', 'city' => '']];
-        /*  ここまで  */
+        $this->model->setAttrs(array_fill_keys($this->fillableExt, null));
 
-        $this->objInit = $model;
+        /*---------- 初期値を与える場合はここに記入 ----------*/
+        $this->model->birth = Carbon::now()->format('Y-m-d');
+        $this->model->gender = 'male';
+        $this->model->activities = [];
+        $this->model->act_areas = ['1' => ['pref' => '', 'city' => '']];
+        /*-------------------- ここまで --------------------*/
     }
 
     public function step1(Request $request)
@@ -51,19 +50,23 @@ class InstructorController extends Controller
         if ($request->isMethod('post')) {
             $arrData = json_decode($request->jsonData, true);
             $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
-            //下書き保存
+
+            /*---------- 下書き保存 ----------*/
             if ($request->has('action') && $request->action === 'draft') {
                 return redirect('instructor/draft-complete')->with('jsonData', $jsonData);
             }
-            //ページ遷移
+
+            /*---------- ページ遷移 ----------*/
             if ($request->has('transit')) {
                 return redirect('/instructor/' . $request->transit)->with('jsonData', $jsonData);
             }
         }
-        // getの場合
-        $objData = $this->objInit;
+
+        /*---------- getの場合 ----------*/
+        $objData = $this->model;
         $jsonData = json_encode($objData);
-        //セッションが存在する場合セッション値を反映
+
+        /*---------- セッションが存在する場合セッション値を反映 ----------*/
         if ($request->session()->has('jsonData')) {
             $jsonData = $request->session()->get('jsonData');
             $objData = new Instructor;
@@ -84,20 +87,22 @@ class InstructorController extends Controller
         if ($request->isMethod('post')) {
             $arrData = json_decode($request->jsonData, true);
             $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
-            //下書き保存
+
+            /*---------- 下書き保存 ----------*/
             if ($request->has('action') && $request->action === 'draft') {
                 return redirect('instructor/draft-complete')->with('jsonData', $jsonData);
             }
-            //ページ遷移
+
+            /*---------- ページ遷移 ----------*/
             if ($request->has('transit')) {
                 return redirect('/instructor/' . $request->transit)->with('jsonData', $jsonData);
             }
         }
 
-        //getの場合
-        $objData = $this->objInit;
+        /*---------- getの場合 ----------*/
+        $objData = $this->model;
         $jsonData = json_encode($objData);
-        //セッションが存在する場合セッション値を反映
+        /*---------- セッションが存在する場合セッション値を反映 ----------*/
         if ($request->session()->has('jsonData')) {
             $jsonData = $request->session()->get('jsonData');
             $objData = new Instructor;
@@ -201,7 +206,7 @@ class InstructorController extends Controller
 
         //getの場合
         $jsonData = $request->session()->get('jsonData');
-        $this->saveData($jsonData, 'public');
+        $this->createData($jsonData, 'public');
 
         return view('Instructor.complete');
     }
@@ -213,46 +218,10 @@ class InstructorController extends Controller
 
         //getの場合
         $jsonData = $request->session()->get('jsonData');
-        $this->saveData($jsonData, 'draft');
+        $this->createData($jsonData, 'draft');
 
         return view('school.draft-complete');
     }
 
-    /**
-     * ユーザー情報を保存する関数
-     * 
-     * @param string $jsonData json文字列化したuserとInstructorモデル
-     * @param string $status ステータス
-     * @return object $objResult 保存されたuserモデル
-     */
-    private function saveData($jsonData, $status)
-    {
-        $objData = new Instructor;
-        $objData->setAttrs(json_decode($jsonData, true));
-        $objData->password = bcrypt($objData->password);
-        $objData->role = 2;
-        $objData->status = $status;
-        $objData->del_flg = 0;
-        $objData->activities = json_encode($objData->activities);
-        $objData->act_areas = json_encode($objData->act_areas);
 
-        //アバター画像をstorageに保存
-        if ($objData->avatar) {
-            $data = base64_decode(str_replace('data:image/png;base64,', '', $objData->avatar));
-            $fileName = Str::uuid().'.png';
-            if(Storage::put("avatars/{$fileName}", $data)) {
-                $objData->avatar_url = $fileName;
-            }
-        }
-
-        $objResult = DB::transaction(function () use ($objData) {
-            $model = new User;
-            $arrData = $objData->toArray();
-            $user = $model->create($arrData);
-            $user->instructor()->create($arrData);
-            return $user;
-        });
-
-        return $objResult;
-    }
 }

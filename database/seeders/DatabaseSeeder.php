@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
 
         \App\Models\User::factory()->create([
             'email' => 'admin@example.com',
-            'password' => 'password',
+            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
             'role' => 3
         ]);
         \App\Models\User::factory($amount)->hasInstructor(1)->create(['role' => 1]);
