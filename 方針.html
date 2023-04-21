@@ -67,7 +67,7 @@ $arrSome = json_decode($fieldData, true);
 <h3>コントローラー内のコンストラクタについて</h3>
 コントローラー内のコンストラクタは以下のようになっている。
 <pre><code class="language-php">
-private $objInit = null;    //初期化済みオブジェクト
+private $model = null;
 private $fillableExt = [];  //メソッド間の受け渡し項目
 
 public function __construct()
@@ -83,8 +83,6 @@ public function __construct()
     /*  初期値を与える場合はここに記入  */
     $model->role = 1;
     /*  ここまで  */
-
-    $this->objInit = $model;
 }
 </code></pre>
 モデルをインスタンスしただけでは項目自体存在しない状態なので、getFillable()でモデル内に記述されている$fillableを取得し、setAttrs()ですべての項目にnullを設定している。
@@ -95,12 +93,12 @@ protected $fillable = [
     'password',
 ];
 //なら
-$this->objInit = [
+$this->model = [
     'email' => null,
     'password' => null,
 ];
 </code></pre>
-項目を追加したり、nullではなく初期値を設定したい場合は指定の場所に記述する。$this->objInitをオブジェクトの初期状態としてメソッド内で利用する。
+項目を追加したり、nullではなく初期値を設定したい場合は指定の場所に記述する。$this->modelをオブジェクトの初期状態としてメソッド内で利用する。
 また、原則的にモデルに関係するデータはオブジェクト型で統一する（連想配列とオブジェクト型は要素の指定方法が異なるので、統一しておいてあとで考えないで済むようにしておく）。
 ちなみにsetAttrs()は独自のメソッドでモデル内に記述している。
 <pre><code class="language-php">
@@ -134,7 +132,6 @@ public function confirm(Request $request)
         !$request->session()->has('jsonData')) abort(404);
     if (!$request->isMethod('get')
         && !$request->isMethod('post'))  abort(404);
-
 
     /*  以降の処理  */
 }
@@ -192,10 +189,11 @@ function myFunc() {
 </code></pre>
 bladeファイル
 <pre><code class="language-php">
-</x-guest-layout>
-<script>
+・・・・
+&lt;/x-guest-layout&gt;
+&lt;script&gt;
   myFunc();  //blade側から関数を呼び出す
-</script>
+&lt;/script&gt;
 </code></pre>
 
 <h3>JavaScriptに変数を渡す</h3>
@@ -213,16 +211,31 @@ bladeファイル
 &lt;script&gt;
 myFunc({
   &#039;key1&#039;: &lt;?php echo $arrSome; ?&gt;,
-  &#039;key2: &lt;?php echo $varSome; ?&gt;
+  &#039;key2&#039;: &lt;?php echo $varSome; ?&gt;
 });
 &lt;/script&gt;
 </code></pre>
-変数が複数の場合はオブジェクトで渡すと楽。<br>
+変数が複数の場合はオブジェクトで渡すと楽。JavaScriptの方では<br>
 jsファイル
 <pre><code class="language-php">
+function myFunc(obj) {
+  const name = obj.name;
+  const tel = obj.tel;
+
+  /*  何らかの処理  */
+}
 </code></pre>
-<h3>項目タイトル</h3>
+のように書いて値を取り出す。
+注意点として、JavaScriptに渡したいデータが連想配列やオブジェクトの場合、json_encode()でjson文字列化してbladeに送ること。
 <pre><code class="language-php">
+return view(&#039;user.create&#039;, [
+  &#039;objData&#039; =&gt; $objData,
+  &#039;jsonSome&#039; =&gt; json_encode($arrSome),
+]);
+</code></pre>
+<h3>bladeのバリデーションエラー表示は@errorを使う</h3>
+<pre><code class="language-php">
+@error(&#039;email&#039;) &lt;p class=&quot;alert&quot;&gt;{{ $message }}&lt;/p&gt; @enderror
 </code></pre>
 </section>
 <section>
