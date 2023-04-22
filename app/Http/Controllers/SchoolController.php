@@ -61,7 +61,6 @@ class SchoolController extends Controller
         /*---------- セッションが存在する場合セッション値を反映 ----------*/
         if ($request->session()->has('jsonData')) {
             $jsonData = $request->session()->get('jsonData');
-            $objData = new School;
             $objData->setAttrs(json_decode($jsonData, true));
         }
 
@@ -119,7 +118,7 @@ class SchoolController extends Controller
         /*---------- データを整形する場合はここに記入 ----------*/
         /*--------------------- ここまで ---------------------*/
 
-        $this->model->createData($jsonData, 'public');
+        $this->model->newEntry($jsonData, 'public');
 
         return view('school.complete');
     }
@@ -131,7 +130,7 @@ class SchoolController extends Controller
 
         /*---------- getの場合 ----------*/
         $jsonData = $request->session()->get('jsonData');
-        $this->model->createData($jsonData, 'draft');
+        $this->model->newEntry($jsonData, 'draft');
 
         /*---------- データを整形する場合はここに記入 ----------*/
         /*--------------------- ここまで ---------------------*/

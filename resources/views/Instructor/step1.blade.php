@@ -14,9 +14,10 @@
             <input type="text" name="email" id="email" class="editInput" value="{{ old('email', $objData->email) }}">
             @error('email') <p class="alert">{{ $message }}</p> @enderror
           </div>
-          <div>
-            <label for="password" class="editLabel">パスワード</label>
-            <input type="password" name="password" id="password" class="editInput" value="{{ old('password', $objData->password) }}"><span id="password__icon" class="password__icon"></span>
+          <div class="edit__item">
+            <label for="password" class="edit__label">パスワード</label>
+            <input type="password" name="password" id="password" class="edit__input" value="{{ old('password', $objData->password) }}">
+            <div id="password__icon" class="password__eye"></div>
             @error('password') <p class="alert">{{ $message }}</p> @enderror
           </div>
           <div>

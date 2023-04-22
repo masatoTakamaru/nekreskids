@@ -12,9 +12,11 @@
             <input type="text" name="email" id="email" class="editInput" value="{{ old('email', $objData->email) }}">
             @error('email') <p class="alert">{{ $message }}</p> @enderror
           </div>
-          <div>
+          <div class="edit__item">
             <label for="password" class="editLabel">パスワード</label>
-            <input type="password" name="password" id="password" class="editInput" value="{{ old('password', $objData->password) }}"><span id="password__icon" class="password__icon"></span>
+            <input type="password" name="password" id="password" class="editInput"
+              value="{{ old('password', $objData->password) }}">
+            <div id="password__icon" class="password__eye"></div>
             @error('password') <p class="alert">{{ $message }}</p> @enderror
           </div>
           <div>
@@ -49,20 +51,17 @@
           </div>
           <div>
             <label for="tel1" class="">電話番号１</label>
-            <input type="text" name="tel1" class="" placeholder="08012345678"
-              value="{{ old('tel1', $objData->tel1)}}">
+            <input type="text" name="tel1" class="" placeholder="08012345678" value="{{ old('tel1', $objData->tel1)}}">
             @error('tel1') <p class="alert">{{ $message }}</p> @enderror
           </div>
           <div>
             <label for="tel2" class="">電話番号２</label>
-            <input type="text" name="tel2" class="" placeholder="08012345678"
-              value="{{ old('tel2', $objData->tel2)}}">
+            <input type="text" name="tel2" class="" placeholder="08012345678" value="{{ old('tel2', $objData->tel2)}}">
             @error('tel2') <p class="alert">{{ $message }}</p> @enderror
           </div>
           <div>
             <label for="charge" class="">担当者名</label>
-            <input type="text" name="charge" class="" placeholder=""
-              value="{{ old('charge', $objData->charge)}}">
+            <input type="text" name="charge" class="" placeholder="" value="{{ old('charge', $objData->charge)}}">
             @error('charge') <p class="alert">{{ $message }}</p> @enderror
           </div>
           <div>

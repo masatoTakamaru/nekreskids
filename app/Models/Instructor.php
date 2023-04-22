@@ -61,7 +61,7 @@ class Instructor extends Model
      * @param string $status ステータス
      * @return object $objResult 保存されたuserモデル
      */
-    public function createData($jsonData, $status)
+    public function newEntry($jsonData, $status)
     {
         $objData = new Instructor;
         $objData->setAttrs(json_decode($jsonData, true));

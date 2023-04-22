@@ -57,7 +57,7 @@ class School extends Model
      * @param string $status ステータス
      * @return object $objResult 保存されたuserモデル
      */
-    public function createData($jsonData, $status)
+    public function newEntry($jsonData, $status)
     {
         $objData = new School;
         $objData->setAttrs(json_decode($jsonData, true));

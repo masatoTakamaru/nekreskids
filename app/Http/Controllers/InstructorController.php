@@ -69,7 +69,6 @@ class InstructorController extends Controller
         /*---------- セッションが存在する場合セッション値を反映 ----------*/
         if ($request->session()->has('jsonData')) {
             $jsonData = $request->session()->get('jsonData');
-            $objData = new Instructor;
             $objData->setAttrs(json_decode($jsonData, true));
         }
 
@@ -105,7 +104,6 @@ class InstructorController extends Controller
         /*---------- セッションが存在する場合セッション値を反映 ----------*/
         if ($request->session()->has('jsonData')) {
             $jsonData = $request->session()->get('jsonData');
-            $objData = new Instructor;
             $objData->setAttrs(json_decode($jsonData, true));
         }
 
@@ -133,12 +131,11 @@ class InstructorController extends Controller
         }
 
         //getの場合
-        $objData = $this->objInit;
+        $objData = $this->model;
         $jsonData = json_encode($objData);
         //セッションが存在する場合セッション値を反映
         if ($request->session()->has('jsonData')) {
             $jsonData = $request->session()->get('jsonData');
-            $objData = new Instructor;
             $objData->setAttrs(json_decode($jsonData, true));
         }
         return view('Instructor.step3', [
@@ -170,8 +167,8 @@ class InstructorController extends Controller
         }
 
         //getの場合
+        $objData = $this->model;
         $jsonData = $request->session()->get('jsonData');
-        $objData = new Instructor;
         $objData->setAttrs(json_decode($jsonData, true));
 
         /*  表示用データを整形する場合はここ  */
@@ -206,7 +203,7 @@ class InstructorController extends Controller
 
         //getの場合
         $jsonData = $request->session()->get('jsonData');
-        $this->createData($jsonData, 'public');
+        $this->newEntry($jsonData, 'public');
 
         return view('Instructor.complete');
     }
@@ -218,10 +215,8 @@ class InstructorController extends Controller
 
         //getの場合
         $jsonData = $request->session()->get('jsonData');
-        $this->createData($jsonData, 'draft');
+        $this->newEntry($jsonData, 'draft');
 
         return view('school.draft-complete');
     }
-
-
 }

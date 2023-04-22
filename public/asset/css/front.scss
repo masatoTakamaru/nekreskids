@@ -55,6 +55,7 @@ body {
         display: flex;
         //align-items: center;
         align-items: flex-start;
+        position: relative;
     }
 
     &__checkboxWrapper {
@@ -126,14 +127,23 @@ body {
     }
 }
 
-.password__icon {
-    margin-left: 5px;
-
-    img {
-        display: none;
-    }
+#password__icon {
+    margin-top: 3px;
+    margin-left: -24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-.isActive {
-    display: inline !important;
+.password__eye {
+    height: 18px;
+    width: 18px;
+    background-image: url(image/eye-solid.svg);
+    background-repeat: no-repeat;
+}
+
+.password__eye-slash {
+    height: 18px;
+    width: 18px;
+    background-image: url(image/eye-slash-solid.svg);
+    background-repeat: no-repeat;
 }

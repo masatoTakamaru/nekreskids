@@ -50,6 +50,7 @@ body {
 .edit__item {
   display: flex;
   align-items: flex-start;
+  position: relative;
 }
 .edit__checkboxWrapper {
   display: flex;
@@ -110,13 +111,23 @@ body {
   width: 480px;
 }
 
-.password__icon {
-  margin-left: 5px;
-}
-.password__icon img {
-  display: none;
+#password__icon {
+  margin-top: 3px;
+  margin-left: -24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.isActive {
-  display: inline !important;
+.password__eye {
+  height: 18px;
+  width: 18px;
+  background-image: url(image/eye-solid.svg);
+  background-repeat: no-repeat;
+}
+
+.password__eye-slash {
+  height: 18px;
+  width: 18px;
+  background-image: url(image/eye-slash-solid.svg);
+  background-repeat: no-repeat;
 }

@@ -8,16 +8,16 @@ function togglePassIcon() {
     $(window).on('load', function () {
         const passElem = $('#password');
         const iconElem = $('#password__icon');
-        const icon1Elem = $('<img class="isActive" src="/asset/image/common/eye-solid.svg" width="20" height="20">').appendTo(iconElem);
-        const icon2Elem = $('<img src="/asset/image/common/eye-slash-solid.svg" width="20" height="20">').appendTo(iconElem);
         iconElem.on('click', function () {
-            if (icon1Elem.hasClass('isActive')) {
-                passElem.attr('type', 'text');
+            if(passElem.attr('type')==='password'){
+                passElem.attr('type','text');
+                iconElem.removeClass('password__eye');
+                iconElem.addClass('password__eye-slash');
             } else {
-                passElem.attr('type', 'password');
+                passElem.attr('type','password');
+                iconElem.removeClass('password__eye-slash');
+                iconElem.addClass('password__eye');
             }
-            icon1Elem.toggleClass('isActive');
-            icon2Elem.toggleClass('isActive');
         });
     });
 }
