@@ -9,12 +9,12 @@ function togglePassIcon() {
         const passElem = $('#password');
         const iconElem = $('#password__icon');
         iconElem.on('click', function () {
-            if(passElem.attr('type')==='password'){
-                passElem.attr('type','text');
+            if (passElem.attr('type') === 'password') {
+                passElem.attr('type', 'text');
                 iconElem.removeClass('password__eye');
                 iconElem.addClass('password__eye-slash');
             } else {
-                passElem.attr('type','password');
+                passElem.attr('type', 'password');
                 iconElem.removeClass('password__eye-slash');
                 iconElem.addClass('password__eye');
             }
@@ -38,53 +38,64 @@ function setJpostal() {
 }
 
 /**
+ * セレクトボックスで日付を選択
+ * 連結された日付を入力するinput要素をhiddenで設置する
  * 
- * 生年月日
- * 
+ * @param obj object　年月日と日付のid
+ * 例
+ * obj = {
+ *   yearId: 'yearId',
+ *   monthId: 'monthId',
+ *   dayId: 'dayId',
+ *   dateId: 'dateId',
+ * }
  */
 
-function setBirthday() {
-    $(window).on("load", function () {
-        const now = new Date();
-        const year = now.getFullYear();
-        const date_init = new Date($("#birth").val());
-        const birth1 = date_init.getFullYear();
-        const birth2 = date_init.getMonth() + 1;
-        const birth3 = date_init.getDate();
-        const date = new Date(birth1, birth2, 0);
+function setDate(obj) {
 
-        for (let i = year; i >= 1940; i--) {
-            const elem = $(`<option value="${i}">${i}</option>`).appendTo("#birth1");
-            if (i === birth1) elem.prop('selected', true);
-        }
+    const now = new Date();         //現在の日付を初期値とする
+    const inputDate = new Date($(`#${obj.date}`).val());
+    const inputYear = inputDate.getFullYear();
+    const inputMonth = inputDate.getMonth() + 1;
+    const inputDay = inputDate.getDate();
+    const date = new Date(inputYear, inputMonth, 0);
+    const yearElem = $(`#${obj.yearId}`);
+    const monthElem = $(`#${obj.monthId}`);
+    const dayElem =$(`#${obj.dayId}`);
+    const yearMonthElem = $(`#${obj.yearId},#${obj.monthId}`);
+    const dateElem = $(`#${obj.dateId}`);
 
-        for (let i = 1; i <= 12; i++) {
-            const elem = $(`<option value="${i}">${i}</option>`).appendTo("#birth2");
-            if (i === birth2) elem.prop('selected', true);
-        }
+    for (let i = now.getFullYear(); i >= 1940; i--) {
+        const elem = $(`<option value="${i}">${i}</option>`).appendTo(yearElem);
+        if (i === inputYear) elem.prop('selected', true);
+    }
 
-        for (let i = 1; i <= date.getDate(); i++) {
-            const elem = $(`<option value="${i}">${i}</option>`).appendTo("#birth3");
-            if (i === birth3) elem.prop('selected', true);
-        }
-    });
+    for (let i = 1; i <= 12; i++) {
+        const elem = $(`<option value="${i}">${i}</option>`).appendTo(monthElem);
+        if (i === inputMonth) elem.prop('selected', true);
+    }
 
-    $("#birth1,#birth2").on("change", function () {
-        const beginOfMonth = new Date($("#birth1").val(), $("#birth2").val() - 1, 1);
-        const endOfMonth = new Date($("#birth1").val(), $("#birth2").val(), 0);
+    for (let i = 1; i <= date.getDate(); i++) {
+        const elem = $(`<option value="${i}">${i}</option>`).appendTo(dayElem);
+        if (i === inputDay) elem.prop('selected', true);
+    }
+
+    yearMonthElem.on("change", function () {
+        const beginOfMonth = new Date(yearElem.val(), monthElem.val() - 1, 1);
+        const endOfMonth = new Date(yearElem.val(), monthElem.val(), 0);
         const year = beginOfMonth.getFullYear();
         const month = beginOfMonth.getMonth() + 1;
         const day = beginOfMonth.getDate();
-        $("#birth3").empty();
+        dayElem.empty();
         for (let i = 1; i <= endOfMonth.getDate(); i++) {
-            $("#birth3").append(`<option value="${i}">${i}</option>`);
+            dayElem.append(`<option value="${i}">${i}</option>`);
         }
-        $("#birth").val(`${year}-${month}-${day}`);
+        dateElem.val(`${year}-${month}-${day}`);
     });
 
-    $("#birth3").on("change", () => {
-        const date = `${$("#birth1").val()}-${$("#birth2").val()}-${$("#birth3").val()}`;
-        $("#birth").val(date);
+    dayElem.on("change", () => {
+        const date = `${yearElem.val()}-${monthElem.val()}-${dayElem.val()}`;
+        dateElem.val(date);
     });
 }
 

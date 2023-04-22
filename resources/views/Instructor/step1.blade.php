@@ -68,6 +68,11 @@
 <script src="/asset/js/sendResizedImg.js"></script>
 <script>
   togglePassIcon();
-  setBirthday();
+  setDate({
+    yearId: 'birth1',
+    monthId: 'birth2',
+    dayId: 'birth3',
+    dateId: 'birth',
+  });
   setResizedImg();
 </script>
