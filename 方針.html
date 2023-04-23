@@ -21,13 +21,12 @@
   <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
 </head>
 <style>
-header{position:fixed;top:0;z-index:10;height:3rem;padding-left:2rem;}main{margin-top:50px;}nav{margin-left:2rem;}ul>ul{margin-left:-1rem;}h2{font-size:24px;margin:35px 0;}h3{font-size:20px;margin: 35px 0;}:target::before{content:"";display:block;height:4rem;margin:-4rem 0 0;}
+main{margin:15px;}ul>ul{margin-left:-1rem;}h2{font-size:24px;margin:35px 0;}h3{font-size:20px;margin: 35px 0;}:target::before{content:"";display:block;height:4rem;margin:-4rem 0 0;}
 </style>
 <body>
-<header class="bg-light w-100 py-2"><a href="#toc">ページトップ</a></header>
-<main class="container">
-<nav id="toc">目次</nav>
-<article>
+<main class="container-fluid d-flex flex-row w-100">
+<nav id="sidebar" class="col-3 bg-light"></nav>
+<article class="col-9">
 
 <section>
 <h2>変数・配列・オブジェクト</h2>
@@ -285,24 +284,22 @@ HTML
 CSS<br>アイコンはfont awesomeから拾ってくる。アイコンを背景画像として配置するとクラスを指定するだけで表示できる。背景画像はcssファイルが置かれているディレクトリに配置。基本的にpublic/asset/css/にcssファイルを置いて、public/asset/css/imageに画像ファイルを置く。
 <pre><code class="language-css">
 #password__icon {
+  height: 18px;
+  width: 18px;  
   margin-top: 3px;
   margin-left: -24px;
   cursor: pointer;
+  z-index: 100;
   transition: all 0.3s ease;
+  background-repeat: no-repeat;
 }
 
 .password__eye {
-  height: 18px;
-  width: 18px;
   background-image: url(image/eye-solid.svg);
-  background-repeat: no-repeat;
 }
 
 .password__eye-slash {
-  height: 18px;
-  width: 18px;
   background-image: url(image/eye-slash-solid.svg);
-  background-repeat: no-repeat;
 }
 </code></pre>
 JavaScript
@@ -493,7 +490,7 @@ function setCounter(obj) {
 <script>
     $(document).ready(function () {
       const sectionElems = $('section');
-      const navbar = $('#toc');
+      const navbar = $('#sidebar');
       const contentElem = $('<ul></ul>').appendTo(navbar);
       let count = 1;
       sectionElems.each(function () {

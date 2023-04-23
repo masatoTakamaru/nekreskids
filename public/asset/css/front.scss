@@ -128,22 +128,23 @@ body {
 }
 
 #password__icon {
+    height: 18px;
+    width: 18px;  
     margin-top: 3px;
     margin-left: -24px;
     cursor: pointer;
+    z-index: 100;
     transition: all 0.3s ease;
-}
-
-.password__eye {
-    height: 18px;
-    width: 18px;
-    background-image: url(image/eye-solid.svg);
     background-repeat: no-repeat;
 }
 
-.password__eye-slash {
-    height: 18px;
-    width: 18px;
-    background-image: url(image/eye-slash-solid.svg);
-    background-repeat: no-repeat;
+.password {
+    &__eye {
+        background-image: url(image/eye-solid.svg);
+    }
+
+    &__eye-slash {
+        background-image: url(image/eye-slash-solid.svg);
+    }
+
 }
