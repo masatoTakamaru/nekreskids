@@ -21,17 +21,16 @@
   <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
 </head>
 <style>
-main{margin:15px;}ul>ul{margin-left:-1rem;}h2{font-size:24px;margin:35px 0;}h3{font-size:20px;margin: 35px 0;}:target::before{content:"";display:block;height:4rem;margin:-4rem 0 0;}
+main{margin:15px;}nav{position:fixed;width:300px;top:0;bottom:0;left:0;overflow-y:auto;}article{margin-left:300px;}ul>ul{margin-left:-1rem;}h2{font-size:24px;margin:35px 0;}h3{font-size:20px;margin: 35px 0;}:target::before{content:"";display:block;height:4rem;margin:-4rem 0 0;}
 </style>
 <body>
-<main class="container-fluid d-flex flex-row w-100">
-<nav id="sidebar" class="col-3 bg-light"></nav>
-<article class="col-9">
-
+<main class="container-fluid w-100">
+<nav id="sidebar" class="bg-light p-3"></nav>
+<article class="p-3">
+<!----------------------------- セクション開始 ----------------------------->
 <section>
 <h2>変数・配列・オブジェクト</h2>
-
-
+<!----------------------------- 見出し ----------------------------->
 <h3>配列はすべて連想配列とする</h3>
 特別な事情がない限り、配列は何らかのキーを持つことで統一する。キーに特別な意味を持たせない場合は、番号を振っておく。
 <pre><code class="language-php">
@@ -49,8 +48,7 @@ $arrSome = [
     3 => 'value3',
 ];
 </code></pre>
-
-
+<!----------------------------- 見出し ----------------------------->
 <h3>単一のフィールドに複数のデータを保存する場合はjson文字列を用いる</h3>
 データが単純な場合はスラッシュ区切りでも良いけど、基本的にデータは連想配列として扱い、キーを必要とするので、json文字列に統一しておいた方が良い。
 <pre><code class="language-php">
@@ -59,13 +57,12 @@ $fieldData = json_encode($arrSome);
 //抽出するとき
 $arrSome = json_decode($fieldData, true);          
 </code></pre>
-
+<!----------------------------- 見出し ----------------------------->
 <h3>コントローラーのメソッド内で扱うデータの変数名</h3>
 データが連想配列なら $arrData、オブジェクト型なら $objData、json文字列なら $jsonData とする。SQLで抽出したデータはオブジェクト型だから $objData に格納する。基本的には $objData を使う。
-
-
+<!----------------------------- 見出し ----------------------------->
 <h3>コンストラクタでモデルを定義する</h3>
-コントローラー内のコンストラクタでモデルを定義する。
+コントローラーにおいて，基本的にメソッド内でモデルのインスタンスを行わなず，コンストラクタでモデルを定義する。
 <pre><code class="language-php">
 private $model = null;
 private $fillableExt = [];  //メソッド間の受け渡し項目
@@ -109,10 +106,11 @@ $role = $objData->role; //データの読み込み
 
 $objData->status = 'public'; //データの書き込み
 
-//メソッドの実行
-//以下の例ならモデル側に
-//public function newEntry() { ～ }
-//を記述する
+/*---------- メソッドの実行 ----------*/
+// 以下の例ならモデル側に
+// public function newEntry() { ～ }
+// を記述する
+
 $objData->newEntry();
 
 </code></pre>
@@ -128,11 +126,56 @@ public function setAttrs($attrs): void
     }
 }
 </code></pre>
-</section>
+コントローラーで複数のモデルが必要なときの書き方は以下。
+<pre><code class="language-php">
+private $model = null;
+private $fillableExt = [];  //メソッド間の受け渡し項目
 
+public function __construct()
+{
+    $this->model = new User();
+    $this->fillableExt = array_merge($this->model->getFillable(), [
+        /*-- メソッド間の受け渡し項目を追加する場合はここに記入 --*/
+        'status',
+        'role',
+        /*--------------------- ここまで ---------------------*/
+    ]);
+    $this->model->setAttrs(array_fill_keys($this->fillableExt, null));
+
+    /*---------- 初期値を与える場合はここに記入 ----------*/
+    $this->model->status = 'private';
+    $this->model->role = 1;
+    /*-------------------- ここまで --------------------*/
+}  
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+</section>
+<!--------------------------- セクションここまで --------------------------->
+
+<!----------------------------- セクション開始 ----------------------------->
 <section>
 <h2>ルーティング</h2>
 
+<!----------------------------- 見出し ----------------------------->
 <h3>ルーティングについて</h3>
 name()は使わない。従って、アクセスするときもroute()は使わない。ルート相対パスで直指定する。
 アドレスと各コントローラー・メソッドの詳細はweb.php内に書いてある。注意が必要なのは
@@ -153,21 +196,30 @@ public function confirm(Request $request)
 </code></pre>
 上の例ではGETとPOSTを受け入れ、GETの場合セッション値を必須としている。条件を満たさない場合はabort(404)で404エラーページを表示する。
 
+<!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
+<!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
 </section>
-  
+
+<!--------------------------- セクションここまで --------------------------->
+
+<!----------------------------- セクション開始 ----------------------------->
+
 <section>
 <h2>コントローラー</h2>
+<!----------------------------- 見出し ----------------------------->
 <h3>同じページにPOSTする</h3>
 例えばcreate→confirm→completeの流れがあるとき、create(GET) → create(POST) → confirm(GET) → confirm(POST) → complete(GET)という流れで進行していく。POSTからGETに移動するときはview()ではなくredirect()を使う。同時にwith()を使うとセッション値を渡せるので便利。
+<!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
+<!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
@@ -175,19 +227,27 @@ public function confirm(Request $request)
 
 <section>
 <h2>モデル</h2>
+<!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
+<!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
+<!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
 </section>
 
+<!--------------------------- セクションここまで --------------------------->
+
+<!----------------------------- セクション開始 ----------------------------->
+
 <section>
 <h2>ビュー</h2>
+<!----------------------------- 見出し ----------------------------->
 <h3>cssとJavaScriptの分離</h3>
 bladeの中にcssやJavaScriptのコードが入ると保守性が下がるので、原則として別ファイルに記述して、layout側でファイルを読み込むように追記しておく。bootstrapやjQueryを使いたいときも同様。
 JavsScriptのコードは必ず関数でラップして、意図しないページでコードが読み込まれないようにしておく。
@@ -206,6 +266,7 @@ blade
 &lt;/script&gt;
 </code></pre>
 
+<!----------------------------- 見出し ----------------------------->
 <h3>JavaScriptに変数を渡す</h3>
 コントローラーからJavaScriptに変数を渡すときの書き方は以下。<br>
 ・変数が1つの場合<br>
@@ -243,77 +304,89 @@ return view(&#039;user.create&#039;, [
   &#039;jsonSome&#039; =&gt; json_encode($arrSome),
 ]);
 </code></pre>
+<!----------------------------- 見出し ----------------------------->
 <h3>bladeのバリデーションエラー表示は@errorを使う</h3>
 <pre><code class="language-php">
 @error(&#039;email&#039;) &lt;p class=&quot;alert&quot;&gt;{{ $message }}&lt;/p&gt; @enderror
 </code></pre>
+<!----------------------------- 見出し ----------------------------->
 <h3>クラス名はBEM記法で</h3>
 検索すると色々出てくるが以下が分かりやすい。<br>
 <a href="https://laraweb.net/surrounding/8081/#:~:text=Block%20Element%20Modifier%20%E3%81%AE%E7%95%A5,%E3%81%AAClass%E5%91%BD%E5%90%8D%E8%A6%8F%E5%89%87%E3%81%A7%E3%81%99%E3%80%82">Laravel学習超</a>
 
 </section>
 
+<!--------------------------- セクションここまで --------------------------->
+
+<!----------------------------- セクション開始 ----------------------------->
 
 <section>
 <h2>セクションタイトル</h2>
+<!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
+<!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
+<!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
 </section>
 
+<!--------------------------- セクションここまで --------------------------->
+
+<!----------------------------- セクション開始 ----------------------------->
+
 <section>
 <h2>パーツ集</h2>
 
+<!----------------------------- 見出し ----------------------------->
 <h3>パスワード入力欄</h3>
 HTML
 <pre><code class="language-markup">
-&lt;div class=&quot;edit__item&quot;&gt;
-&lt;label for=&quot;password&quot; class=&quot;edit__label&quot;&gt;パスワード&lt;/label&gt;
-&lt;input type=&quot;password&quot; name=&quot;password&quot; id=&quot;password&quot;
-  class=&quot;edit__input&quot; value=&quot;{{ old(&#039;password&#039;, $objData-&gt;password) }}&quot;&gt;
-&lt;div id=&quot;password__icon&quot; class=&quot;password__eye&quot;&gt;&lt;/div&gt;
-@error(&#039;password&#039;) &lt;p class=&quot;alert&quot;&gt;{{ $message }}&lt;/p&gt; @enderror
-&lt;/div&gt;
+&lt;input type=&quot;password&quot; name=&quot;password&quot; id=&quot;password&quot; value=&quot;&quot;&gt;
+&lt;script&gt;
+  togglePassIcon(&#039;password&#039;);
+&lt;/script&gt;
 </code></pre>
-CSS<br>アイコンはfont awesomeから拾ってくる。アイコンを背景画像として配置するとクラスを指定するだけで表示できる。背景画像はcssファイルが置かれているディレクトリに配置。基本的にpublic/asset/css/にcssファイルを置いて、public/asset/css/imageに画像ファイルを置く。
+SCSS<br>アイコンはfont awesomeから拾ってくる。アイコンを背景画像として配置するとクラスを指定するだけで表示できる。背景画像はcssファイルが置かれているディレクトリに配置。基本的にpublic/asset/css/にcssファイルを置いて、public/asset/css/imageに画像ファイルを置く。
 <pre><code class="language-css">
-#password__icon {
-  height: 18px;
-  width: 18px;  
-  margin-top: 3px;
-  margin-left: -24px;
-  cursor: pointer;
-  z-index: 100;
-  transition: all 0.3s ease;
-  background-repeat: no-repeat;
-}
+.password {
+  &__icon {
+      height: 18px;
+      width: 18px;
+      margin-top: 3px;
+      margin-left: -24px;
+      cursor: pointer;
+      z-index: 100;
+      transition: all 0.3s ease;
+      background-repeat: no-repeat;
+  }
 
-.password__eye {
-  background-image: url(image/eye-solid.svg);
-}
+  &__eye {
+      background-image: url(image/eye-solid.svg);
+  }
 
-.password__eye-slash {
-  background-image: url(image/eye-slash-solid.svg);
+  &__eye-slash {
+      background-image: url(image/eye-slash-solid.svg);
+  }
 }
 </code></pre>
 JavaScript
 <pre><code class="language-javascript">
 /**
- * 
  * パスワード入力用アイコン切り替え
- * 
+ * @param string id パスワード入力欄の要素ID
  */
 
-function togglePassIcon() {
+function togglePassIcon(id) {
     $(window).on('load', function () {
-        const passElem = $('#password');
-        const iconElem = $('#password__icon');
+        const passElem = $(`#${id}`);
+        const iconElem = $(&#039;&lt;span class=&quot;password__icon password__eye&quot;&gt;&lt;/span&gt;&#039;);
+        passElem.after(iconElem);
         iconElem.on('click', function () {
             if(passElem.attr('type')==='password'){
                 passElem.attr('type','text');
@@ -330,35 +403,44 @@ function togglePassIcon() {
 </code></pre>
 
 
+<!----------------------------- 見出し ----------------------------->
 <h3>郵便番号から住所を自動入力(jPostal)</h3>
 blade
 <pre><code class="language-markup">
+&lt;input id=&quot;zip&quot;&gt;
 &lt;input id=&quot;pref&quot;&gt;
 &lt;input id=&quot;city&quot;&gt;
 &lt;input id=&quot;address&quot;&gt;
-
-&lt;!-- scriptはページ最下部に --&gt;
 &lt;script&gt;
-  setJpostal();
+  setJpostal({
+    zip: 'zip',
+    pref: 'pref',
+    city: 'city',
+    address: 'address',
+  });
 &lt;/script&gt;  
 </code></pre>
 JavaScript
 <pre><code class="language-javascript">
 /**
- * 
- * jPostal呼び出し
- * 
- */
-
-function setJpostal() {
+* jPostal呼び出し
+* @param obj obj{
+*      zip: string,
+*      pref: string,
+*      city: string,
+*      address: string,
+* }    郵便番号，都道府県，市区町村，それ以外の要素ID
+*/
+function setJpostal(obj) {
     $(window).on('load', function () {
-        $('#zip').jpostal({
-            postcode: ['#zip'],
-            address: { '#pref': '%3', "#city": '%4', '#address': '%5' }
+        $(`#${obj.zip}`).jpostal({
+            postcode: [`#${obj.zip}`],
+            address: { [`#${obj.pref}`]: '%3', [`#${obj.city}`]: '%4', [`#${obj.address}`]: '%5' }
         });
     });
 }
 </code></pre>
+<!----------------------------- 見出し ----------------------------->
 <h3>年月日をセレクトボックスで入力する</h3>
 blade
 <pre><code class="language-php">
@@ -379,58 +461,63 @@ setDate({
 </code></pre>
 JavaScript
 <pre><code class="language-javascript">
-  /**
-  * セレクトボックスで日付を選択
-  * 連結された日付を入力するinput要素をhiddenで設置する
-  * @param obj object　年月日と日付のid
-  */
- function setDate(obj) {
- 
-     const yearElem = $(`#${obj.yearId}`);
-     const monthElem = $(`#${obj.monthId}`);
-     const yearMonthElem = $(`#${obj.yearId},#${obj.monthId}`);
-     const dayElem = $(`#${obj.dayId}`);
-     const inputElem = $(`#${obj.dateId}`);
-     const date = inputElem.val() ? new Date(inputElem.val()) : new Date();
-     const year = date.getFullYear();
-     const month = date.getMonth() + 1;
-     const day = date.getDate();
-     const endOfMonth = new Date(year, month, 0);
- 
-     for (let i = endOfMonth.getFullYear(); i &gt;= 1940; i--) {
-         const elem = $(`&lt;option value=&quot;${i}&quot;&gt;${i}&lt;/option&gt;`).appendTo(yearElem);
-         if (i === year) elem.prop(&quot;selected&quot;, true);
-     }
- 
-     for (let i = 1; i &lt;= 12; i++) {
-         const elem = $(`&lt;option value=&quot;${i}&quot;&gt;${i}&lt;/option&gt;`).appendTo(monthElem);
-         if (i === month) elem.prop(&quot;selected&quot;, true);
-     }
- 
-     for (let i = 1; i &lt;= endOfMonth.getDate(); i++) {
-         const elem = $(`&lt;option value=&quot;${i}&quot;&gt;${i}&lt;/option&gt;`).appendTo(dayElem);
-         if (i === day) elem.prop(&quot;selected&quot;, true);
-     }
- 
-     yearMonthElem.on(&quot;change&quot;, function () {
-         const beginOfMonth = new Date(yearElem.val(), monthElem.val() - 1, 1);
-         const endOfMonth = new Date(yearElem.val(), monthElem.val(), 0);
-         const year = beginOfMonth.getFullYear();
-         const month = beginOfMonth.getMonth() + 1;
-         const day = beginOfMonth.getDate();
-         dayElem.empty();
-         for (let i = 1; i &lt;= endOfMonth.getDate(); i++) {
-             dayElem.append(`&lt;option value=&quot;${i}&quot;&gt;${i}&lt;/option&gt;`);
-         }
-         inputElem.val(`${year}-${month}-${day}`);
-     });
- 
-     dayElem.on(&quot;change&quot;, () =&gt; {
-         const date = `${yearElem.val()}-${monthElem.val()}-${dayElem.val()}`;
-         inputElem.val(date);
-     });
- }
- </code></pre>
+/**
+* セレクトボックスで日付を選択
+* 連結された日付を入力するinput要素をhiddenで設置する
+* @param obj object{
+*      yearId: string,
+*      monthId: string,
+*      dayId: string,
+*      dateId: string}　年月日と日付のid
+*/
+function setDate(obj) {
+
+    const yearElem = $(`#${obj.yearId}`);
+    const monthElem = $(`#${obj.monthId}`);
+    const yearMonthElem = $(`#${obj.yearId},#${obj.monthId}`);
+    const dayElem = $(`#${obj.dayId}`);
+    const inputElem = $(`#${obj.dateId}`);
+    const date = inputElem.val() ? new Date(inputElem.val()) : new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const endOfMonth = new Date(year, month, 0);
+
+    for (let i = endOfMonth.getFullYear(); i &gt;= 1940; i--) {
+        const elem = $(`&lt;option value=&quot;${i}&quot;&gt;${i}&lt;/option&gt;`).appendTo(yearElem);
+        if (i === year) elem.prop(&quot;selected&quot;, true);
+    }
+
+    for (let i = 1; i &lt;= 12; i++) {
+        const elem = $(`&lt;option value=&quot;${i}&quot;&gt;${i}&lt;/option&gt;`).appendTo(monthElem);
+        if (i === month) elem.prop(&quot;selected&quot;, true);
+    }
+
+    for (let i = 1; i &lt;= endOfMonth.getDate(); i++) {
+        const elem = $(`&lt;option value=&quot;${i}&quot;&gt;${i}&lt;/option&gt;`).appendTo(dayElem);
+        if (i === day) elem.prop(&quot;selected&quot;, true);
+    }
+
+    yearMonthElem.on(&quot;change&quot;, function () {
+        const beginOfMonth = new Date(yearElem.val(), monthElem.val() - 1, 1);
+        const endOfMonth = new Date(yearElem.val(), monthElem.val(), 0);
+        const year = beginOfMonth.getFullYear();
+        const month = beginOfMonth.getMonth() + 1;
+        const day = beginOfMonth.getDate();
+        dayElem.empty();
+        for (let i = 1; i &lt;= endOfMonth.getDate(); i++) {
+            dayElem.append(`&lt;option value=&quot;${i}&quot;&gt;${i}&lt;/option&gt;`);
+        }
+        inputElem.val(`${year}-${month}-${day}`);
+    });
+
+    dayElem.on(&quot;change&quot;, () =&gt; {
+        const date = `${yearElem.val()}-${monthElem.val()}-${dayElem.val()}`;
+        inputElem.val(date);
+    });
+}
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
 <h3>残り文字数カウンター</h3>
 blade
 <pre><code class="language-markup">
@@ -438,15 +525,19 @@ blade
   &lt;textarea name=&quot;content&quot; id=&quot;content&quot; cols=&quot;50&quot; rows=&quot;10&quot;&gt;&lt;/textarea&gt;
   &lt;p id=&quot;count&quot;&gt;&lt;/p&gt;
 &lt;/div&gt;
+&lt;script&gt;
+  setCounter({
+    textArea: &#039;content&#039;,
+    count: &#039;count&#039;,
+  });
+&lt;/script&gt;
 </code></pre>
 JavaScript
 <pre><code class="language-javascript">
 /**
- * 
- * 残り文字数カウンター
- * 
- */
-
+* 残り文字数カウンター
+* @param obj obj{textArea: string, count: string} textareaとカウンタを表示する要素のID
+*/
 function setCounter(obj) {
     const maxLength = 200;  //最大文字数
     const textElem = $(`#${obj.textArea}`);
@@ -475,36 +566,43 @@ function setCounter(obj) {
     });
 }
 </code></pre>
+<!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
+<!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
 
+
 </section>
+
+<!--------------------------- セクションここまで --------------------------->
   
 </article>
-</main=>
+</main>
+<!-----------------  サイドメニュー生成 ----------------->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <script>
-    $(document).ready(function () {
-      const sectionElems = $('section');
-      const navbar = $('#sidebar');
-      const contentElem = $('<ul></ul>').appendTo(navbar);
-      let count = 1;
-      sectionElems.each(function () {
-        const h2Elem = $(this).find('h2').first();
-        $(`<li>${h2Elem.text()}</li>`).appendTo(contentElem);
-        const chapterElem = $('<ul></ul>').appendTo(contentElem);
-        const h3Elems = $(this).find('h3');
-        h3Elems.each(function () {
-          $(this).attr('id', `item${count}`);
-          const elem = $(`<li><a class="text-decoration-none" href="#item${count}">${$(this).text()}</a></li=>`).appendTo(chapterElem);
-          count++;
-        });
+  $(document).ready(function () {
+    const sectionElems = $('section');
+    const navbar = $('#sidebar');
+    const contentElem = $('<ul></ul>').appendTo(navbar);
+    let count = 1;
+    sectionElems.each(function () {
+      const h2Elem = $(this).find('h2').first();
+      $(`<li>${h2Elem.text()}</li>`).appendTo(contentElem);
+      const chapterElem = $('<ul></ul>').appendTo(contentElem);
+      const h3Elems = $(this).find('h3');
+      h3Elems.each(function () {
+        $(this).attr('id', `item${count}`);
+        const elem = $(`<li><a class="text-decoration-none" href="#item${count}">${$(this).text()}</a></li=>`).appendTo(chapterElem);
+        count++;
       });
     });
-  </script>
+  });
+</script>
+<!-----------------  サイドメニュー生成ここまで ----------------->
 </body>
 </html>

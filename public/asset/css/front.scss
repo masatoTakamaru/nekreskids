@@ -127,18 +127,18 @@ body {
     }
 }
 
-#password__icon {
-    height: 18px;
-    width: 18px;  
-    margin-top: 3px;
-    margin-left: -24px;
-    cursor: pointer;
-    z-index: 100;
-    transition: all 0.3s ease;
-    background-repeat: no-repeat;
-}
-
 .password {
+    &__icon {
+        height: 18px;
+        width: 18px;
+        margin-top: 3px;
+        margin-left: -24px;
+        cursor: pointer;
+        z-index: 100;
+        transition: all 0.3s ease;
+        background-repeat: no-repeat;
+    }
+
     &__eye {
         background-image: url(image/eye-solid.svg);
     }
@@ -146,5 +146,4 @@ body {
     &__eye-slash {
         background-image: url(image/eye-slash-solid.svg);
     }
-
 }

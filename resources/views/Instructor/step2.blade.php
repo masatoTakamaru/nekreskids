@@ -49,5 +49,10 @@
   </article>
 </x-guest-layout>
 <script>
-  setJpostal();
+  setJpostal({
+    zip: 'zip',
+    pref: 'pref',
+    city: 'city',
+    address: 'address',
+  });
 </script>

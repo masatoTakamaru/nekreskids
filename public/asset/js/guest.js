@@ -1,12 +1,11 @@
 /**
- * 
- * パスワード入力用アイコン切り替え
- * 
+ * パスワード入力欄アイコン切り替え
+ * @param string id パスワード入力欄の要素ID
  */
-
-function togglePassIcon() {
-    const passElem = $('#password');
-    const iconElem = $('#password__icon');
+function togglePassIcon(id) {
+    const passElem = $(`#${id}`);
+    const iconElem = $('<span class="password__icon password__eye"></span>');
+    passElem.after(iconElem);
     iconElem.on('click', function () {
         if (passElem.attr('type') === 'password') {
             passElem.attr('type', 'text');
@@ -21,16 +20,19 @@ function togglePassIcon() {
 }
 
 /**
- * 
  * jPostal呼び出し
- * 
+ * @param obj obj{
+ *      zip: string,
+ *      pref: string,
+ *      city: string,
+ *      address: string,
+ * }    郵便番号，都道府県，市区町村，それ以外の要素ID
  */
-
-function setJpostal() {
+function setJpostal(obj) {
     $(window).on('load', function () {
-        $('#zip').jpostal({
-            postcode: ['#zip'],
-            address: { '#pref': '%3', "#city": '%4', '#address': '%5' }
+        $(`#${obj.zip}`).jpostal({
+            postcode: [`#${obj.zip}`],
+            address: { [`#${obj.pref}`]: '%3', [`#${obj.city}`]: '%4', [`#${obj.address}`]: '%5' }
         });
     });
 }
@@ -38,7 +40,11 @@ function setJpostal() {
 /**
  * セレクトボックスで日付を選択
  * 連結された日付を入力するinput要素をhiddenで設置する
- * @param obj object　年月日と日付のid
+ * @param obj object{
+ *      yearId: string,
+ *      monthId: string,
+ *      dayId: string,
+ *      dateId: string}　年月日と日付のid
  */
 function setDate(obj) {
 
@@ -176,11 +182,9 @@ function setActArea(obj) {
 }
 
 /**
- * 
  * 残り文字数カウンター
- * 
+ * @param obj obj{textArea: string, count: string} textareaとカウンタを表示する要素のID
  */
-
 function setCounter(obj) {
     const maxLength = 200;  //最大文字数
     const textElem = $(`#${obj.textArea}`);
