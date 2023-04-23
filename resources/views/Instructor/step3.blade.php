@@ -44,8 +44,8 @@
           <div class="edit__item">
             <label for="pr" class="edit__label">自己紹介</label>
             <div>
-              <textarea name="pr" class="pr_content" id="pr_content" cols="50" rows="10">{{ old('pr_content', $objData->pr) }}</textarea>
-              <p class="edit__prCount" id="pr_count"></p>
+              <textarea name="pr" class="pr__content" id="pr__content" cols="50" rows="10">{{ old('pr_content', $objData->pr) }}</textarea>
+              <p class="edit__prCount" id="pr__count"></p>
             </div>
           </div>
       </div>
@@ -66,5 +66,8 @@
     'prefs': <?php echo $jsonPrefs; ?>,
     'cities': <?php echo $jsonCities; ?>
   });
-  setPrCharsLimit();
+  setCounter({
+    textArea: 'pr__content',
+    count: 'pr__count',
+  });
 </script>

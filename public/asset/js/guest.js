@@ -5,20 +5,18 @@
  */
 
 function togglePassIcon() {
-    $(window).on('load', function () {
-        const passElem = $('#password');
-        const iconElem = $('#password__icon');
-        iconElem.on('click', function () {
-            if (passElem.attr('type') === 'password') {
-                passElem.attr('type', 'text');
-                iconElem.removeClass('password__eye');
-                iconElem.addClass('password__eye-slash');
-            } else {
-                passElem.attr('type', 'password');
-                iconElem.removeClass('password__eye-slash');
-                iconElem.addClass('password__eye');
-            }
-        });
+    const passElem = $('#password');
+    const iconElem = $('#password__icon');
+    iconElem.on('click', function () {
+        if (passElem.attr('type') === 'password') {
+            passElem.attr('type', 'text');
+            iconElem.removeClass('password__eye');
+            iconElem.addClass('password__eye-slash');
+        } else {
+            passElem.attr('type', 'password');
+            iconElem.removeClass('password__eye-slash');
+            iconElem.addClass('password__eye');
+        }
     });
 }
 
@@ -40,44 +38,34 @@ function setJpostal() {
 /**
  * セレクトボックスで日付を選択
  * 連結された日付を入力するinput要素をhiddenで設置する
- * 
  * @param obj object　年月日と日付のid
- * 例
- * obj = {
- *   yearId: 'yearId',
- *   monthId: 'monthId',
- *   dayId: 'dayId',
- *   dateId: 'dateId',
- * }
  */
-
 function setDate(obj) {
 
-    const now = new Date();         //現在の日付を初期値とする
-    const inputDate = new Date($(`#${obj.date}`).val());
-    const inputYear = inputDate.getFullYear();
-    const inputMonth = inputDate.getMonth() + 1;
-    const inputDay = inputDate.getDate();
-    const date = new Date(inputYear, inputMonth, 0);
     const yearElem = $(`#${obj.yearId}`);
     const monthElem = $(`#${obj.monthId}`);
-    const dayElem =$(`#${obj.dayId}`);
     const yearMonthElem = $(`#${obj.yearId},#${obj.monthId}`);
-    const dateElem = $(`#${obj.dateId}`);
+    const dayElem = $(`#${obj.dayId}`);
+    const inputElem = $(`#${obj.dateId}`);
+    const date = inputElem.val() ? new Date(inputElem.val()) : new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const endOfMonth = new Date(year, month, 0);
 
-    for (let i = now.getFullYear(); i >= 1940; i--) {
+    for (let i = endOfMonth.getFullYear(); i >= 1940; i--) {
         const elem = $(`<option value="${i}">${i}</option>`).appendTo(yearElem);
-        if (i === inputYear) elem.prop('selected', true);
+        if (i === year) elem.prop("selected", true);
     }
 
     for (let i = 1; i <= 12; i++) {
         const elem = $(`<option value="${i}">${i}</option>`).appendTo(monthElem);
-        if (i === inputMonth) elem.prop('selected', true);
+        if (i === month) elem.prop("selected", true);
     }
 
-    for (let i = 1; i <= date.getDate(); i++) {
+    for (let i = 1; i <= endOfMonth.getDate(); i++) {
         const elem = $(`<option value="${i}">${i}</option>`).appendTo(dayElem);
-        if (i === inputDay) elem.prop('selected', true);
+        if (i === day) elem.prop("selected", true);
     }
 
     yearMonthElem.on("change", function () {
@@ -90,12 +78,12 @@ function setDate(obj) {
         for (let i = 1; i <= endOfMonth.getDate(); i++) {
             dayElem.append(`<option value="${i}">${i}</option>`);
         }
-        dateElem.val(`${year}-${month}-${day}`);
+        inputElem.val(`${year}-${month}-${day}`);
     });
 
     dayElem.on("change", () => {
         const date = `${yearElem.val()}-${monthElem.val()}-${dayElem.val()}`;
-        dateElem.val(date);
+        inputElem.val(date);
     });
 }
 
@@ -189,34 +177,33 @@ function setActArea(obj) {
 
 /**
  * 
- * 指導員ユーザー登録PR文字数カウンター
+ * 残り文字数カウンター
  * 
  */
 
-function setPrCharsLimit() {
-    const maxLength = 200;
-    const pr_content = $('#pr_content');
-    const pr_count = $('#pr_count');
-
+function setCounter(obj) {
+    const maxLength = 200;  //最大文字数
+    const textElem = $(`#${obj.textArea}`);
+    const countElem = $(`#${obj.count}`);
     $(window).on('load', function () {
-        pr_count.text(`あと${maxLength}文字`);
+        countElem.text(`あと${maxLength}文字`);
     });
 
-    pr_content.on('input', function () {
-        const text = pr_content.val().replace(/(\r\n|\n|\r)/gm, "");
+    textElem.on('input', function () {
+        const text = textElem.val().replace(/(\r\n|\n|\r)/gm, "");
         if (text.length >= maxLength) {
-            pr_content.attr('readonly', true);
+            textElem.attr('readonly', true);
         } else {
-            pr_content.removeAttr('readonly');
+            textElem.removeAttr('readonly');
         }
         const len = maxLength - text.length;
-        pr_count.text(`あと${len}文字`);
+        countElem.text(`あと${len}文字`);
     });
 
-    pr_content.on('keydown', function (e) {
-        if (pr_content.attr('readonly')) {
+    textElem.on('keydown', function (e) {
+        if (textElem.attr('readonly')) {
             if (e.keyCode === 8 || e.keyCode === 46) {
-                pr_content.removeAttr('readonly');
+                textElem.removeAttr('readonly');
             }
         }
     });

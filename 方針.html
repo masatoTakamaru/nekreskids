@@ -364,60 +364,119 @@ function setJpostal() {
 </code></pre>
 <h3>年月日をセレクトボックスで入力する</h3>
 blade
+<pre><code class="language-php">
+&lt;div&gt;
+  &lt;select id=&quot;date1&quot;&gt;&lt;/select&gt;
+  &lt;select id=&quot;date2&quot;&gt;&lt;/select&gt;
+  &lt;select id=&quot;date3&quot;&gt;&lt;/select&gt;
+  &lt;input type=&quot;hidden&quot; name=&quot;date&quot; id=&quot;date&quot; value=&quot;&quot;&gt;
+&lt;/div&gt;
+&lt;script&gt;
+setDate({
+  yearId: &quot;date1&quot;,
+  monthId: &quot;date2&quot;,
+  dayId: &quot;date3&quot;,
+  dateId: &quot;date&quot;
+});
+&lt;/script&gt;
+</code></pre>
+JavaScript
+<pre><code class="language-javascript">
+  /**
+  * セレクトボックスで日付を選択
+  * 連結された日付を入力するinput要素をhiddenで設置する
+  * @param obj object　年月日と日付のid
+  */
+ function setDate(obj) {
+ 
+     const yearElem = $(`#${obj.yearId}`);
+     const monthElem = $(`#${obj.monthId}`);
+     const yearMonthElem = $(`#${obj.yearId},#${obj.monthId}`);
+     const dayElem = $(`#${obj.dayId}`);
+     const inputElem = $(`#${obj.dateId}`);
+     const date = inputElem.val() ? new Date(inputElem.val()) : new Date();
+     const year = date.getFullYear();
+     const month = date.getMonth() + 1;
+     const day = date.getDate();
+     const endOfMonth = new Date(year, month, 0);
+ 
+     for (let i = endOfMonth.getFullYear(); i &gt;= 1940; i--) {
+         const elem = $(`&lt;option value=&quot;${i}&quot;&gt;${i}&lt;/option&gt;`).appendTo(yearElem);
+         if (i === year) elem.prop(&quot;selected&quot;, true);
+     }
+ 
+     for (let i = 1; i &lt;= 12; i++) {
+         const elem = $(`&lt;option value=&quot;${i}&quot;&gt;${i}&lt;/option&gt;`).appendTo(monthElem);
+         if (i === month) elem.prop(&quot;selected&quot;, true);
+     }
+ 
+     for (let i = 1; i &lt;= endOfMonth.getDate(); i++) {
+         const elem = $(`&lt;option value=&quot;${i}&quot;&gt;${i}&lt;/option&gt;`).appendTo(dayElem);
+         if (i === day) elem.prop(&quot;selected&quot;, true);
+     }
+ 
+     yearMonthElem.on(&quot;change&quot;, function () {
+         const beginOfMonth = new Date(yearElem.val(), monthElem.val() - 1, 1);
+         const endOfMonth = new Date(yearElem.val(), monthElem.val(), 0);
+         const year = beginOfMonth.getFullYear();
+         const month = beginOfMonth.getMonth() + 1;
+         const day = beginOfMonth.getDate();
+         dayElem.empty();
+         for (let i = 1; i &lt;= endOfMonth.getDate(); i++) {
+             dayElem.append(`&lt;option value=&quot;${i}&quot;&gt;${i}&lt;/option&gt;`);
+         }
+         inputElem.val(`${year}-${month}-${day}`);
+     });
+ 
+     dayElem.on(&quot;change&quot;, () =&gt; {
+         const date = `${yearElem.val()}-${monthElem.val()}-${dayElem.val()}`;
+         inputElem.val(date);
+     });
+ }
+ </code></pre>
+<h3>残り文字数カウンター</h3>
+blade
+<pre><code class="language-markup">
+&lt;div&gt;
+  &lt;textarea name=&quot;content&quot; id=&quot;content&quot; cols=&quot;50&quot; rows=&quot;10&quot;&gt;&lt;/textarea&gt;
+  &lt;p id=&quot;count&quot;&gt;&lt;/p&gt;
+&lt;/div&gt;
+</code></pre>
+JavaScript
 <pre><code class="language-javascript">
 /**
-* 
-* セレクトボックスで日付を選択
-* 
-*/
-  
-function setBirthday() {
-    $(window).on(&quot;load&quot;, function () {
-        const now = new Date();         //現在の日付を初期値とする
-        const year = now.getFullYear();
-        const birthDate = new Date($(&quot;#birth&quot;).val());
-        const birth1 = birthDate.getFullYear();
-        const birth2 = birthDate.getMonth() + 1;
-        const birth3 = birthDate.getDate();
-        const date = new Date(birth1, birth2, 0);
+ * 
+ * 残り文字数カウンター
+ * 
+ */
 
-        for (let i = year; i &gt;= 1940; i--) {
-            const elem = $(`&lt;option value=&quot;${i}&quot;&gt;${i}&lt;/option&gt;`).appendTo(&quot;#birth1&quot;);
-            if (i === birth1) elem.prop(&#039;selected&#039;, true);
-        }
-
-        for (let i = 1; i &lt;= 12; i++) {
-            const elem = $(`&lt;option value=&quot;${i}&quot;&gt;${i}&lt;/option&gt;`).appendTo(&quot;#birth2&quot;);
-            if (i === birth2) elem.prop(&#039;selected&#039;, true);
-        }
-
-        for (let i = 1; i &lt;= date.getDate(); i++) {
-            const elem = $(`&lt;option value=&quot;${i}&quot;&gt;${i}&lt;/option&gt;`).appendTo(&quot;#birth3&quot;);
-            if (i === birth3) elem.prop(&#039;selected&#039;, true);
-        }
+function setCounter(obj) {
+    const maxLength = 200;  //最大文字数
+    const textElem = $(`#${obj.textArea}`);
+    const countElem = $(`#${obj.count}`);
+    $(window).on(&#039;load&#039;, function () {
+        countElem.text(`あと${maxLength}文字`);
     });
 
-    $(&quot;#birth1,#birth2&quot;).on(&quot;change&quot;, function () {
-        const beginOfMonth = new Date($(&quot;#birth1&quot;).val(), $(&quot;#birth2&quot;).val() - 1, 1);
-        const endOfMonth = new Date($(&quot;#birth1&quot;).val(), $(&quot;#birth2&quot;).val(), 0);
-        const year = beginOfMonth.getFullYear();
-        const month = beginOfMonth.getMonth() + 1;
-        const day = beginOfMonth.getDate();
-        $(&quot;#birth3&quot;).empty();
-        for (let i = 1; i &lt;= endOfMonth.getDate(); i++) {
-            $(&quot;#birth3&quot;).append(`&lt;option value=&quot;${i}&quot;&gt;${i}&lt;/option&gt;`);
+    textElem.on(&#039;input&#039;, function () {
+        const text = textElem.val().replace(/(\r\n|\n|\r)/gm, &quot;&quot;);
+        if (text.length &gt;= maxLength) {
+            textElem.attr(&#039;readonly&#039;, true);
+        } else {
+            textElem.removeAttr(&#039;readonly&#039;);
         }
-        $(&quot;#birth&quot;).val(`${year}-${month}-${day}`);
+        const len = maxLength - text.length;
+        countElem.text(`あと${len}文字`);
     });
 
-    $(&quot;#birth3&quot;).on(&quot;change&quot;, () =&gt; {
-        const date = `${$(&quot;#birth1&quot;).val()}-${$(&quot;#birth2&quot;).val()}-${$(&quot;#birth3&quot;).val()}`;
-        $(&quot;#birth&quot;).val(date);
+    textElem.on(&#039;keydown&#039;, function (e) {
+        if (textElem.attr(&#039;readonly&#039;)) {
+            if (e.keyCode === 8 || e.keyCode === 46) {
+                textElem.removeAttr(&#039;readonly&#039;);
+            }
+        }
     });
 }
-</code></pre>
-<h3>項目タイトル</h3>
-<pre><code class="language-php">
 </code></pre>
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
