@@ -7,7 +7,7 @@
       </header>
       <div>
         @if(!empty($objData))
-        <form action="/instructor/step1" method="post" enctype="multipart/form-data">
+        <form action="/instructor/step1" method="post">
           @csrf
           <div>
             <label for="email" class="editLabel">メールアドレス</label>
