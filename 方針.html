@@ -619,9 +619,31 @@ class UserEntryController extends Controller
     }
 }
 </code></pre>
+
 <!----------------------------- 見出し ----------------------------->
 <h3>アップロード画像等はstorageに保存</h3>
 アップロードされた画像などは<code>storage\app</code>配下に<code>image</code>などのディレクトリを作り，そこに保存する。ただし，storageは<code>public</code>ディレクトリにシンボリックリンクが貼られた状態でなければ機能しないので注意が必要。詳細は<a href="https://readouble.com/laravel/10.x/ja/filesystem.html" target="_blank">公式</a>を参照。
+
+<!----------------------------- 見出し ----------------------------->
+<h3>CRUD操作について</h3>
+基本的に以下の4つのメソッドで構成する。
+<ul>
+  <li><code>index</code> テーブルに保存されたレコードの一覧を表示する。</li>
+  <ul>
+    <li>各レコードをクリックすると詳細画面に遷移する。</li>
+    <li>新規作成ボタンを設置する。</li>
+    <li>複数キーワード対応の絞り込み検索窓を設置する。</li>
+  </ul>
+  <li><code>detail</code> レコードの<code>id</code>に基づいて、レコードの詳細を表示する。</li>
+  <ul>
+    <li>編集ボタンを設置する。</li>
+    <li>削除ボタンを設置する。</li>
+    <li>プレビュー表示が必要な場合はここに設置する。</li>
+  </ul>
+</ul>
+
+<pre><code class="language-php">
+</code></pre>
 <!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
@@ -666,6 +688,20 @@ fillableの便利な点は，引数の連想配列にテーブルに関係ない
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+
+
 </section>
 
 <!--------------------------- セクションここまで --------------------------->
