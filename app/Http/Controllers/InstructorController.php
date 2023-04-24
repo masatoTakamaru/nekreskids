@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use App\Consts\RecruitConst;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InstructorStep1Request;
@@ -203,7 +201,8 @@ class InstructorController extends Controller
 
         //getの場合
         $jsonData = $request->session()->get('jsonData');
-        $this->newEntry($jsonData, 'public');
+        $objData = $this->model;
+        $objData->newEntry($jsonData, 'public');
 
         return view('Instructor.complete');
     }
@@ -215,7 +214,8 @@ class InstructorController extends Controller
 
         //getの場合
         $jsonData = $request->session()->get('jsonData');
-        $this->newEntry($jsonData, 'draft');
+        $objData = $this->model;
+        $objData->newEntry($jsonData, 'draft');
 
         return view('school.draft-complete');
     }
