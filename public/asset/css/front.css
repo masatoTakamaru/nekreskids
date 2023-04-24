@@ -111,7 +111,7 @@ body {
   width: 480px;
 }
 
-#password__icon {
+.password__icon {
   height: 18px;
   width: 18px;
   margin-top: 3px;
@@ -121,7 +121,6 @@ body {
   transition: all 0.3s ease;
   background-repeat: no-repeat;
 }
-
 .password__eye {
   background-image: url(image/eye-solid.svg);
 }

@@ -7,7 +7,7 @@
       </header>
       <div>
         @if(!empty($objData))
-        <form action="/instructor/step1" method="post" enctype="multipart/form-data">
+        <form action="/instructor/step1" method="post">
           @csrf
           <div>
             <label for="email" class="editLabel">メールアドレス</label>
@@ -17,7 +17,6 @@
           <div class="edit__item">
             <label for="password" class="edit__label">パスワード</label>
             <input type="password" name="password" id="password" class="edit__input" value="{{ old('password', $objData->password) }}">
-            <div id="password__icon" class="password__eye"></div>
             @error('password') <p class="alert">{{ $message }}</p> @enderror
           </div>
           <div>
@@ -67,7 +66,7 @@
 </x-guest-layout>
 <script src="/asset/js/sendResizedImg.js"></script>
 <script>
-  togglePassIcon();
+  togglePassIcon('password');
   setDate({
     yearId: 'birth1',
     monthId: 'birth2',

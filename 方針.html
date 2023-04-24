@@ -21,17 +21,16 @@
   <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
 </head>
 <style>
-main{margin:15px;}ul>ul{margin-left:-1rem;}h2{font-size:24px;margin:35px 0;}h3{font-size:20px;margin: 35px 0;}:target::before{content:"";display:block;height:4rem;margin:-4rem 0 0;}
+main{margin:15px;}nav{position:fixed;width:300px;top:0;bottom:0;left:0;overflow-y:auto;}article{margin-left:300px;}ul>ul{margin-left:-1rem;}h2{font-size:24px;margin:35px 0;}h3{font-size:20px;margin: 35px 0;}:target::before{content:"";display:block;height:4rem;margin:-4rem 0 0;}
 </style>
 <body>
-<main class="container-fluid d-flex flex-row w-100">
-<nav id="sidebar" class="col-3 bg-light"></nav>
-<article class="col-9">
-
+<main class="container-fluid w-100">
+<nav id="sidebar" class="bg-light p-3"></nav>
+<article class="p-3">
+<!----------------------------- セクション開始 ----------------------------->
 <section>
 <h2>変数・配列・オブジェクト</h2>
-
-
+<!----------------------------- 見出し ----------------------------->
 <h3>配列はすべて連想配列とする</h3>
 特別な事情がない限り、配列は何らかのキーを持つことで統一する。キーに特別な意味を持たせない場合は、番号を振っておく。
 <pre><code class="language-php">
@@ -49,8 +48,7 @@ $arrSome = [
     3 => 'value3',
 ];
 </code></pre>
-
-
+<!----------------------------- 見出し ----------------------------->
 <h3>単一のフィールドに複数のデータを保存する場合はjson文字列を用いる</h3>
 データが単純な場合はスラッシュ区切りでも良いけど、基本的にデータは連想配列として扱い、キーを必要とするので、json文字列に統一しておいた方が良い。
 <pre><code class="language-php">
@@ -59,22 +57,21 @@ $fieldData = json_encode($arrSome);
 //抽出するとき
 $arrSome = json_decode($fieldData, true);          
 </code></pre>
-
+<!----------------------------- 見出し ----------------------------->
 <h3>コントローラーのメソッド内で扱うデータの変数名</h3>
-データが連想配列なら $arrData、オブジェクト型なら $objData、json文字列なら $jsonData とする。SQLで抽出したデータはオブジェクト型だから $objData に格納する。基本的には $objData を使う。
-
-
+データが連想配列なら<code>$arrData</code>、オブジェクト型なら<code>$objData</code>、json文字列なら<code>$jsonData</code>とする。SQLで抽出したデータはオブジェクト型だから<code>$objData</code>に格納する。
+<!----------------------------- 見出し ----------------------------->
 <h3>コンストラクタでモデルを定義する</h3>
-コントローラー内のコンストラクタでモデルを定義する。
+コントローラーにおいて，基本的にメソッド内でモデルのインスタンスを行わなず，コンストラクタでモデルを定義する。モデルにあらかじめ用意されている項目だけでは足りずに追加することも多いが，個々のメソッド内でそれをやると混乱の元になるのでコンストラクタに記述し，クラス全体で共通するものとして設定しておく。
 <pre><code class="language-php">
 private $model = null;
-private $fillableExt = [];  //メソッド間の受け渡し項目
+private $fillableExt = [];  //fillableの項目を拡張したもの，fillableExtendedの略
 
 public function __construct()
 {
     $this->model = new User();
     $this->fillableExt = array_merge($this->model->getFillable(), [
-        /*-- メソッド間の受け渡し項目を追加する場合はここに記入 --*/
+        /*----------- 項目を追加する場合はここに記入 -----------*/
         'status',
         'role',
         /*--------------------- ここまで ---------------------*/
@@ -87,7 +84,7 @@ public function __construct()
     /*-------------------- ここまで --------------------*/
 }
 </code></pre>
-モデルをインスタンスしただけでは項目自体存在しない状態なので、getFillable()でモデル内に記述されている$fillableを取得し、setAttrs()ですべての項目にnullを設定している。
+モデルをインスタンスしただけでは項目自体存在しない状態なので、<code>getFillable()</code>でモデル内に記述されている<code>$fillable</code>を取得し項目を追加した上で、<code>setAttrs()</code>ですべての項目にいったん<code>null</code>を設定している。
 <pre><code class="language-php">
 //たとえばモデルで以下のように書かれているとき
 protected $fillable = [
@@ -98,25 +95,27 @@ protected $fillable = [
 $this->model = [
     'email' => null,
     'password' => null,
+    'status' => null,
+    'role' => null,
 ];
 </code></pre>
-項目を追加したり、nullではなく初期値を設定したい場合は指定の場所に記述する。コントローラーのメソッド内では$this->modelを呼び出してデータの読み書きをしたり、$this->model->メソッド名()の形でモデルに操作を加えたりする。<br>
+項目を追加したり、<code>null</code>ではなく初期値を設定したい場合は指定の場所に記述する。コントローラーのメソッド内では<code>$this->model</code>を呼び出してデータの読み書きをしたり、<code>$this->model->メソッド名()</code>の形でモデルに操作を加えたりする。<br>
 <pre><code class="language-php">
-//モデルをいったん$objDataに格納する（可読性を確保）
-$objData = $this->model;
+$objData = $this->model;      //モデルをいったん$objDataに格納する（可読性を確保）
+$role = $objData->role;       //データを読み込む場合
+$objData->status = 'public';  //データを書き込む場合
+$items = $this->fillableExt;  //拡張された項目の配列を取得する場合
+$items = $objData->getFillable();   //モデルの$fillableを取得する場合
 
-$role = $objData->role; //データの読み込み
+/*---------- メソッドの実行 ----------*/
+// 以下の例ならモデル側に
+// public function newEntry() { ～ }
+// を記述する
 
-$objData->status = 'public'; //データの書き込み
-
-//メソッドの実行
-//以下の例ならモデル側に
-//public function newEntry() { ～ }
-//を記述する
 $objData->newEntry();
 
 </code></pre>
-ちなみにsetAttrs()は独自のメソッドでモデル内に設置する。
+ちなみに<code>setAttrs()</code>は独自のメソッドでモデル内に設置する。
 <pre><code class="language-php">
 /**
 * モデルのプロパティを連想配列でまとめて格納する
@@ -128,14 +127,77 @@ public function setAttrs($attrs): void
     }
 }
 </code></pre>
-</section>
+コントローラーで複数のモデルが必要なときの書き方は以下。
+<pre><code class="language-php">
+private $model = null;
+private $fillableExt = [];  //fillableに要素を追加したもの
 
+public function __construct()
+{
+    $this->model = new User();
+    $this->fillableExt = array_merge($this->model->getFillable(), [
+        /*-- 項目を追加する場合はここに記入 --*/
+        'status',
+        'role',
+        /*--------------------- ここまで ---------------------*/
+    ]);
+    $this->model->setAttrs(array_fill_keys($this->fillableExt, null));
+
+    /*---------- 初期値を与える場合はここに記入 ----------*/
+    $this->model->status = 'private';
+    $this->model->role = 1;
+    /*-------------------- ここまで --------------------*/
+}  
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>定数</h3>
+定数は<code>app\Consts</code>配下に<code>StatusConst.php</code>のように命名したファイルを置く。
+<pre><code class="language-php">
+&lt;?php
+
+namespace App\Consts;
+
+class StatusConst
+{
+    const STATUS = [
+        'public' => '公開',
+        'unpublic' => '非公開',
+    ];
+}
+</code></pre>
+定数を参照する場合は以下。
+<pre><code class="language-php">
+use App\Consts\StatusConst;
+
+$status_type = StatusConst::STATUS;
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>比較演算子は===を使う</h3>
+コード内に<code>==</code>と<code>===</code>が混在すると分かりにくいので<code>===</code>で統一する。
+比較演算子についてはphpの<a href="https://www.php.net/manual/ja/language.operators.comparison.php" target="_blank">公式</a>を参照。
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+</section>
+<!--------------------------- セクションここまで --------------------------->
+
+<!----------------------------- セクション開始 ----------------------------->
 <section>
 <h2>ルーティング</h2>
 
+<!----------------------------- 見出し ----------------------------->
 <h3>ルーティングについて</h3>
-name()は使わない。従って、アクセスするときもroute()は使わない。ルート相対パスで直指定する。
-アドレスと各コントローラー・メソッドの詳細はweb.php内に書いてある。注意が必要なのは
+<code>name()</code>は使わない。従って、ヘルパーの<code>route()</code>も使わない。ルート相対パスで直接指定する。
+アドレスと各コントローラー・メソッドの詳細は<code>web.php</code>内に書いてある。注意が必要なのは
 <pre><code class="language-php">
 Route::any('/{url}', function () {
 </code></pre>
@@ -151,23 +213,416 @@ public function confirm(Request $request)
     /*  以降の処理  */
 }
 </code></pre>
-上の例ではGETとPOSTを受け入れ、GETの場合セッション値を必須としている。条件を満たさない場合はabort(404)で404エラーページを表示する。
-
-<h3>項目タイトル</h3>
-<pre><code class="language-php">
-</code></pre>
+上の例ではGETとPOSTを受け入れ、GETの場合セッション値を必須としている。条件を満たさない場合は<code>abort(404)</code>で404エラーページを表示する。<br>
+<code>web.php</code>は書き方がやや教科書的でない部分があるが，この書き方ならXAMPP環境下において<code>php artisan serve</code>で動作するし，phpUnitテストやduskが動く。
+<!----------------------------- 見出し ----------------------------->
+<h3>ログイン後のページ遷移先を変更する</h3>
+ログイン処理を行った際に遷移するページの指定は，<code>app\Providers\RouteServiceProvider.php</code>に記述されている<code>public const HOME = '/dashboard';</code>の部分。例えば，ログイン後に<code>admin/dashboard</code>に移動したいなら，<code>public const HOME = '/admin/dashboard';</code>とすれば良い。
+<!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
 </section>
-  
+
+<!--------------------------- セクションここまで --------------------------->
+
+<!----------------------------- セクション開始 ----------------------------->
+
 <section>
 <h2>コントローラー</h2>
+<!----------------------------- 見出し ----------------------------->
 <h3>同じページにPOSTする</h3>
-例えばcreate→confirm→completeの流れがあるとき、create(GET) → create(POST) → confirm(GET) → confirm(POST) → complete(GET)という流れで進行していく。POSTからGETに移動するときはview()ではなくredirect()を使う。同時にwith()を使うとセッション値を渡せるので便利。
-<h3>項目タイトル</h3>
-<pre><code class="language-php">
+例えばcreate→confirm→completeの流れがあるとき、create(GET) → create(POST) → confirm(GET) → confirm(POST) → complete(GET)という流れで進行していく。POSTからGETに移動するときは<code>view()</code>ではなく<code>redirect()</code>を使う。同時に<code>with()</code>を使うとセッション値を渡せるので便利。<br>
+以下では入力画面が3つに分かれている場合のユーザー登録の例を記載している。下書き保存機能を含む。入力画面が1つの場合はstep2/3の部分を削るだけで動く。<br>
+step1
+<pre><code class="language-markup">
+&lt;x-guest-layout&gt;
+  &lt;article class=&quot;contents&quot;&gt;
+    &lt;div class=&quot;contentsInner&quot;&gt;
+      &lt;header&gt;
+        &lt;h2&gt;ユーザー登録&lt;/h2&gt;
+        &lt;h3&gt;ステップ1&lt;/h3&gt;
+      &lt;/header&gt;
+      &lt;div&gt;
+        @if(!empty($objData))
+        &lt;form action=&quot;/userEntry/step1&quot; method=&quot;post&quot;&gt;
+          @csrf
+          &lt;div&gt;
+            &lt;label for=&quot;email&quot; class=&quot;edit__label&quot;&gt;メールアドレス&lt;/label&gt;
+            &lt;input type=&quot;text&quot; name=&quot;email&quot; id=&quot;email&quot; class=&quot;edit__input&quot; value=&quot;{{ old(&#039;email&#039;, $objData-&gt;email) }}&quot;&gt;
+            @error(&#039;email&#039;) &lt;p class=&quot;alert&quot;&gt;{{ $message }}&lt;/p&gt; @enderror
+          &lt;/div&gt;
+          &lt;div&gt;
+            &lt;button type=&quot;submit&quot; name=&quot;action&quot; class=&quot;&quot; value=&quot;draft&quot;&gt;下書き保存&lt;/button&gt;
+            &lt;button type=&quot;submit&quot; name=&quot;transit&quot; class=&quot;editSubmit&quot; value=&quot;step2&quot;&gt;次に進む&lt;/button&gt;
+          &lt;/div&gt;
+          &lt;input type=&quot;hidden&quot; name=&quot;jsonData&quot; value=&quot;{{ old(&#039;jsonData&#039;, $jsonData) }}&quot;&gt;
+        &lt;/form&gt;
+        @endif
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/article&gt;
+&lt;/x-guest-layout&gt;
 </code></pre>
+step2
+<pre><code class="language-markup">
+&lt;x-guest-layout&gt;
+  &lt;article class=&quot;&quot;&gt;
+    &lt;div class=&quot;&quot;&gt;
+      &lt;header&gt;
+        &lt;h2&gt;ユーザー登録&lt;/h2&gt;
+        &lt;h3&gt;ステップ2&lt;/h3&gt;
+      &lt;/header&gt;
+      &lt;div&gt;
+        &lt;form action=&quot;/userEntry/step2&quot; method=&quot;post&quot;&gt;
+          @csrf
+          &lt;div&gt;
+            &lt;label for=&quot;name&quot; class=&quot;edit__label&quot;&gt;氏名&lt;/label&gt;
+            &lt;input type=&quot;text&quot; name=&quot;name&quot; class=&quot;edit__input&quot; value=&quot;{{ old(&#039;name&#039;, $objData-&gt;name) }}&quot;&gt;
+            @error(&#039;name&#039;) &lt;p class=&quot;alert&quot;&gt;{{ $message }}&lt;/p&gt; @enderror
+          &lt;/div&gt;
+          &lt;div&gt;
+            &lt;button type=&quot;submit&quot; name=&quot;action&quot; class=&quot;&quot; value=&quot;draft&quot;&gt;下書き保存&lt;/button&gt;
+            &lt;button type=&quot;submit&quot; name=&quot;transit&quot; class=&quot;&quot; value=&quot;step1&quot;&gt;前に戻る&lt;/button&gt;
+            &lt;button type=&quot;submit&quot; name=&quot;transit&quot; class=&quot;&quot; value=&quot;step3&quot;&gt;次に進む&lt;/button&gt;
+          &lt;/div&gt;
+          &lt;input type=&quot;hidden&quot; name=&quot;jsonData&quot; value=&quot;{{ old(&#039;jsonData&#039;, $jsonData) }}&quot;&gt;
+        &lt;/form&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/article&gt;
+&lt;/x-guest-layout&gt;
+</code></pre>
+step3
+<pre><code class="language-markup">
+&lt;x-guest-layout&gt;
+  &lt;article class=&quot;&quot;&gt;
+    &lt;div class=&quot;&quot;&gt;
+      &lt;header&gt;
+        &lt;h2&gt;ユーザー登録&lt;/h2&gt;
+        &lt;h3&gt;ステップ3&lt;/h3&gt;
+      &lt;/header&gt;
+      &lt;div&gt;
+        &lt;form action=&quot;/userEntry/step3&quot; method=&quot;post&quot;&gt;
+          @csrf
+          &lt;div&gt;
+            &lt;label for=&quot;address&quot; class=&quot;edit__label&quot;&gt;住所&lt;/label&gt;
+            &lt;input type=&quot;text&quot; name=&quot;address&quot; id=&quot;address&quot; class=&quot;edit__input&quot; placeholder=&quot;東京都新宿区西新宿２－８－１&quot;
+              value=&quot;{{ old(&#039;address&#039;, $objData-&gt;address)}}&quot;&gt;
+            @error(&#039;address&#039;) &lt;p class=&quot;alert&quot;&gt;{{ $message }}&lt;/p&gt; @enderror
+          &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div&gt;
+        &lt;button type=&quot;submit&quot; name=&quot;action&quot; class=&quot;&quot; value=&quot;draft&quot;&gt;下書き保存&lt;/button&gt;
+        &lt;button type=&quot;submit&quot; name=&quot;transit&quot; class=&quot;&quot; value=&quot;step2&quot;&gt;前に戻る&lt;/button&gt;
+        &lt;button type=&quot;submit&quot; name=&quot;transit&quot; class=&quot;&quot; value=&quot;confirm&quot;&gt;確認画面へ&lt;/button&gt;
+      &lt;/div&gt;
+      &lt;input type=&quot;hidden&quot; name=&quot;jsonData&quot; value=&quot;{{ old(&#039;jsonData&#039;, $jsonData) }}&quot;&gt;
+      &lt;/form&gt;
+    &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/article&gt;
+&lt;/x-guest-layout&gt;  
+</code></pre>
+confirm
+<pre><code class="language-markup">
+&lt;x-guest-layout&gt;
+  &lt;article class=&quot;&quot;&gt;
+    &lt;div class=&quot;&quot;&gt;
+      &lt;header&gt;
+        &lt;h2&gt;ユーザー登録情報の確認&lt;/h2&gt;
+      &lt;/header&gt;
+      &lt;div&gt;
+        &lt;div class=&quot;detail__item&quot;&gt;
+          &lt;span class=&quot;&quot;&gt;メールアドレス&lt;/span&gt;
+          &lt;span class=&quot;&quot;&gt;{{ $objData-&gt;email }}&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;detail__item&quot;&gt;
+          &lt;span class=&quot;&quot;&gt;氏名&lt;/span&gt;
+          &lt;span class=&quot;&quot;&gt;{{ $objData-&gt;name }}&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;detail__item&quot;&gt;
+          &lt;span class=&quot;&quot;&gt;住所&lt;/span&gt;
+          &lt;span class=&quot;&quot;&gt;{{ $objData-&gt;address }}&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;form action=&quot;/userEntry/confirm&quot; method=&quot;post&quot;&gt;
+          @csrf
+          &lt;div&gt;
+            &lt;button type=&quot;submit&quot; name=&quot;action&quot; class=&quot;&quot; value=&quot;draft&quot;&gt;下書き保存&lt;/button&gt;
+            &lt;button type=&quot;submit&quot; name=&quot;transit&quot; class=&quot;&quot; value=&quot;step3&quot;&gt;前に戻る&lt;/button&gt;
+            &lt;button type=&quot;submit&quot; name=&quot;transit&quot; class=&quot;&quot; value=&quot;complete&quot;&gt;登録する&lt;/button&gt;
+          &lt;/div&gt;   
+          &lt;input type=&quot;hidden&quot; name=&quot;jsonData&quot; value=&quot;{{ old(&#039;jsonData&#039;, $jsonData) }}&quot;&gt;
+        &lt;/form&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/article&gt;
+&lt;/x-guest-layout&gt;
+</code></pre>
+complete
+<pre><code class="language-markup">
+&lt;x-guest-layout&gt;
+  &lt;article class=&quot;&quot;&gt;
+    &lt;div class=&quot;&quot;&gt;
+      &lt;header&gt;
+        &lt;h2&gt;ユーザー登録が完了しました&lt;/h2&gt;
+      &lt;/header&gt;
+      &lt;div&gt;
+        &lt;a href=&quot;/&quot;&gt;トップページ&lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/article&gt;
+&lt;/x-guest-layout&gt;
+</code></pre>
+draft-complete
+<pre><code class="language-markup">
+&lt;x-guest-layout&gt;
+  &lt;article class=&quot;&quot;&gt;
+    &lt;div class=&quot;&quot;&gt;
+      &lt;header&gt;
+        &lt;h2&gt;下書き保存しました&lt;/h2&gt;
+      &lt;/header&gt;
+      &lt;div&gt;
+        &lt;a href=&quot;/&quot;&gt;トップページ&lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/article&gt;
+&lt;/x-guest-layout&gt;
+</code></pre>
+コントローラー
+<pre><code class="language-php">
+class UserEntryController extends Controller
+{
+    private $model = null;
+    private $fillableExt = [];
+
+    public function __construct()
+    {
+        $this->model = new User();
+        $this->fillableExt = array_merge($this->model->getFillable(), [
+            /*----------- 項目を追加する場合はここに記入 -----------*/
+            'name',
+            'address',
+            /*--------------------- ここまで ---------------------*/
+        ]);
+        $this->model->setAttrs(array_fill_keys($this->fillableExt, null));
+
+        /*---------- 初期値を与える場合はここに記入 ----------*/
+        /*-------------------- ここまで --------------------*/
+    }
+
+    public function step1(Request $request)
+    {
+        //メソッドを確認してGETとPOST以外は404エラーページに遷移させる
+        if (!$request->isMethod('get') && !$request->isMethod('post')) abort(404);
+
+        /*---------- postの場合 ----------*/
+        if ($request->isMethod('post')) {
+            //jsonDataにはstep1～step3の全項目のデータが入っている
+            //json_decode()で連想配列に変換する
+            $arrData = json_decode($request->jsonData, true);
+            //step1で入力されたデータとstep2/3で入力されたデータをマージしてjson文字列に変換
+            $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
+
+            /*---------- 下書き保存 ----------*/
+            if ($request->has('action') && $request->action === 'draft') {
+                //post→getの遷移はredirect()で行い，with()でセッション値を送る
+                return redirect('/userEntry/draft-complete')->with('jsonData', $jsonData);
+            }
+
+            /*---------- ページ遷移 ----------*/
+            if ($request->has('transit')) {
+                //transitには遷移先のurlが格納されている。こちらも同様にwith()でセッション値を送る
+                return redirect('/userEntry/' . $request->transit)->with('jsonData', $jsonData);
+            }
+        }
+
+        /*---------- getの場合 ----------*/
+        //コンストラクタで設定したmodelを格納する
+        $objData = $this->model;
+        //初期状態のデータをjson文字列に変換
+        $jsonData = json_encode($objData);
+
+        /*---------- セッションが存在する場合セッション値を反映 ----------*/
+        //step2で「前に戻る」をクリックして遷移してきた場合はセッション値を持っている
+        //それ以外の画面から遷移してきた場合はセッション値は存在しない
+        if ($request->session()->has('jsonData')) {
+            //セッション値を取得
+            //このデータはビュー側の隠しフィールドに格納する。そして，
+            //ビュー側でsubmitした時に，上の「postの場合」の箇所で再度
+            //受け取ることになる
+            $jsonData = $request->session()->get('jsonData');
+            //json文字列を連想配列に変換して，オブジェクトに書き込む
+            //このデータはビューで表示するために利用する
+            $objData->setAttrs(json_decode($jsonData, true));
+        }
+
+        //この時点で，セッションが存在しなければ$objDataは初期状態であり，
+        //セッションが存在していればセッション値の内容を反映したデータになっている
+
+        /*---------- 表示用データを加工する場合はここ ----------*/
+        /*----------------- ここまで -------------------------*/
+
+        return view('userEntry.step1', [
+            'objData' => $objData,
+            'jsonData' => $jsonData,
+        ]);
+    }
+
+    public function step2(Request $request)
+    {
+        //step2/3は基本的にstep1と同じ構造をしている
+        if (!$request->isMethod('get') && !$request->isMethod('post')) abort(404);
+
+        if ($request->isMethod('post')) {
+            $arrData = json_decode($request->jsonData, true);
+            $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
+
+            /*---------- 下書き保存 ----------*/
+            if ($request->has('action') && $request->action === 'draft') {
+                return redirect('/userEntry/draft-complete')->with('jsonData', $jsonData);
+            }
+
+            /*---------- ページ遷移 ----------*/
+            if ($request->has('transit')) {
+                return redirect('/userEntry/' . $request->transit)->with('jsonData', $jsonData);
+            }
+        }
+
+        /*---------- getの場合 ----------*/
+        $objData = $this->model;
+        $jsonData = json_encode($objData);
+
+        /*---------- セッションが存在する場合セッション値を反映 ----------*/
+        if ($request->session()->has('jsonData')) {
+            $jsonData = $request->session()->get('jsonData');
+            $objData->setAttrs(json_decode($jsonData, true));
+        }
+
+        /*---------- 表示用データを加工する場合はここ ----------*/
+        /*----------------- ここまで -------------------------*/
+
+        return view('userEntry.step2', [
+            'objData' => $objData,
+            'jsonData' => $jsonData,
+        ]);
+    }
+
+    public function step3(Request $request)
+    {
+        if (!$request->isMethod('get') && !$request->isMethod('post')) abort(404);
+
+        if ($request->isMethod('post')) {
+          $arrData = json_decode($request->jsonData, true);
+          $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
+
+          /*---------- 下書き保存 ----------*/
+          if ($request->has('action') && $request->action === 'draft') {
+              return redirect('/userEntry/draft-complete')->with('jsonData', $jsonData);
+          }
+
+          /*---------- ページ遷移 ----------*/
+          if ($request->has('transit')) {
+              return redirect('/userEntry/' . $request->transit)->with('jsonData', $jsonData);
+          }
+      }
+
+        /*---------- getの場合 ----------*/
+        $objData = $this->model;
+        $jsonData = json_encode($objData);
+        
+        /*---------- セッションが存在する場合セッション値を反映 ----------*/
+        if ($request->session()->has('jsonData')) {
+            $jsonData = $request->session()->get('jsonData');
+            $objData->setAttrs(json_decode($jsonData, true));
+        }
+
+        /*---------- 表示用データを加工する場合はここ ----------*/
+        /*----------------- ここまで -------------------------*/
+
+        return view('userEntry.step3', [
+            'objData' => $objData,
+            'jsonData' => $jsonData,
+        ]);
+    }
+
+    public function confirm(Request $request)
+    {
+        if (!$request->isMethod('get') && !$request->isMethod('post')) abort(404);
+        //confirmの場合はセッション値を必須とする
+        if ($request->isMethod('get') && !$request->session()->has('jsonData')) abort(404);
+
+        if ($request->isMethod('post')) {
+          $arrData = json_decode($request->jsonData, true);
+          $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
+
+          /*---------- 下書き保存 ----------*/
+          if ($request->has('action') && $request->action === 'draft') {
+              return redirect('/userEntry/draft-complete')->with('jsonData', $jsonData);
+          }
+
+          /*---------- ページ遷移 ----------*/
+          if ($request->has('transit')) {
+              return redirect('/userEntry/' . $request->transit)->with('jsonData', $jsonData);
+          }
+      }
+
+      /*---------- getの場合 ----------*/
+      $objData = $this->model;
+      $jsonData = json_encode($objData);
+      
+      /*---------- セッションが存在する場合セッション値を反映 ----------*/
+      if ($request->session()->has('jsonData')) {
+          $jsonData = $request->session()->get('jsonData');
+          $objData->setAttrs(json_decode($jsonData, true));
+      }
+
+      /*---------- 表示用データを加工する場合はここ ----------*/
+      /*----------------- ここまで -------------------------*/
+
+      return view('userEntry.confirm', [
+            'objData' => $objData,
+            'jsonData' => $jsonData,
+        ]);
+    }
+
+    public function complete(Request $request)
+    {
+        if (!$request->isMethod('get')) abort(404);
+        //completeの場合はセッション値を必須とする
+        if ($request->isMethod('get') && !$request->session()->has('jsonData')) abort(404);
+
+        /*---------- getの場合 ----------*/
+        $jsonData = $request->session()->get('jsonData');
+        //ここでデータをテーブルに保存する
+        //保存するメソッドはモデル側に記述する
+        $objData = $this->model;
+        $objData->newEntry($jsonData, 'public');
+
+        return view('userEntry.complete');
+    }
+
+    public function draft_complete(Request $request)
+    {
+        if (!$request->isMethod('get')) abort(404);
+        //draft_completeの場合はセッション値を必須とする        
+        if ($request->isMethod('get') && !$request->session()->has('jsonData')) abort(404);
+
+        /*---------- getの場合 ----------*/
+        $jsonData = $request->session()->get('jsonData');
+        //ここでデータをテーブルに保存する
+        //保存するメソッドはモデル側に記述する
+        $objData = $this->model;
+        $objData->newEntry($jsonData, 'draft');
+
+        return view('userEntry.draft-complete');
+    }
+}
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>アップロード画像等はstorageに保存</h3>
+アップロードされた画像などは<code>storage\app</code>配下に<code>image</code>などのディレクトリを作り，そこに保存する。ただし，storageは<code>public</code>ディレクトリにシンボリックリンクが貼られた状態でなければ機能しないので注意が必要。詳細は<a href="https://readouble.com/laravel/10.x/ja/filesystem.html" target="_blank">公式</a>を参照。
+<!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
@@ -175,39 +630,71 @@ public function confirm(Request $request)
 
 <section>
 <h2>モデル</h2>
-<h3>項目タイトル</h3>
+<!----------------------------- 見出し ----------------------------->
+<h3>複数のテーブルに対するcreateやupdade処理について</h3>
+複数のテーブルに対してcreateやupdate処理を行う場合はトランザクションを利用する。<code>DB::transaction()</code>でラップしておけば，テーブル操作の処理に失敗した場合に自動的にロールバックして例外処理が発生するので，<code>try</code>～<code>catch</code>や<code>rollBack()</code>を記述する必要はない（トランザクション失敗時に例外処理ではなく別の処理が必要なときはこの限りではない）。詳細は<a href="https://readouble.com/laravel/10.x/ja/database.html" target="_blank">公式</a>を参照。
 <pre><code class="language-php">
+use Illuminate\Support\Facades\DB;
+
+DB::transaction(function () {
+    DB::update('update users set votes = 1');
+    DB::delete('delete from posts');
+});
 </code></pre>
-<h3>項目タイトル</h3>
+<!----------------------------- 見出し ----------------------------->
+<h3>fillableの扱いについて</h3>
+モデルで定義される<code>$fillable</code>はテーブル操作時に書き込みを行うことを許可するカラムを記入する。
 <pre><code class="language-php">
+class Company extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'tel',
+        'del_flg',
+    ];
+}
 </code></pre>
+基本的にはテーブルのカラムを全て記入するが，テーブルにリレーションが貼られており，<code>user_id</code>など参照元に紐付されたカラムは含めない。こうすることで誤って<code>user_id</code>を上書きしてしまうミスを防ぐ。参照先のデータを新規作成する場合は以下のようにリレーションメソッドを利用する。このように書けばfillableに<code>user_id</code>が無くてもLaravel側が自動的に書き込んでくれる。
+<pre><code class="language-php">
+  $user->company()->create($arrData); //$userはユーザーの情報が入ったオブジェクト
+</code></pre>
+補足であるが，<code>create()</code>や<code>update()</code>の引数は連想配列なので誤ってオブジェクトを入れないように注意する。オブジェクトのデータを使いたいなら<code>$arrData = $objData->toArray();</code>などとして，いったん連想配列に変換すると良い。<br>
+fillableの便利な点は，引数の連想配列にテーブルに関係ない要素が含まれていてもそれらを自動的に取り除いてくれるところにある。連想配列は様々な処理のためにもともとテーブルのカラムに無い要素を追加していることも多いが，そういう場合でも気にせず引数としてそのまま放り込んでしまって良い（ただし動作検証すべき）。
+<!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
 </section>
 
+<!--------------------------- セクションここまで --------------------------->
+
+<!----------------------------- セクション開始 ----------------------------->
+
 <section>
 <h2>ビュー</h2>
+<!----------------------------- 見出し ----------------------------->
 <h3>cssとJavaScriptの分離</h3>
-bladeの中にcssやJavaScriptのコードが入ると保守性が下がるので、原則として別ファイルに記述して、layout側でファイルを読み込むように追記しておく。bootstrapやjQueryを使いたいときも同様。
-JavsScriptのコードは必ず関数でラップして、意図しないページでコードが読み込まれないようにしておく。
-<br>JavaScriptファイル
+bladeの中にstyle要素やJavaScriptのコードが入ると保守性が下がるので、原則として別ファイルに記述して、layout側でファイルを読み込むように追記しておく。bootstrapやjQueryを使いたいときも同様。また，JavsScriptのコードは必ず関数でラップして、意図しないページでコードが動作しないようにしておく。<br>cssファイルは<code>public\asset\css</code>配下に置き，JavaScriptファイルは<code>public\asset\js</code>配下に置く。
+<br>JavaScript
 <pre><code class="language-php">
 function myFunc() {
   /*  何らかの処理  */
 }
 </code></pre>
-blade
+blade　<code>script</code>要素は原則レイアウトの外側に書いておけば良い。内側と外側では挙動が異なる場合があるので注意が必要。
 <pre><code class="language-php">
 ・・・・
 &lt;/x-guest-layout&gt;
+&lt;-- ↓↓↓ レイアウト要素の下に書く ↓↓↓  --&gt;
 &lt;script&gt;
   myFunc();  //blade側から関数を呼び出す
 &lt;/script&gt;
 </code></pre>
 
-<h3>JavaScriptに変数を渡す</h3>
-コントローラーからJavaScriptに変数を渡すときの書き方は以下。<br>
+<!----------------------------- 見出し ----------------------------->
+<h3>phpの変数をJavaScriptに渡す</h3>
 ・変数が1つの場合<br>
 bladeファイル
 <pre><code class="language-markup">
@@ -216,7 +703,7 @@ bladeファイル
 &lt;/script&gt;
 </code></pre>
 ・変数が複数の場合<br>
-blade
+blade　変数が複数の場合はオブジェクトで渡すと楽。
 <pre><code class="language-markup">
 &lt;script&gt;
 myFunc({
@@ -225,7 +712,6 @@ myFunc({
 });
 &lt;/script&gt;
 </code></pre>
-変数が複数の場合はオブジェクトで渡すと楽。JavaScriptの方では<br>
 JavaScript
 <pre><code class="language-javascript">
 function myFunc(obj) {
@@ -236,84 +722,95 @@ function myFunc(obj) {
 }
 </code></pre>
 のように書いて値を取り出す。
-注意点として、JavaScriptに渡したいデータが連想配列やオブジェクトの場合、json_encode()でjson文字列化してbladeに送ること。
+注意点として、JavaScriptに渡したいデータが連想配列やオブジェクトの場合、<code>json_encode()</code>でjson文字列化してbladeに送ること。
 <pre><code class="language-php">
 return view(&#039;user.create&#039;, [
   &#039;objData&#039; =&gt; $objData,
   &#039;jsonSome&#039; =&gt; json_encode($arrSome),
 ]);
 </code></pre>
+<!----------------------------- 見出し ----------------------------->
 <h3>bladeのバリデーションエラー表示は@errorを使う</h3>
 <pre><code class="language-php">
 @error(&#039;email&#039;) &lt;p class=&quot;alert&quot;&gt;{{ $message }}&lt;/p&gt; @enderror
 </code></pre>
+<!----------------------------- 見出し ----------------------------->
 <h3>クラス名はBEM記法で</h3>
 検索すると色々出てくるが以下が分かりやすい。<br>
 <a href="https://laraweb.net/surrounding/8081/#:~:text=Block%20Element%20Modifier%20%E3%81%AE%E7%95%A5,%E3%81%AAClass%E5%91%BD%E5%90%8D%E8%A6%8F%E5%89%87%E3%81%A7%E3%81%99%E3%80%82">Laravel学習超</a>
 
 </section>
 
+<!--------------------------- セクションここまで --------------------------->
 
+<!----------------------------- セクション開始 ----------------------------->
 <section>
 <h2>セクションタイトル</h2>
+<!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
+<!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
+<!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
 </section>
 
+<!--------------------------- セクションここまで --------------------------->
+
+<!----------------------------- セクション開始 ----------------------------->
+
 <section>
 <h2>パーツ集</h2>
 
-<h3>パスワード入力欄</h3>
+<!----------------------------- 見出し ----------------------------->
+<h3>パスワード表示・非表示アイコン</h3>
 HTML
 <pre><code class="language-markup">
-&lt;div class=&quot;edit__item&quot;&gt;
-&lt;label for=&quot;password&quot; class=&quot;edit__label&quot;&gt;パスワード&lt;/label&gt;
-&lt;input type=&quot;password&quot; name=&quot;password&quot; id=&quot;password&quot;
-  class=&quot;edit__input&quot; value=&quot;{{ old(&#039;password&#039;, $objData-&gt;password) }}&quot;&gt;
-&lt;div id=&quot;password__icon&quot; class=&quot;password__eye&quot;&gt;&lt;/div&gt;
-@error(&#039;password&#039;) &lt;p class=&quot;alert&quot;&gt;{{ $message }}&lt;/p&gt; @enderror
-&lt;/div&gt;
+&lt;input type=&quot;password&quot; name=&quot;password&quot; id=&quot;password&quot; value=&quot;&quot;&gt;
+&lt;script&gt;
+  togglePassIcon(&#039;password&#039;);
+&lt;/script&gt;
 </code></pre>
-CSS<br>アイコンはfont awesomeから拾ってくる。アイコンを背景画像として配置するとクラスを指定するだけで表示できる。背景画像はcssファイルが置かれているディレクトリに配置。基本的にpublic/asset/css/にcssファイルを置いて、public/asset/css/imageに画像ファイルを置く。
+SCSS<br>アイコンはfont awesomeから拾ってくる。アイコンを背景画像として配置するとクラスを指定するだけで表示できる。背景画像はcssファイルが置かれているディレクトリに配置。基本的に<code>public/asset/css/</code>にcssファイルを置いて、<code>public/asset/css/image</code>に画像ファイルを置く。
 <pre><code class="language-css">
-#password__icon {
-  height: 18px;
-  width: 18px;  
-  margin-top: 3px;
-  margin-left: -24px;
-  cursor: pointer;
-  z-index: 100;
-  transition: all 0.3s ease;
-  background-repeat: no-repeat;
-}
+.password {
+  &__icon {
+      height: 18px;
+      width: 18px;
+      margin-top: 3px;
+      margin-left: -24px;
+      cursor: pointer;
+      z-index: 100;
+      transition: all 0.3s ease;
+      background-repeat: no-repeat;
+  }
 
-.password__eye {
-  background-image: url(image/eye-solid.svg);
-}
+  &__eye {
+      background-image: url(image/eye-solid.svg);
+  }
 
-.password__eye-slash {
-  background-image: url(image/eye-slash-solid.svg);
+  &__eye-slash {
+      background-image: url(image/eye-slash-solid.svg);
+  }
 }
 </code></pre>
 JavaScript
 <pre><code class="language-javascript">
 /**
- * 
  * パスワード入力用アイコン切り替え
- * 
+ * @param string id パスワード入力欄の要素ID
  */
 
-function togglePassIcon() {
+function togglePassIcon(id) {
     $(window).on('load', function () {
-        const passElem = $('#password');
-        const iconElem = $('#password__icon');
+        const passElem = $(`#${id}`);
+        const iconElem = $(&#039;&lt;span class=&quot;password__icon password__eye&quot;&gt;&lt;/span&gt;&#039;);
+        passElem.after(iconElem);
         iconElem.on('click', function () {
             if(passElem.attr('type')==='password'){
                 passElem.attr('type','text');
@@ -330,35 +827,44 @@ function togglePassIcon() {
 </code></pre>
 
 
+<!----------------------------- 見出し ----------------------------->
 <h3>郵便番号から住所を自動入力(jPostal)</h3>
 blade
 <pre><code class="language-markup">
+&lt;input id=&quot;zip&quot;&gt;
 &lt;input id=&quot;pref&quot;&gt;
 &lt;input id=&quot;city&quot;&gt;
 &lt;input id=&quot;address&quot;&gt;
-
-&lt;!-- scriptはページ最下部に --&gt;
 &lt;script&gt;
-  setJpostal();
+  setJpostal({
+    zip: 'zip',
+    pref: 'pref',
+    city: 'city',
+    address: 'address',
+  });
 &lt;/script&gt;  
 </code></pre>
 JavaScript
 <pre><code class="language-javascript">
 /**
- * 
- * jPostal呼び出し
- * 
- */
-
-function setJpostal() {
+* jPostal呼び出し
+* @param obj obj{
+*      zip: string,
+*      pref: string,
+*      city: string,
+*      address: string,
+* }    郵便番号，都道府県，市区町村，それ以外の要素ID
+*/
+function setJpostal(obj) {
     $(window).on('load', function () {
-        $('#zip').jpostal({
-            postcode: ['#zip'],
-            address: { '#pref': '%3', "#city": '%4', '#address': '%5' }
+        $(`#${obj.zip}`).jpostal({
+            postcode: [`#${obj.zip}`],
+            address: { [`#${obj.pref}`]: '%3', [`#${obj.city}`]: '%4', [`#${obj.address}`]: '%5' }
         });
     });
 }
 </code></pre>
+<!----------------------------- 見出し ----------------------------->
 <h3>年月日をセレクトボックスで入力する</h3>
 blade
 <pre><code class="language-php">
@@ -379,74 +885,84 @@ setDate({
 </code></pre>
 JavaScript
 <pre><code class="language-javascript">
-  /**
-  * セレクトボックスで日付を選択
-  * 連結された日付を入力するinput要素をhiddenで設置する
-  * @param obj object　年月日と日付のid
-  */
- function setDate(obj) {
- 
-     const yearElem = $(`#${obj.yearId}`);
-     const monthElem = $(`#${obj.monthId}`);
-     const yearMonthElem = $(`#${obj.yearId},#${obj.monthId}`);
-     const dayElem = $(`#${obj.dayId}`);
-     const inputElem = $(`#${obj.dateId}`);
-     const date = inputElem.val() ? new Date(inputElem.val()) : new Date();
-     const year = date.getFullYear();
-     const month = date.getMonth() + 1;
-     const day = date.getDate();
-     const endOfMonth = new Date(year, month, 0);
- 
-     for (let i = endOfMonth.getFullYear(); i &gt;= 1940; i--) {
-         const elem = $(`&lt;option value=&quot;${i}&quot;&gt;${i}&lt;/option&gt;`).appendTo(yearElem);
-         if (i === year) elem.prop(&quot;selected&quot;, true);
-     }
- 
-     for (let i = 1; i &lt;= 12; i++) {
-         const elem = $(`&lt;option value=&quot;${i}&quot;&gt;${i}&lt;/option&gt;`).appendTo(monthElem);
-         if (i === month) elem.prop(&quot;selected&quot;, true);
-     }
- 
-     for (let i = 1; i &lt;= endOfMonth.getDate(); i++) {
-         const elem = $(`&lt;option value=&quot;${i}&quot;&gt;${i}&lt;/option&gt;`).appendTo(dayElem);
-         if (i === day) elem.prop(&quot;selected&quot;, true);
-     }
- 
-     yearMonthElem.on(&quot;change&quot;, function () {
-         const beginOfMonth = new Date(yearElem.val(), monthElem.val() - 1, 1);
-         const endOfMonth = new Date(yearElem.val(), monthElem.val(), 0);
-         const year = beginOfMonth.getFullYear();
-         const month = beginOfMonth.getMonth() + 1;
-         const day = beginOfMonth.getDate();
-         dayElem.empty();
-         for (let i = 1; i &lt;= endOfMonth.getDate(); i++) {
-             dayElem.append(`&lt;option value=&quot;${i}&quot;&gt;${i}&lt;/option&gt;`);
-         }
-         inputElem.val(`${year}-${month}-${day}`);
-     });
- 
-     dayElem.on(&quot;change&quot;, () =&gt; {
-         const date = `${yearElem.val()}-${monthElem.val()}-${dayElem.val()}`;
-         inputElem.val(date);
-     });
- }
- </code></pre>
+/**
+* セレクトボックスで日付を選択
+* 連結された日付を入力するinput要素をhiddenで設置する
+* @param obj object{
+*      yearId: string,
+*      monthId: string,
+*      dayId: string,
+*      dateId: string}　年月日と日付のid
+*/
+function setDate(obj) {
+
+    const yearElem = $(`#${obj.yearId}`);
+    const monthElem = $(`#${obj.monthId}`);
+    const yearMonthElem = $(`#${obj.yearId},#${obj.monthId}`);
+    const dayElem = $(`#${obj.dayId}`);
+    const inputElem = $(`#${obj.dateId}`);
+    const date = inputElem.val() ? new Date(inputElem.val()) : new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const endOfMonth = new Date(year, month, 0);
+
+    for (let i = endOfMonth.getFullYear(); i &gt;= 1940; i--) {
+        const elem = $(`&lt;option value=&quot;${i}&quot;&gt;${i}&lt;/option&gt;`).appendTo(yearElem);
+        if (i === year) elem.prop(&quot;selected&quot;, true);
+    }
+
+    for (let i = 1; i &lt;= 12; i++) {
+        const elem = $(`&lt;option value=&quot;${i}&quot;&gt;${i}&lt;/option&gt;`).appendTo(monthElem);
+        if (i === month) elem.prop(&quot;selected&quot;, true);
+    }
+
+    for (let i = 1; i &lt;= endOfMonth.getDate(); i++) {
+        const elem = $(`&lt;option value=&quot;${i}&quot;&gt;${i}&lt;/option&gt;`).appendTo(dayElem);
+        if (i === day) elem.prop(&quot;selected&quot;, true);
+    }
+
+    yearMonthElem.on(&quot;change&quot;, function () {
+        const beginOfMonth = new Date(yearElem.val(), monthElem.val() - 1, 1);
+        const endOfMonth = new Date(yearElem.val(), monthElem.val(), 0);
+        const year = beginOfMonth.getFullYear();
+        const month = beginOfMonth.getMonth() + 1;
+        const day = beginOfMonth.getDate();
+        dayElem.empty();
+        for (let i = 1; i &lt;= endOfMonth.getDate(); i++) {
+            dayElem.append(`&lt;option value=&quot;${i}&quot;&gt;${i}&lt;/option&gt;`);
+        }
+        inputElem.val(`${year}-${month}-${day}`);
+    });
+
+    dayElem.on(&quot;change&quot;, () =&gt; {
+        const date = `${yearElem.val()}-${monthElem.val()}-${dayElem.val()}`;
+        inputElem.val(date);
+    });
+}
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
 <h3>残り文字数カウンター</h3>
+inputやtextareaに「あと〇〇文字」を表示させ，制限文字数に達するとdelとbackspace以外の入力を受け付けなくなる。改行文字はカウントしない。<br>
 blade
 <pre><code class="language-markup">
 &lt;div&gt;
   &lt;textarea name=&quot;content&quot; id=&quot;content&quot; cols=&quot;50&quot; rows=&quot;10&quot;&gt;&lt;/textarea&gt;
   &lt;p id=&quot;count&quot;&gt;&lt;/p&gt;
 &lt;/div&gt;
+&lt;script&gt;
+  setCounter({
+    textArea: &#039;content&#039;,
+    count: &#039;count&#039;,
+  });
+&lt;/script&gt;
 </code></pre>
 JavaScript
 <pre><code class="language-javascript">
 /**
- * 
- * 残り文字数カウンター
- * 
- */
-
+* 残り文字数カウンター
+* @param obj obj{textArea: string, count: string} textareaとカウンタを表示する要素のID
+*/
 function setCounter(obj) {
     const maxLength = 200;  //最大文字数
     const textElem = $(`#${obj.textArea}`);
@@ -475,36 +991,381 @@ function setCounter(obj) {
     });
 }
 </code></pre>
-<h3>項目タイトル</h3>
-<pre><code class="language-php">
+<!----------------------------- 見出し ----------------------------->
+<h3>sendResizedImg</h3>
+アップロードした画像をプレビュー表示して，それとは別に指定した大きさでリサイズした画像を送信したい場合に使う。あとで拡張できるようにクラス化しているので，使うときはインスタンスが必要。jQuery無しで動作し，フロントエンド側でリサイズ処理を行うのでphpにGDが入っていなくても動く。サーバー側の負担も回避できる。送信されるデータは文字列であり，ある程度想定されたデータサイズの範囲内で送られるため無理にバリデーションしなくても良い（originalモードで送信する場合は別）。<br>
+画像をアップロードするためのinput要素は下記のコード例で言えば<code>id="image_upload"</code>のdiv要素の中に自動的に生成される。生成されたbase64文字列は，<code>name="image"</code>のinput要素に格納される。また，プレビューとは別にリサイズ処理された画像がcanvas要素として生成されるが非表示に設定されている。<br>
+プレビュー画像と送信画像で異なるサイズを指定できる。画像データをbase64文字列化してinputフィールドに格納するため，フォーム内で他の文字列データと同様に扱うことができる。そのため，入力されたデータをconfirmに送るなどの処理で楽できる。ちなみにbase64文字列を画像として表示する場合は，<code>img</code>要素の<code>src</code>の中に文字列をそのまま放り込むだけで良い。
+<pre><code class="language-javascript">
+/**
+ * アップロードした画像をプレビュー表示し，リサイズした画像をbase64文字列化する
+ * @param previewElemId    string  プレビュー画像を配置するdiv要素のid
+ * @param uploadElemId     string  ファイルアップロードを配置するdiv要素のid
+ * @param sendElemId       string  base64文字列を格納するinput要素のID
+*/
+ 
+/*
+アップロードした画像をプレビュー表示し，リサイズして送信する。
+データはbase64文字列として送信する。バックエンド側で保存する場合は，
+base64_decode()を利用してバイナリデータに変換した上で保存すると良い。
+
+nocropの場合，枠の中に画像全体を収めるようにリサイズする。枠と画像の縦横比
+が合わない場合，上下または左右に空白が作られる。
+cropの場合，空白を作らないようにリサイズする。枠と画像の縦横比が合わない場合，
+上下または左右のはみ出た部分がカットされる。
+originalの場合，プレビュー画像はnocropと同等になり，送信画像はmaxWidthと
+maxHeightの値は無視され，元の画像と同じサイズで送信する。
+ 
+■ サンプルコード
+
+フロント側
+
+----------HTML ----------
+
+&lt;div id=&quot;image_preview&quot;&gt;&lt;/div&gt;
+&lt;div id=&quot;image_upload&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;image&quot; value=&quot;&quot;&gt;&lt;/div&gt;
+
+----------JavaScript ----------
+
+const sendResizedImg = new sendResizedImg(&#039;image_preview&#039;, &#039;image_upload&#039;, &#039;image&#039;);
+sendResizedImg.create({
+    mode: &quot;nocrop&quot;,                 //モード(nocrop|crop|original)
+    preview: {
+        maxWidth: 240,                  //プレビュー画像の最大幅
+        maxHeight: 180,                 //プレビュー画像の最大高さ
+        imgInit: &quot;/asset/no-image.png&quot;, //画像アップロード前の初期画像(ファイル名|base64文字列)
+                                        //省略可。この場合デフォルト画像が表示される
+                                        //(getNoImage()で参照されるbase64文字列。
+                                        // コード最下部に配置)
+    },
+    send: {
+        maxWidth: 512,                  //送信画像の最大幅
+        maxHeight: 384,                 //送信画像の最大高さ
+        format: &quot;png&quot;,                  //画像形式(jpeg|png)
+        quality: 0.9,                   //画質(0.0～1.0)
+    }
+});
+
+プレビュー画像と送信画像で異なる縦横比を指定すると，プレビューと見た目が異なる画像が
+送信されるため縦横比を合わせることが望ましい。
+
+バックエンド側(Laravel)：png画像の場合
+
+if ($request -&gt; has(&#039;image&#039;)) {
+    $fileName = &#039;image&#039;;
+    $data = base64_decode(str_replace(&#039;data:image/png;base64,&#039;, &#039;&#039;, $request -&gt; image_file));
+    Storage:: put($fileName. &#039;png&#039;, $data);
+}
+
+jpeg画像の場合は&#039;data:image/jpeg;base64,&#039;。また，保存ファイル名の拡張子を.jpgとする。 
+
+*/
+
+class sendResizedImg {
+    constructor(previewElemId, uploadElemId, sendElemId) {
+        this.previewElemId = previewElemId;
+        this.uploadElemId = uploadElemId;
+        this.sendElemId = sendElemId;
+    }
+
+    create(obj) {
+        //初期状態
+        const uploadEl = document.getElementById(this.uploadElemId);
+        const previewEl = document.getElementById(this.previewElemId);
+        const fileEl = uploadEl.appendChild(document.createElement(&quot;input&quot;));
+        const sendEl = document.getElementById(this.sendElemId);
+        const hcvsEl = uploadEl.appendChild(document.createElement(&quot;canvas&quot;));
+        const pcvsEl = previewEl.appendChild(document.createElement(&quot;canvas&quot;));
+        let sendCtx = hcvsEl.getContext(&quot;2d&quot;);
+        let previewCtx = pcvsEl.getContext(&quot;2d&quot;);
+        let sendImg = new Image();
+        let previewImg = new Image();
+
+        fileEl.setAttribute(&quot;type&quot;, &quot;file&quot;);
+        hcvsEl.setAttribute(&quot;style&quot;, &quot;display:none;&quot;);
+        hcvsEl.setAttribute(&quot;id&quot;, this.sendElemId + &quot;_canvas&quot;);
+        hcvsEl.setAttribute(&quot;width&quot;, obj.send.maxWidth);
+        hcvsEl.setAttribute(&quot;height&quot;, obj.send.maxHeight);
+        pcvsEl.setAttribute(&quot;id&quot;, this.previewElemId + &quot;_canvas&quot;);
+        pcvsEl.setAttribute(&quot;width&quot;, obj.preview.maxWidth);
+        pcvsEl.setAttribute(&quot;height&quot;, obj.preview.maxHeight);
+
+        //送信画像初期設定
+        sendImg.src = this.getNoImage();
+        if (obj.preview.imgInit) sendImg.src = obj.preview.imgInit;
+        if (sendEl.value) sendImg.src = sendEl.value;
+        sendImg.addEventListener(&quot;load&quot;, () =&gt; {
+            sendCtx.imageSmoothingQuality = &quot;medium&quot;;
+            const objSendCoord = this.getSendCoordinate(obj, sendImg);
+            sendCtx.drawImage(
+                sendImg,
+                objSendCoord.sx,
+                objSendCoord.sy,
+                objSendCoord.sw,
+                objSendCoord.sh,
+                objSendCoord.dx,
+                objSendCoord.dy,
+                objSendCoord.dw,
+                objSendCoord.dh
+            );
+            sendEl.value = sendCtx.canvas.toDataURL(&quot;image/&quot; + obj.send.format, obj.send.quality);
+        });
+
+        //プレビュー画像初期設定
+        previewImg.src = this.getNoImage();
+        if (obj.preview.imgInit) previewImg.src = obj.preview.imgInit;
+        if (sendEl.value) previewImg.src = sendEl.value;
+        previewImg.addEventListener(&quot;load&quot;, () =&gt; {
+            previewCtx.imageSmoothingQuality = &quot;medium&quot;;
+            const objCoord = this.getPreviewCoordinate(obj, previewImg);
+            previewCtx.drawImage(
+                previewImg,
+                objCoord.sx,
+                objCoord.sy,
+                objCoord.sw,
+                objCoord.sh,
+                objCoord.dx,
+                objCoord.dy,
+                objCoord.dw,
+                objCoord.dh
+            );
+        });
+
+        //ファイルアップロード時の処理
+        fileEl.addEventListener(&quot;change&quot;, (event) =&gt; {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            if (!file.type.match(/^image\/(png|jpeg|gif)$/)) return;
+            reader.readAsDataURL(file);
+            reader.addEventListener(&quot;load&quot;, (event) =&gt; {
+                //送信画像
+                const sendImg = new Image();
+                sendImg.src = event.target.result;
+                sendImg.addEventListener(&quot;load&quot;, () =&gt; {
+                    const objCoord = this.getSendCoordinate(obj, sendImg);
+                    sendCtx.clearRect(0, 0, obj.send.maxWidth, obj.send.maxHeight);
+                    sendCtx.drawImage(
+                        sendImg,
+                        objCoord.sx,
+                        objCoord.sy,
+                        objCoord.sw,
+                        objCoord.sh,
+                        objCoord.dx,
+                        objCoord.dy,
+                        objCoord.dw,
+                        objCoord.dh
+                    );
+                    sendEl.value = hcvsEl.toDataURL(&quot;image/&quot; + obj.send.format, obj.send.quality);
+                });
+                //プレビュー画像
+                const previewImg = new Image();
+                previewImg.src = event.target.result;
+                previewImg.addEventListener(&quot;load&quot;, () =&gt; {
+                    const objCoord = this.getPreviewCoordinate(obj, previewImg);
+                    previewCtx.clearRect(0, 0, obj.preview.maxWidth, obj.preview.maxHeight);
+                    previewCtx.drawImage(
+                        previewImg,
+                        objCoord.sx,
+                        objCoord.sy,
+                        objCoord.sw,
+                        objCoord.sh,
+                        objCoord.dx,
+                        objCoord.dy,
+                        objCoord.dw,
+                        objCoord.dh
+                    );
+                });
+            });
+        });
+    }
+
+    getSendCoordinate(obj, image) {
+
+        let result = {};
+        const scaleX = obj.send.maxWidth / image.width;     //倍率
+        const scaleY = obj.send.maxHeight / image.height;
+
+        switch (obj.mode) {
+            case &quot;nocrop&quot;:
+                //試しに幅で合わせてみたら画像高さがはみでる場合
+                if (image.height * scaleX &gt;= obj.send.maxHeight) {
+                    //高さで合わせる
+                    return {
+                        sx: 0,
+                        sy: 0,
+                        sw: image.width,
+                        sh: image.height,
+                        dx: Math.abs(obj.send.maxWidth - image.width * scaleY) / 2,
+                        dy: 0,
+                        dw: image.width * scaleY,
+                        dh: image.height * scaleY,
+                    };
+                } else {
+                    //画像幅がはみでる場合幅で合わせる
+                    return {
+                        sx: 0,
+                        sy: 0,
+                        sw: image.width,
+                        sh: image.height,
+                        dx: 0,
+                        dy: Math.abs(obj.send.maxHeight - image.height * scaleX) / 2,
+                        dw: image.width * scaleX,
+                        dh: image.height * scaleX,
+                    };
+                }
+                break;
+            case &quot;crop&quot;:
+                //試しに幅で合わせてみたら画像高さがはみでる場合
+                if (image.height * scaleX &gt;= obj.send.maxHeight) {
+                    //幅で合わせて画像上下をカット
+                    const trimY = Math.abs(obj.send.maxHeight / scaleX - image.height);
+                    return {
+                        sx: 0,
+                        sy: trimY / 2,
+                        sw: image.width,
+                        sh: image.height - trimY,
+                        dx: 0,
+                        dy: 0,
+                        dw: obj.send.maxWidth,
+                        dh: obj.send.maxHeight,
+                    };
+                } else {
+                    //画像幅がはみでる場合高さで合わせて画像左右をカット
+                    const trimX = Math.abs(obj.send.maxWidth / scaleY - image.width);
+                    return {
+                        sx: trimX / 2,
+                        sy: 0,
+                        sw: image.width - trimX,
+                        sh: image.height,
+                        dx: 0,
+                        dy: 0,
+                        dw: obj.send.maxWidth,
+                        dh: obj.send.maxHeight,
+                    };
+                }
+                break;
+            case &quot;originai&quot;:
+                break;
+            default:
+        }
+
+        return {};
+
+    }
+
+    getPreviewCoordinate(obj, image) {
+
+        let result = {};
+        const scaleX = obj.preview.maxWidth / image.width;     //倍率
+        const scaleY = obj.preview.maxHeight / image.height;
+
+        switch (obj.mode) {
+            case &quot;nocrop&quot;:
+                //試しに幅で合わせてみたら画像高さがはみでる場合
+                if (image.height * scaleX &gt;= obj.preview.maxHeight) {
+                    //高さで合わせる
+                    return {
+                        sx: 0,
+                        sy: 0,
+                        sw: image.width,
+                        sh: image.height,
+                        dx: Math.abs(obj.preview.maxWidth - image.width * scaleY) / 2,
+                        dy: 0,
+                        dw: image.width * scaleY,
+                        dh: image.height * scaleY,
+                    };
+                } else {
+                    //画像幅がはみでる場合幅で合わせる
+                    return {
+                        sx: 0,
+                        sy: 0,
+                        sw: image.width,
+                        sh: image.height,
+                        dx: 0,
+                        dy: Math.abs(obj.preview.maxHeight - image.height * scaleX) / 2,
+                        dw: image.width * scaleX,
+                        dh: image.height * scaleX,
+                    };
+                }
+                break;
+            case &quot;crop&quot;:
+                //試しに幅で合わせてみたら画像高さがはみでる場合
+                if (image.height * scaleX &gt;= obj.preview.maxHeight) {
+                    //幅で合わせて画像上下をカット
+                    const trimY = Math.abs(obj.preview.maxHeight / scaleX - image.height);
+                    return {
+                        sx: 0,
+                        sy: trimY / 2,
+                        sw: image.width,
+                        sh: image.height - trimY,
+                        dx: 0,
+                        dy: 0,
+                        dw: obj.preview.maxWidth,
+                        dh: obj.preview.maxHeight,
+                    };
+                } else {
+                    //画像幅がはみでる場合高さで合わせて画像左右をカット
+                    const trimX = Math.abs(obj.preview.maxWidth / scaleY - image.width);
+                    return {
+                        sx: trimX / 2,
+                        sy: 0,
+                        sw: image.width - trimX,
+                        sh: image.height,
+                        dx: 0,
+                        dy: 0,
+                        dw: obj.preview.maxWidth,
+                        dh: obj.preview.maxHeight,
+                    };
+                }
+                break;
+            case &quot;originai&quot;:
+                break;
+            default:
+        }
+
+        return {};
+
+    }
+
+    getNoImage() {
+        return &quot;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtWK6eAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAACxMAAAsTAQCanBgAABF6aVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/Pg0KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxNDggNzkuMTY0MDM2LCAyMDE5LzA4LzEzLTAxOjA2OjU3ICAgICAgICAiPg0KICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPg0KICAgIDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iIHhtbG5zOmV4aWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vZXhpZi8xLjAvIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6MDA1ODFlODgtNmE2MS00YjBhLWE0NmQtYWM3ZTYwMTJmMGQxIiB4bXBNTTpEb2N1bWVudElEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6M2E3ZjQ0YTItZWZjMC0yZTRhLWE3MGYtYTlmMWMzYTAxMTgxIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjAyYWJiZjg3LWJjNTQtNDM2Yi04NzhhLTg4NjkzZmE4ODQxMiIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ0MgMjAxOSAoTWFjaW50b3NoKSIgeG1wOkNyZWF0ZURhdGU9IjIwMTktMDgtMjVUMjE6NTc6MjkrMDk6MDAiIHhtcDpNb2RpZnlEYXRlPSIyMDIwLTA1LTA1VDIzOjI2OjEzKzA5OjAwIiB4bXA6TWV0YWRhdGFEYXRlPSIyMDIwLTA1LTA1VDIzOjI2OjEzKzA5OjAwIiBkYzpmb3JtYXQ9ImltYWdlL3BuZyIgcGhvdG9zaG9wOkNvbG9yTW9kZT0iMyIgcGhvdG9zaG9wOklDQ1Byb2ZpbGU9InNSR0IgSUVDNjE5NjYtMi4xIiB0aWZmOk9yaWVudGF0aW9uPSIxIiB0aWZmOlhSZXNvbHV0aW9uPSI3MjAwMDAvMTAwMDAiIHRpZmY6WVJlc29sdXRpb249IjcyMDAwMC8xMDAwMCIgdGlmZjpSZXNvbHV0aW9uVW5pdD0iMiIgZXhpZjpDb2xvclNwYWNlPSIxIiBleGlmOlBpeGVsWERpbWVuc2lvbj0iNjQwIiBleGlmOlBpeGVsWURpbWVuc2lvbj0iNjQwIj4NCiAgICAgIDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjdkNDYwN2E5LTc4MWMtNGI4MC1hNzZmLTQ4YmE0ZThmMWVkYiIgc3RSZWY6ZG9jdW1lbnRJRD0iYWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOjQ1NTIxNDhkLTZkOTctOTE0NC05YjkyLWJlN2Q0MjE2NmI0YiIgc3RSZWY6b3JpZ2luYWxEb2N1bWVudElEPSJ4bXAuZGlkOjAwNTgxZTg4LTZhNjEtNGIwYS1hNDZkLWFjN2U2MDEyZjBkMSIgLz4NCiAgICAgIDx4bXBNTTpIaXN0b3J5Pg0KICAgICAgICA8cmRmOlNlcT4NCiAgICAgICAgICA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6N2E2NDNkYmUtMjI2OS00YzkyLWFmODktYzNmMzIzZjQ0ODJmIiBzdEV2dDp3aGVuPSIyMDE5LTExLTI1VDA4OjI5OjUzKzA5OjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgQ0MgMjAxOSAoTWFjaW50b3NoKSIgc3RFdnQ6Y2hhbmdlZD0iLyIgLz4NCiAgICAgICAgICA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY29udmVydGVkIiBzdEV2dDpwYXJhbWV0ZXJzPSJmcm9tIGltYWdlL3BuZyB0byBhcHBsaWNhdGlvbi92bmQuYWRvYmUucGhvdG9zaG9wIiAvPg0KICAgICAgICAgIDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJkZXJpdmVkIiBzdEV2dDpwYXJhbWV0ZXJzPSJjb252ZXJ0ZWQgZnJvbSBpbWFnZS9wbmcgdG8gYXBwbGljYXRpb24vdm5kLmFkb2JlLnBob3Rvc2hvcCIgLz4NCiAgICAgICAgICA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6NjY1YzA1Y2EtZGU3Ni00Y2RiLWJhNTEtMWQxNmU4ZTRjMjY3IiBzdEV2dDp3aGVuPSIyMDE5LTExLTI1VDA4OjI5OjUzKzA5OjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgQ0MgMjAxOSAoTWFjaW50b3NoKSIgc3RFdnQ6Y2hhbmdlZD0iLyIgLz4NCiAgICAgICAgICA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6M2NlODJkMTgtZjhjYi00ODM5LTkxOTItZWI5ZGVkZGM1MzlmIiBzdEV2dDp3aGVuPSIyMDIwLTAxLTA5VDAwOjMwOjAzKzA5OjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgMjEuMCAoTWFjaW50b3NoKSIgc3RFdnQ6Y2hhbmdlZD0iLyIgLz4NCiAgICAgICAgICA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY29udmVydGVkIiBzdEV2dDpwYXJhbWV0ZXJzPSJmcm9tIGFwcGxpY2F0aW9uL3ZuZC5hZG9iZS5waG90b3Nob3AgdG8gaW1hZ2UvcG5nIiAvPg0KICAgICAgICAgIDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJkZXJpdmVkIiBzdEV2dDpwYXJhbWV0ZXJzPSJjb252ZXJ0ZWQgZnJvbSBhcHBsaWNhdGlvbi92bmQuYWRvYmUucGhvdG9zaG9wIHRvIGltYWdlL3BuZyIgLz4NCiAgICAgICAgICA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6YThjYzk5YWEtM2NkMi00MGUwLTk5YWQtNDc2ZTUwMTY4NGQyIiBzdEV2dDp3aGVuPSIyMDIwLTAxLTA5VDAwOjMwOjAzKzA5OjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgMjEuMCAoTWFjaW50b3NoKSIgc3RFdnQ6Y2hhbmdlZD0iLyIgLz4NCiAgICAgICAgICA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6NGYwNjBjNGItM2Y4ZC00ZGYzLThmOWUtNTEzN2Y1ZjEyNmU4IiBzdEV2dDp3aGVuPSIyMDIwLTA0LTE4VDE1OjU0OjE0KzA5OjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgMjEuMSAoTWFjaW50b3NoKSIgc3RFdnQ6Y2hhbmdlZD0iLyIgLz4NCiAgICAgICAgICA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY29udmVydGVkIiBzdEV2dDpwYXJhbWV0ZXJzPSJmcm9tIGltYWdlL3BuZyB0byBhcHBsaWNhdGlvbi92bmQuYWRvYmUucGhvdG9zaG9wIiAvPg0KICAgICAgICAgIDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJkZXJpdmVkIiBzdEV2dDpwYXJhbWV0ZXJzPSJjb252ZXJ0ZWQgZnJvbSBpbWFnZS9wbmcgdG8gYXBwbGljYXRpb24vdm5kLmFkb2JlLnBob3Rvc2hvcCIgLz4NCiAgICAgICAgICA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6YjBjODFhYjYtMGNjZC00NjU3LWJjYmUtZWE4NzE2MmFkMzdlIiBzdEV2dDp3aGVuPSIyMDIwLTA0LTE4VDE1OjU0OjE0KzA5OjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgMjEuMSAoTWFjaW50b3NoKSIgc3RFdnQ6Y2hhbmdlZD0iLyIgLz4NCiAgICAgICAgICA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6N2Q0NjA3YTktNzgxYy00YjgwLWE3NmYtNDhiYTRlOGYxZWRiIiBzdEV2dDp3aGVuPSIyMDIwLTA1LTA1VDIzOjI2OjEzKzA5OjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgMjEuMSAoTWFjaW50b3NoKSIgc3RFdnQ6Y2hhbmdlZD0iLyIgLz4NCiAgICAgICAgICA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY29udmVydGVkIiBzdEV2dDpwYXJhbWV0ZXJzPSJmcm9tIGFwcGxpY2F0aW9uL3ZuZC5hZG9iZS5waG90b3Nob3AgdG8gaW1hZ2UvcG5nIiAvPg0KICAgICAgICAgIDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJkZXJpdmVkIiBzdEV2dDpwYXJhbWV0ZXJzPSJjb252ZXJ0ZWQgZnJvbSBhcHBsaWNhdGlvbi92bmQuYWRvYmUucGhvdG9zaG9wIHRvIGltYWdlL3BuZyIgLz4NCiAgICAgICAgICA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6MDJhYmJmODctYmM1NC00MzZiLTg3OGEtODg2OTNmYTg4NDEyIiBzdEV2dDp3aGVuPSIyMDIwLTA1LTA1VDIzOjI2OjEzKzA5OjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgMjEuMSAoTWFjaW50b3NoKSIgc3RFdnQ6Y2hhbmdlZD0iLyIgLz4NCiAgICAgICAgPC9yZGY6U2VxPg0KICAgICAgPC94bXBNTTpIaXN0b3J5Pg0KICAgIDwv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&quot;;
+    }
+ 
+}
 </code></pre>
+<!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
 
+
 </section>
+
+<!--------------------------- セクションここまで --------------------------->
   
 </article>
-</main=>
+</main>
+<!-----------------  サイドメニュー生成 ----------------->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <script>
-    $(document).ready(function () {
-      const sectionElems = $('section');
-      const navbar = $('#sidebar');
-      const contentElem = $('<ul></ul>').appendTo(navbar);
-      let count = 1;
-      sectionElems.each(function () {
-        const h2Elem = $(this).find('h2').first();
-        $(`<li>${h2Elem.text()}</li>`).appendTo(contentElem);
-        const chapterElem = $('<ul></ul>').appendTo(contentElem);
-        const h3Elems = $(this).find('h3');
-        h3Elems.each(function () {
-          $(this).attr('id', `item${count}`);
-          const elem = $(`<li><a class="text-decoration-none" href="#item${count}">${$(this).text()}</a></li=>`).appendTo(chapterElem);
-          count++;
-        });
+  $(document).ready(function () {
+    const sectionElems = $('section');
+    const navbar = $('#sidebar');
+    const contentElem = $('<ul></ul>').appendTo(navbar);
+    let count = 1;
+    sectionElems.each(function () {
+      const h2Elem = $(this).find('h2').first();
+      $(`<li>${h2Elem.text()}</li>`).appendTo(contentElem);
+      const chapterElem = $('<ul></ul>').appendTo(contentElem);
+      const h3Elems = $(this).find('h3');
+      h3Elems.each(function () {
+        $(this).attr('id', `item${count}`);
+        const elem = $(`<li><a class="text-decoration-none" href="#item${count}">${$(this).text()}</a></li=>`).appendTo(chapterElem);
+        count++;
       });
     });
-  </script>
+  });
+</script>
+<!-----------------  サイドメニュー生成ここまで ----------------->
 </body>
 </html>

@@ -70,7 +70,7 @@ class InstructorController extends Controller
             $objData->setAttrs(json_decode($jsonData, true));
         }
 
-        return view('Instructor.step1', [
+        return view('instructor.step1', [
             'objData' => $objData,
             'jsonData' => $jsonData,
             'genders' => UserConst::GENDERS,
@@ -105,7 +105,7 @@ class InstructorController extends Controller
             $objData->setAttrs(json_decode($jsonData, true));
         }
 
-        return view('Instructor.step2', [
+        return view('instructor.step2', [
             'objData' => $objData,
             'jsonData' => $jsonData,
         ]);
@@ -136,7 +136,7 @@ class InstructorController extends Controller
             $jsonData = $request->session()->get('jsonData');
             $objData->setAttrs(json_decode($jsonData, true));
         }
-        return view('Instructor.step3', [
+        return view('instructor.step3', [
             'objData' => $objData,
             'jsonData' => $jsonData,
             'arrActivities' => RecruitConst::ACTIVITIES,
@@ -188,7 +188,7 @@ class InstructorController extends Controller
         $objData->act_areas = implode('<br>', $actAreas);
         /*  ここまで  */
 
-        return view('Instructor.confirm', [
+        return view('instructor.confirm', [
             'objData' => $objData,
             'jsonData' => $jsonData,
         ]);
@@ -204,7 +204,7 @@ class InstructorController extends Controller
         $objData = $this->model;
         $objData->newEntry($jsonData, 'public');
 
-        return view('Instructor.complete');
+        return view('instructor.complete');
     }
 
     public function draft_complete(Request $request)
@@ -217,6 +217,6 @@ class InstructorController extends Controller
         $objData = $this->model;
         $objData->newEntry($jsonData, 'draft');
 
-        return view('school.draft-complete');
+        return view('instructor.draft-complete');
     }
 }

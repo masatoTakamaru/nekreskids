@@ -16,7 +16,6 @@
             <label for="password" class="editLabel">パスワード</label>
             <input type="password" name="password" id="password" class="editInput"
               value="{{ old('password', $objData->password) }}">
-            <div id="password__icon" class="password__eye"></div>
             @error('password') <p class="alert">{{ $message }}</p> @enderror
           </div>
           <div>
@@ -75,6 +74,11 @@
   </article>
 </x-guest-layout>
 <script>
-  togglePassIcon();
-  setJpostal();
+  togglePassIcon('password');
+  setJpostal({
+    zip: 'zip',
+    pref: 'pref',
+    city: 'city',
+    address: 'address',
+  });
 </script>
