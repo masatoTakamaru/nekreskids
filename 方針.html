@@ -50,7 +50,7 @@ $arrSome = [
 </code></pre>
 <!----------------------------- 見出し ----------------------------->
 <h3>単一のフィールドに複数のデータを保存する場合はjson文字列を用いる</h3>
-データが単純な場合はスラッシュ区切りでも良いけど、基本的にデータは連想配列として扱い、キーを必要とするので、json文字列に統一しておいた方が良い。
+データが単純な場合はスラッシュ区切りでも良いけど、基本的にデータは連想配列として扱う。キーを必要とするので、json文字列に統一しておいた方が良い。
 <pre><code class="language-php">
 //保存するとき
 $fieldData = json_encode($arrSome);
@@ -59,11 +59,13 @@ $arrSome = json_decode($fieldData, true);
 </code></pre>
 <!----------------------------- 見出し ----------------------------->
 <h3>コントローラーのメソッド内で扱うデータの変数名</h3>
-データが連想配列なら<code>$arrData</code>、オブジェクト型なら<code>$objData</code>、json文字列なら<code>$jsonData</code>とする。SQLで抽出したデータはオブジェクト型だから<code>$objData</code>に格納する。
+データが連想配列なら<code>$arrData</code>、オブジェクト型なら<code>$objData</code>、json文字列なら<code>$jsonData</code>とする。SQLで抽出したデータはオブジェクト型だから<code>$objData</code>に格納する。<br>複数のモデルを扱う場合は，<code>$objData['user']</code>や<code>$objData['company']</code>など，連想配列にそれぞれのモデルを格納する。
 <!----------------------------- 見出し ----------------------------->
 <h3>コンストラクタでモデルを定義する</h3>
 コントローラーにおいて，基本的にメソッド内でモデルのインスタンスを行わなず，コンストラクタでモデルを定義する。モデルにあらかじめ用意されている項目だけでは足りずに追加することも多いが，個々のメソッド内でそれをやると混乱の元になるのでコンストラクタに記述し，クラス全体で共通するものとして設定しておく。
 <pre><code class="language-php">
+use App\Models\Company;
+
 private $model = null;
 private $fillableExt = [];  //fillableの項目を拡張したもの，fillableExtendedの略
 
@@ -127,25 +129,45 @@ public function setAttrs($attrs): void
     }
 }
 </code></pre>
-コントローラーで複数のモデルが必要なときの書き方は以下。
+
+複数のモデルが必要なときの書き方は以下。
+
 <pre><code class="language-php">
-private $model = null;
-private $fillableExt = [];  //fillableに要素を追加したもの
+use App\Models\User;
+use App\Models\Company;
+
+private $model = [
+    'user' => null,
+    'company' => null,
+];
+private $fillableExt = [];
 
 public function __construct()
 {
-    $this->model = new User();
-    $this->fillableExt = array_merge($this->model->getFillable(), [
-        /*-- 項目を追加する場合はここに記入 --*/
+    $this->model['user'] = new User();
+    $this->fillableExt = array_merge($this->model['user']->getFillable(), [
+        /*----------- 項目を追加する場合はここに記入 -----------*/
         'status',
         'role',
         /*--------------------- ここまで ---------------------*/
     ]);
-    $this->model->setAttrs(array_fill_keys($this->fillableExt, null));
+    $this->model['user']->setAttrs(array_fill_keys($this->fillableExt, null));
 
     /*---------- 初期値を与える場合はここに記入 ----------*/
-    $this->model->status = 'private';
-    $this->model->role = 1;
+    $this->model['user']->status = 'private';
+    $this->model['user']->role = 1;
+    /*-------------------- ここまで --------------------*/
+
+    $this->model['company'] = new Company();
+    $this->fillableExt = array_merge($this->model['company']->getFillable(), [
+        /*----------- 項目を追加する場合はここに記入 -----------*/
+        'status',
+        /*--------------------- ここまで ---------------------*/
+    ]);
+    $this->model['company']->setAttrs(array_fill_keys($this->fillableExt, null));
+
+    /*---------- 初期値を与える場合はここに記入 ----------*/
+    $this->model['company']->status = 'private';
     /*-------------------- ここまで --------------------*/
 }  
 </code></pre>
@@ -201,7 +223,7 @@ $status_type = StatusConst::STATUS;
 <pre><code class="language-php">
 Route::any('/{url}', function () {
 </code></pre>
-の部分で、コントローラー内の一つのメソッドに対し、GET、POST、PATCHh、DELETEなどいずれでもアクセスできるようになっている。コントローラーを記述するときに、不要なものについてはメソッドの初めで拒否し、以降の処理に進まないようにする。
+の部分で、コントローラー内の一つのメソッドに対し、GET、POST、PATCH、DELETEなどいずれでもアクセスできるようになっている。コントローラーを記述するときに、不要なものについてはメソッドの初めで拒否し、以降の処理に進まないようにする。
 <pre><code class="language-php">
 public function confirm(Request $request)
 {
@@ -651,13 +673,17 @@ class UserEntryController extends Controller
 <h3>管理画面のCRUD操作</h3>
 基本的に以下の4つのメソッドで構成する。
 <ul>
-  <li><code>index</code>　テーブルに保存されたレコードの一覧を表示する。</li>
+  <li><code>index</code></li>
   <ul>
+    <li>テーブルに保存されたレコードの一覧を表示する。</li>
     <li>各レコードをクリックすると詳細画面に遷移する。</li>
     <li>新規作成ボタンを設置する。</li>
     <li>複数キーワード対応の絞り込み検索窓を設置する。</li>
   </ul>
-  <li><code>create</code>　レコードの新規作成画面を表示する。POSTメソッドでDBにレコードを新規保存する。</li>
+  <li><code>create</code>　レコードの新規作成画面を表示する。POSTメソッドでDBにレコードを新規保存する。
+  <ul>
+    <li></li>
+  </ul></li>
   <li><code>detail</code>　レコードの<code>id</code>に基づいて、レコードの詳細を表示する。</li>
   <ul>
     <li>編集ボタンを設置する。editに遷移。</li>
@@ -666,10 +692,8 @@ class UserEntryController extends Controller
   </ul>
   <li><code>edit</code>　レコードの<code>id</code>に基づいて，編集画面を表示する。PATCHメソッドで送信し，レコードを更新する。</li>
 </ul>
-更新，削除についてはPOSTではなく，それぞれPATCH，DELETEメソッドを使う。使わないとLaravelのセキュリティ機能が発揮されない。<br>
-<code>index</code>メソッドはGETのみ受け入れる（検索リクエストもGET）。<br><code>create</code>メソッドはGETなら入力フォームの画面を表示し，POSTならレコードを新規保存する。それ以外は受け付けない。<br><code>detail</code>メソッドはGETなら詳細画面を表示し，DELETEならレコードを削除する。それ以外は受け付けない。<br><code>edit</code>メソッドはGETなら編集フォームの画面を表示し，PATCHならレコードを更新する。それ以外は受け付けない。
-<pre><code class="language-php">
-</code></pre>
+更新，削除についてはPOSTではなく，それぞれPATCH，DELETEメソッドを使う。使わないとLaravelのセキュリティ機能が発揮されない。<br><br>
+<code>index</code>メソッドはGETのみ受け入れる（検索リクエストもGET）。<br><code>create</code>メソッドはGETなら入力フォームの画面を表示し，POSTならレコードを新規保存する。それ以外は受け付けない。<br><code>detail</code>メソッドはGETなら詳細画面を表示し，DELETEならレコードを削除する。それ以外は受け付けない。パラメーターとして<code>id</code>が必要。<br><code>edit</code>メソッドはGETなら編集フォームの画面を表示し，PATCHならレコードを更新する。それ以外は受け付けない。パラメーターとして<code>id</code>が必要。
 
 <!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
@@ -862,6 +886,16 @@ return view(&#039;user.create&#039;, [
 &lt;/body&gt;
 &lt;/html&gt;
 </code></pre>
+{{ $slot }}の部分にコンテンツが入る。<br><br>
+blade
+<pre><code class="language-markup">
+&lt;x-admin-layout&gt;
+
+  &lt;!------- 何らかの内容 -------&gt;
+
+&lt;/x-admin-layout&gt;
+</code></pre>
+レイアウトファイル名が<code>admin.blade.php</code>なら，コンテンツ側のbladeファイルは内容全体を<code>&lt;x-admin-layout&gt;</code>～<code>&lt;/x-admin-layout&gt;</code>で囲む。
 
 </section>
 
@@ -1115,6 +1149,30 @@ function setCounter(obj) {
     });
 }
 </code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>ボタンクリックで確認ダイアログを表示する</h3>
+blade
+<pre><code class="language-markup">
+  &lt;input type=&quot;submit&quot; id=&quot;form__delbutton&quot; value=&quot;削除&quot;&gt;
+  &lt;script&gt;
+    deleteConfirm(&#039;form__delbutton&#039;);
+  &lt;/script&gt;
+</code></pre>
+JavaScript
+<pre><code class="language-javascript">
+/**
+* 削除ボタンをクリックしたときに確認ダイアログを表示する
+* @param id string 削除ボタンの要素Id
+*/
+function deleteConfirm(id) {
+    $(`#${id}`).on('click', (event) => {
+        if (!confirm("削除してもよろしいですか？")) return event.preventDefault();
+    });
+}
+ </code></pre>
+
+
+
 <!----------------------------- 見出し ----------------------------->
 <h3>sendResizedImg</h3>
 アップロードした画像をプレビュー表示して，それとは別に指定した大きさでリサイズした画像を送信したい場合に使う。あとで拡張できるようにクラス化しているので，使うときはインスタンスが必要。jQuery無しで動作し，フロントエンド側でリサイズ処理を行うのでphpにGDが入っていなくても動く。サーバー側の負担も回避できる。送信されるデータは文字列であり，ある程度想定されたデータサイズの範囲内で送られるため無理にバリデーションしなくても良い（originalモードで送信する場合は別）。<br>
@@ -1457,11 +1515,6 @@ class sendResizedImg {
  
 }
 </code></pre>
-<!----------------------------- 見出し ----------------------------->
-<h3>項目タイトル</h3>
-<pre><code class="language-php">
-</code></pre>
-
 
 </section>
 
