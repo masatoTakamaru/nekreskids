@@ -812,6 +812,56 @@ return view(&#039;user.create&#039;, [
 <h3>クラス名はBEM記法で</h3>
 検索すると色々出てくるが以下が分かりやすい。<br>
 <a href="https://laraweb.net/surrounding/8081/#:~:text=Block%20Element%20Modifier%20%E3%81%AE%E7%95%A5,%E3%81%AAClass%E5%91%BD%E5%90%8D%E8%A6%8F%E5%89%87%E3%81%A7%E3%81%99%E3%80%82">Laravel学習超</a>
+<!----------------------------- 見出し ----------------------------->
+<h3>レイアウトファイル</h3>
+レイアウトのファイルは<code>resources\views\layouts</code>配下に置く。以下にレイアウトbladeのサンプルを示す。
+<pre><code class="language-markup">
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;{{ str_replace(&#039;_&#039;, &#039;-&#039;, app()-&gt;getLocale()) }}&quot;&gt;
+
+&lt;head&gt;
+  &lt;meta charset=&quot;utf-8&quot;&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+  &lt;meta name=&quot;csrf-token&quot; content=&quot;{{ csrf_token() }}&quot;&gt;
+  &lt;title&gt;{{ config(&#039;app.name&#039;, &#039;Laravel&#039;) }}&lt;/title&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;/asset/bootstrap-5.0.2-dist/css/bootstrap.min.css&quot;&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;/asset/css/normalize.css&quot;&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;/asset/css/style.css&quot;&gt;
+  &lt;script src=&quot;/asset/js/jquery-3.6.4.min.js&quot;&gt;&lt;/script&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+  &lt;header class=&quot;app__header&quot;&gt;
+    &lt;div&gt;
+      &lt;a href=&quot;/&quot;&gt;アプリ名&lt;/a&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+      @guest
+      &lt;div&gt;
+        &lt;a href=&quot;/login&quot;&gt;ログイン&lt;/a&gt;
+      &lt;/div&gt;
+      &lt;div&gt;
+        &lt;a href=&quot;/userEntry&quot;&gt;新規ユーザー登録&lt;/a&gt;
+      &lt;/div&gt;
+      @endguest
+    &lt;/div&gt;
+  &lt;/header&gt;
+  &lt;main class=&quot;container&quot;&gt;
+    &lt;article&gt;
+      {{ $slot }}
+    &lt;/article&gt;
+  &lt;/main&gt;
+  &lt;footer&gt;
+    &lt;div&gt;
+      2023 Sample Corp.
+    &lt;/div&gt;
+  &lt;/footer&gt;
+  &lt;script src=&quot;/asset/bootstrap-5.0.2-dist/js/bootstrap.bundle.min.js&quot;&gt;&lt;/script&gt;
+  &lt;script type=&quot;text/javascript&quot; src=&quot;//jpostal-1006.appspot.com/jquery.jpostal.js&quot;&gt;&lt;/script&gt;
+  &lt;script src=&quot;/asset/js/guest.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
 
 </section>
 
