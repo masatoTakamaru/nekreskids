@@ -219,9 +219,32 @@ public function confirm(Request $request)
 <h3>ログイン後のページ遷移先を変更する</h3>
 ログイン処理を行った際に遷移するページの指定は，<code>app\Providers\RouteServiceProvider.php</code>に記述されている<code>public const HOME = '/dashboard';</code>の部分。例えば，ログイン後に<code>admin/dashboard</code>に移動したいなら，<code>public const HOME = '/admin/dashboard';</code>とすれば良い。
 <!----------------------------- 見出し ----------------------------->
+<h3>GETでパラーメータを送る</h3>
+GETメソッドでページ遷移するときにパラーメータが必要な場合は以下のように書く。
+<pre><code class="language-markup">
+&lt;a href=&quot;/admin/user/detail?id={{ $objData-&gt;id }}&quot;&gt;
+  {{$objData-&gt;name}}
+&lt;/a&gt;
+</code></pre>
+パラーメータが複数ある場合は&で繋ぐ
+<pre><code class="language-markup">
+&lt;a href=&quot;/admin/user/detail?id={{ $objData-&gt;id }}&amp;param={{ $objData->param }}&quot;&gt;
+  {{$objData-&gt;name}}
+&lt;/a&gt;
+</code></pre>
+  <!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+
 </section>
 
 <!--------------------------- セクションここまで --------------------------->
@@ -647,6 +670,7 @@ class UserEntryController extends Controller
 <code>index</code>メソッドはGETのみ受け入れる（検索リクエストもGET）。<br><code>create</code>メソッドはGETなら入力フォームの画面を表示し，POSTならレコードを新規保存する。それ以外は受け付けない。<br><code>detail</code>メソッドはGETなら詳細画面を表示し，DELETEならレコードを削除する。それ以外は受け付けない。<br><code>edit</code>メソッドはGETなら編集フォームの画面を表示し，PATCHならレコードを更新する。それ以外は受け付けない。
 <pre><code class="language-php">
 </code></pre>
+
 <!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
@@ -689,18 +713,28 @@ class Company extends Model
 補足であるが，<code>create()</code>や<code>update()</code>の引数は連想配列なので誤ってオブジェクトを入れないように注意する。オブジェクトのデータを使いたいなら<code>$arrData = $objData->toArray();</code>などとして，いったん連想配列に変換すると良い。<br>
 fillableの便利な点は，引数として与える連想配列にテーブルに関係ない要素が含まれていてもそれらを自動的に取り除いてくれるところにある。連想配列は様々な処理のためにもともとテーブルのカラムに無い要素を追加していることも多いが，そういう場合でも気にせず引数としてそのまま放り込んでしまって良い（ただし動作検証は行うこと）。
 <!----------------------------- 見出し ----------------------------->
+<h3>ペジネーションが付加されたモデルの扱い</h3>
+データの一覧を表示するページではモデルに<code>paginate()</code>を付加することが多い。これによって取り出されたオブジェクトはSQLから取得した情報の他にペジネーション情報を持っている。
+
+<pre><code class="language-php">
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
+<!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
+<!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
+<!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
+<!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>

@@ -64,9 +64,8 @@
             @error('charge') <p class="alert">{{ $message }}</p> @enderror
           </div>
           <div>
-            <button type="submit" name="transit" class="edit__submit" value="confirm">次に進む</button>
+            <button type="submit" class="edit__submit">登録する</button>
           </div>
-          <input type="hidden" name="jsonData" value="{{ old('jsonData', $jsonData) }}">
         </form>
       </div>
     </div>

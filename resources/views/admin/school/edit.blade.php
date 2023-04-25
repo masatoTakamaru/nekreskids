@@ -1,11 +1,12 @@
-<x-guest-layout>
+<x-admin-layout>
   <article class="contents">
     <div class="contents__inner">
       <header>
-        <h2>学校ユーザー登録</h2>
+        <h2>学校ユーザー編集</h2>
       </header>
       <div>
         <form action="/admin/school/edit" method="post">
+          @method('patch')
           @csrf
           <div>
             <label for="email" class="edit__label">メールアドレス</label>
@@ -64,14 +65,13 @@
             @error('charge') <p class="alert">{{ $message }}</p> @enderror
           </div>
           <div>
-            <button type="submit" name="transit" class="" value="confirm">次に進む</button>
+            <button type="submit" class="edit__submit">登録する</button>
           </div>
-          <input type="hidden" name="jsonData" value="{{ old('jsonData', $jsonData) }}">
         </form>
       </div>
     </div>
   </article>
-</x-guest-layout>
+</x-admin-layout>
 <script>
   togglePassIcon('password');
   setJpostal({
