@@ -833,9 +833,35 @@ return view(&#039;user.create&#039;, [
 @error(&#039;email&#039;) &lt;p class=&quot;alert&quot;&gt;{{ $message }}&lt;/p&gt; @enderror
 </code></pre>
 <!----------------------------- 見出し ----------------------------->
-<h3>クラス名はBEM記法で</h3>
+<h3>クラス名の扱い ― BEM記法</h3>
 検索すると色々出てくるが以下が分かりやすい。<br>
-<a href="https://laraweb.net/surrounding/8081/#:~:text=Block%20Element%20Modifier%20%E3%81%AE%E7%95%A5,%E3%81%AAClass%E5%91%BD%E5%90%8D%E8%A6%8F%E5%89%87%E3%81%A7%E3%81%99%E3%80%82">Laravel学習超</a>
+<a href="https://laraweb.net/surrounding/8081/#:~:text=Block%20Element%20Modifier%20%E3%81%AE%E7%95%A5,%E3%81%AAClass%E5%91%BD%E5%90%8D%E8%A6%8F%E5%89%87%E3%81%A7%E3%81%99%E3%80%82">Laravel学習帳</a><br>
+
+ビューの修正等でクラスを追加する場合，<code>public\asset\css</code>配下に<code>bls-web.css</code>を設置して記述するものとする。<br>システムメンバー側で設置するクラスはBEM記法の前に<code>bls-web__</code>を加えることで判別できるようにする。したがって，<code>bls-web.css</code>はコード全体を<code>.bls-web { }</code>でラップする形になり，その中に追加したいクラスを記述することになる。
+<pre><code class="language-css">
+.bls-web {
+  &__someBlock {
+    /* ↓ クラス名は bls-web__someBlock__someElem*/
+    &__someElem {
+      /* プロパティ */
+    }
+    /* ↓ クラス名は bls-web__someBlock__anotherElem*/
+    &__anotherElem {  
+      /* プロパティ */
+      /* ↓ クラス名は bls-web__someBlock__anotherElem-add */
+      &-add {
+        /* プロパティ */
+      }
+    }
+  }
+  &__anotherBlock {
+    &__someElem {
+      /* プロパティ */
+    }
+  }
+}
+</code></pre>
+
 <!----------------------------- 見出し ----------------------------->
 <h3>レイアウトファイル</h3>
 レイアウトのファイルは<code>resources\views\layouts</code>配下に置く。以下にレイアウトbladeのサンプルを示す。
