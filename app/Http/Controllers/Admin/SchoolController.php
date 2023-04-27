@@ -9,18 +9,33 @@ use App\Http\Controllers\Controller;
 
 class SchoolController extends Controller
 {
+    private $dir = 'school';
+    private $model = null;
+    private $fillableExt = [];
+
+    public function __construct()
+    {
+        $this->model = new School;
+        $this->fillableExt = array_merge($this->model->getFillable(), [
+            /*----------- 項目を追加する場合はここに記入 -----------*/
+            'email',
+            'password',
+            /*--------------------- ここまで ---------------------*/
+        ]);
+        $this->model->setAttrs(array_fill_keys($this->fillableExt, null));
+
+        /*---------- 初期値を与える場合はここに記入 ----------*/
+        $this->model->score = 0;
+        /*-------------------- ここまで --------------------*/
+    }
+
     public function index(Request $request)
     {
-        $school = new School;
+        $objData = $this->model;
+        $objData->getList($request->keywords);
 
-        if ($request->keywords) {
-            $entity = $school->searchEntity($request->keywords);
-        } else {
-            $entity = $school->getEntityList();
-        }
-
-        return view('admin.school.school-index', [
-            'objData' => !empty($entity) ? $entity : null,
+        return view("admin.$this->dir.index", [
+            'objData' => $objData,
             'keywords' => $request->keywords,
         ]);
     }

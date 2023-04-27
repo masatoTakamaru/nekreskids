@@ -68,4 +68,27 @@ class School extends Model
 
         return $objResult;
     }
+
+    /**
+     * 学校ユーザー一覧を取得
+     * @param array $keywords 絞込検索キーワード（複数）
+     * @return obj
+     */
+    public function getList($keywords)
+    {
+        $query = DB::table('users')
+            ->select(
+                'users.*',
+                'users.del_flg as u_del_flg',
+                'schools.*',
+                'schools.del_flg as s_del_flg',
+            )
+            ->leftJoin('schools', 'users.id', '=', 'schools.user_id');
+
+        $condition = [];
+        $objData = $query->where($condition)->paginate(10);
+
+        dd($objData);
+        return $objData;
+    }
 }
