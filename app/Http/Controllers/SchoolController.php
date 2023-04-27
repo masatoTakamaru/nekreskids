@@ -16,14 +16,15 @@ use Carbon\Carbon;
 
 class SchoolController extends Controller
 {
+    private $dir = 'school';
     private $model = null;
-    private $fillableExt = [];  //メソッド間の受け渡し項目
+    private $fillableExt = [];
 
     public function __construct()
     {
         $this->model = new School();
         $this->fillableExt = array_merge($this->model->getFillable(), [
-            /*-- メソッド間の受け渡し項目を追加する場合はここに記入 --*/
+            /*----------- 項目を追加する場合はここに記入 -----------*/
             'email',
             'password',
             /*--------------------- ここまで ---------------------*/
@@ -40,17 +41,17 @@ class SchoolController extends Controller
         if (!$request->isMethod('get') && !$request->isMethod('post')) abort(404);
 
         if ($request->isMethod('post')) {
-            $arrData = json_decode($request->jsonData, true);
-            $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
+            $arrTemp = json_decode($request->jsonData, true);
+            $jsonData = json_encode(array_merge($arrTemp, $request->only($this->fillableExt)));
 
             /*---------- 下書き保存 ----------*/
             if ($request->has('action') && $request->action === 'draft') {
-                return redirect('school/draft-complete')->with('jsonData', $jsonData);
+                return redirect("$this->dir/draft-complete")->with('jsonData', $jsonData);
             }
 
             /*---------- ページ遷移 ----------*/
             if ($request->has('transit')) {
-                return redirect('/school/' . $request->transit)->with('jsonData', $jsonData);
+                return redirect("/$this->dir/" . $request->transit)->with('jsonData', $jsonData);
             }
         }
 
@@ -64,7 +65,7 @@ class SchoolController extends Controller
             $objData->setAttrs(json_decode($jsonData, true));
         }
 
-        return view('school.create', [
+        return view("$this->dir.create", [
             'objData' => $objData,
             'jsonData' => $jsonData,
         ]);
@@ -81,15 +82,15 @@ class SchoolController extends Controller
 
             /*---------- 下書き保存 ----------*/
             if ($request->has('action') && $request->action === 'draft') {
-                return redirect('school/draft-complete')->with('jsonData', $jsonData);
+                return redirect("$this->dir/draft-complete")->with('jsonData', $jsonData);
             }
 
             /*---------- ページ遷移 ----------*/
             if ($request->has('transit')) {
-                return redirect('/school/' . $request->transit)->with('jsonData', $jsonData);
+                return redirect("/$this->dir/" . $request->transit)->with('jsonData', $jsonData);
             }
 
-            return redirect('/school/complete')->with('jsonData', $jsonData);
+            return redirect("/$this->dir/complete")->with('jsonData', $jsonData);
         }
 
         /*---------- getの場合 ----------*/
@@ -101,7 +102,7 @@ class SchoolController extends Controller
         $objData->address = $objData->pref . $objData->city . $objData->address;
         /*--------------------- ここまで ---------------------*/
 
-        return view('school.confirm', [
+        return view("$this->dir.confirm", [
             'objData' => $objData,
             'jsonData' => $jsonData,
         ]);
@@ -120,7 +121,7 @@ class SchoolController extends Controller
 
         $this->model->newEntry($jsonData, 'public');
 
-        return view('school.complete');
+        return view("$this->dir.complete");
     }
 
     public function draft_complete(Request $request)
@@ -135,6 +136,6 @@ class SchoolController extends Controller
         /*---------- データを整形する場合はここに記入 ----------*/
         /*--------------------- ここまで ---------------------*/
 
-        return view('school.draft-complete');
+        return view("$this->dir.draft-complete");
     }
 }

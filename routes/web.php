@@ -44,7 +44,7 @@ Route::any('/{url}', function () {
             //1階層構成
             $path .= $arrUrl[1] . 'Controller';
             break;
-        case !empty($arrUrl[2]):
+        case !empty($arrUrl[2]) && empty($arrUrl[3]):
             //2階層構成
             $path .= Str::studly($arrUrl[1]) . 'Controller';
             $action = Str::replace('-', '_', $arrUrl[2]);
