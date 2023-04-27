@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
+use App\Traits\Common;
 
 class School extends Model
 {
     use HasFactory;
+    use Common;
 
     protected $fillable = [
         'name',
@@ -38,16 +40,6 @@ class School extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    /**
-     * モデルのプロパティを連想配列でまとめて格納する
-     */
-    public function setAttrs($attrs): void
-    {
-        foreach ($attrs as $key => $value) {
-            $this->$key = $value;
-        }
     }
 
     /**

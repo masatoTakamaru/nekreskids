@@ -8,10 +8,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Traits\Common;
 
 class Instructor extends Model
 {
     use HasFactory;
+    use Common;
 
     protected $fillable = [
         //'user_id',
@@ -46,16 +48,6 @@ class Instructor extends Model
     }
 
     /**
-     * モデルのプロパティを連想配列でまとめて格納する
-     */
-    public function setAttrs($props): void
-    {
-        foreach ($props as $key => $value) {
-            $this->$key = $value;
-        }
-    }
-
-        /**
      * ユーザー情報を保存する関数
      * 
      * @param string $jsonData json文字列化したuserとInstructorモデル
