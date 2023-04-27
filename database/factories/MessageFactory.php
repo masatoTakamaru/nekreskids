@@ -30,7 +30,7 @@ class MessageFactory extends Factory
             'recipient' => $recipient->id,
             'message' => 'サンプルメッセージ' . fake()->realText(490),
             'read_flg' => 0,
-            'del_flg' => mt_rand(0, 4) ? 0 : 1,
+            'del_flg' => mt_rand(0, 2) ? 0 : 1,
         ];
     }
 }

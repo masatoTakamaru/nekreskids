@@ -75,7 +75,7 @@ class InstructorFactory extends Factory
             'address' => fake()->streetAddress(),
             'tel' => mt_rand(0, 4) ? str_replace('-', '', fake()->phoneNumber()) : null,
             'keep' => 0,
-            'del_flg' => mt_rand(0, 4) ? 0 : 1,
+            'del_flg' => mt_rand(0, 2) ? 0 : 1,
         ];
     }
 }
