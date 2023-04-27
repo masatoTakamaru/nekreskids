@@ -18,11 +18,12 @@ use Carbon\Carbon;
 class InstructorController extends Controller
 {
     private $model = null;
+    private $dir = 'instructor';
     private $fillableExt = [];  //メソッド間の受け渡し項目
 
     public function __construct()
     {
-        $this->model = new Instructor();
+        $this->model = new Instructor;
         $this->fillableExt = array_merge($this->model->getFillable(), [
             /*-- メソッド間の受け渡し項目を追加する場合はここに記入 --*/
             'email',
@@ -51,12 +52,12 @@ class InstructorController extends Controller
 
             /*---------- 下書き保存 ----------*/
             if ($request->has('action') && $request->action === 'draft') {
-                return redirect('instructor/draft-complete')->with('jsonData', $jsonData);
+                return redirect("/$this->dir/draft-complete")->with('jsonData', $jsonData);
             }
 
             /*---------- ページ遷移 ----------*/
             if ($request->has('transit')) {
-                return redirect('/instructor/' . $request->transit)->with('jsonData', $jsonData);
+                return redirect("/$this->dir/$request->transit")->with('jsonData', $jsonData);
             }
         }
 
@@ -70,7 +71,7 @@ class InstructorController extends Controller
             $objData->setAttrs(json_decode($jsonData, true));
         }
 
-        return view('instructor.step1', [
+        return view("$this->dir.step1", [
             'objData' => $objData,
             'jsonData' => $jsonData,
             'genders' => UserConst::GENDERS,
@@ -87,12 +88,12 @@ class InstructorController extends Controller
 
             /*---------- 下書き保存 ----------*/
             if ($request->has('action') && $request->action === 'draft') {
-                return redirect('instructor/draft-complete')->with('jsonData', $jsonData);
+                return redirect("$this->dir/draft-complete")->with('jsonData', $jsonData);
             }
 
             /*---------- ページ遷移 ----------*/
             if ($request->has('transit')) {
-                return redirect('/instructor/' . $request->transit)->with('jsonData', $jsonData);
+                return redirect("/$this->dir/$request->transit")->with('jsonData', $jsonData);
             }
         }
 
@@ -105,7 +106,7 @@ class InstructorController extends Controller
             $objData->setAttrs(json_decode($jsonData, true));
         }
 
-        return view('instructor.step2', [
+        return view("$this->dir.step2", [
             'objData' => $objData,
             'jsonData' => $jsonData,
         ]);
@@ -120,11 +121,11 @@ class InstructorController extends Controller
             $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
             //下書き保存
             if ($request->has('action') && $request->action === 'draft') {
-                return redirect('instructor/draft-complete')->with('jsonData', $jsonData);
+                return redirect("$this->dir/draft-complete")->with('jsonData', $jsonData);
             }
             //ページ遷移
             if ($request->has('transit')) {
-                return redirect('/instructor/' . $request->transit)->with('jsonData', $jsonData);
+                return redirect("/$this->dir/" . $request->transit)->with('jsonData', $jsonData);
             }
         }
 
@@ -136,7 +137,7 @@ class InstructorController extends Controller
             $jsonData = $request->session()->get('jsonData');
             $objData->setAttrs(json_decode($jsonData, true));
         }
-        return view('instructor.step3', [
+        return view("$this->dir.step3", [
             'objData' => $objData,
             'jsonData' => $jsonData,
             'arrActivities' => RecruitConst::ACTIVITIES,
@@ -156,11 +157,11 @@ class InstructorController extends Controller
             $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
             //下書き保存
             if ($request->has('action') && $request->action === 'draft') {
-                return redirect('instructor/draft-complete')->with('jsonData', $jsonData);
+                return redirect("/$this->dir/draft-complete")->with('jsonData', $jsonData);
             }
             //ページ遷移
             if ($request->has('transit')) {
-                return redirect('/instructor/' . $request->transit)->with('jsonData', $jsonData);
+                return redirect("/$this->dir/$request->transit")->with('jsonData', $jsonData);
             }
         }
 
@@ -188,7 +189,7 @@ class InstructorController extends Controller
         $objData->act_areas = implode('<br>', $actAreas);
         /*  ここまで  */
 
-        return view('instructor.confirm', [
+        return view("$this->dir.confirm", [
             'objData' => $objData,
             'jsonData' => $jsonData,
         ]);
@@ -204,7 +205,7 @@ class InstructorController extends Controller
         $objData = $this->model;
         $objData->newEntry($jsonData, 'public');
 
-        return view('instructor.complete');
+        return view("$this->dir.complete");
     }
 
     public function draft_complete(Request $request)
@@ -217,6 +218,6 @@ class InstructorController extends Controller
         $objData = $this->model;
         $objData->newEntry($jsonData, 'draft');
 
-        return view('instructor.draft-complete');
+        return view("$this->dir.draft-complete");
     }
 }
