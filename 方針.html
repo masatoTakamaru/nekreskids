@@ -439,6 +439,7 @@ draft-complete
 class UserEntryController extends Controller
 {
     private $model = null;
+    private $dir = 'userEntry'; //コントローラー内で共通して使うディレクトリ名
     private $fillableExt = [];
 
     public function __construct()
@@ -465,20 +466,20 @@ class UserEntryController extends Controller
         if ($request->isMethod('post')) {
             //jsonDataにはstep1～step3の全項目のデータが入っている
             //json_decode()で連想配列に変換する
-            $arrData = json_decode($request->jsonData, true);
+            $arrTemp = json_decode($request->jsonData, true);
             //step1で入力されたデータとstep2/3で入力されたデータをマージしてjson文字列に変換
-            $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
+            $jsonData = json_encode(array_merge($arrTemp, $request->only($this->fillableExt)));
 
             /*---------- 下書き保存 ----------*/
             if ($request->has('action') && $request->action === 'draft') {
                 //post→getの遷移はredirect()で行い，with()でセッション値を送る
-                return redirect('/userEntry/draft-complete')->with('jsonData', $jsonData);
+                return redirect("/$this->dir/draft-complete")->with('jsonData', $jsonData);
             }
 
             /*---------- ページ遷移 ----------*/
             if ($request->has('transit')) {
                 //transitには遷移先のurlが格納されている。こちらも同様にwith()でセッション値を送る
-                return redirect('/userEntry/' . $request->transit)->with('jsonData', $jsonData);
+                return redirect("/$this->dir/$request->transit")->with('jsonData', $jsonData);
             }
         }
 
@@ -508,7 +509,7 @@ class UserEntryController extends Controller
         /*---------- 表示用データを加工する場合はここ ----------*/
         /*----------------- ここまで -------------------------*/
 
-        return view('userEntry.step1', [
+        return view("$this->dir.step1", [
             'objData' => $objData,
             'jsonData' => $jsonData,
         ]);
@@ -520,17 +521,17 @@ class UserEntryController extends Controller
         if (!$request->isMethod('get') && !$request->isMethod('post')) abort(404);
 
         if ($request->isMethod('post')) {
-            $arrData = json_decode($request->jsonData, true);
-            $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
+            $arrTemp = json_decode($request->jsonData, true);
+            $jsonData = json_encode(array_merge($arrTemp, $request->only($this->fillableExt)));
 
             /*---------- 下書き保存 ----------*/
             if ($request->has('action') && $request->action === 'draft') {
-                return redirect('/userEntry/draft-complete')->with('jsonData', $jsonData);
+                return redirect("/$this->dir/draft-complete")->with('jsonData', $jsonData);
             }
 
             /*---------- ページ遷移 ----------*/
             if ($request->has('transit')) {
-                return redirect('/userEntry/' . $request->transit)->with('jsonData', $jsonData);
+                return redirect("/$this->dir/$request->transit")->with('jsonData', $jsonData);
             }
         }
 
@@ -547,7 +548,7 @@ class UserEntryController extends Controller
         /*---------- 表示用データを加工する場合はここ ----------*/
         /*----------------- ここまで -------------------------*/
 
-        return view('userEntry.step2', [
+        return view("$this->dir.step2", [
             'objData' => $objData,
             'jsonData' => $jsonData,
         ]);
@@ -558,17 +559,17 @@ class UserEntryController extends Controller
         if (!$request->isMethod('get') && !$request->isMethod('post')) abort(404);
 
         if ($request->isMethod('post')) {
-          $arrData = json_decode($request->jsonData, true);
-          $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
+          $arrTemp = json_decode($request->jsonData, true);
+          $jsonData = json_encode(array_merge($arrTemp, $request->only($this->fillableExt)));
 
           /*---------- 下書き保存 ----------*/
           if ($request->has('action') && $request->action === 'draft') {
-              return redirect('/userEntry/draft-complete')->with('jsonData', $jsonData);
+              return redirect("/$this->dir/draft-complete")->with('jsonData', $jsonData);
           }
 
           /*---------- ページ遷移 ----------*/
           if ($request->has('transit')) {
-              return redirect('/userEntry/' . $request->transit)->with('jsonData', $jsonData);
+              return redirect("/$this->dir/$request->transit")->with('jsonData', $jsonData);
           }
       }
 
@@ -585,7 +586,7 @@ class UserEntryController extends Controller
         /*---------- 表示用データを加工する場合はここ ----------*/
         /*----------------- ここまで -------------------------*/
 
-        return view('userEntry.step3', [
+        return view("$this->dir.step3", [
             'objData' => $objData,
             'jsonData' => $jsonData,
         ]);
@@ -598,17 +599,17 @@ class UserEntryController extends Controller
         if ($request->isMethod('get') && !$request->session()->has('jsonData')) abort(404);
 
         if ($request->isMethod('post')) {
-          $arrData = json_decode($request->jsonData, true);
-          $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
+          $arrTemp = json_decode($request->jsonData, true);
+          $jsonData = json_encode(array_merge($arrTemp, $request->only($this->fillableExt)));
 
           /*---------- 下書き保存 ----------*/
           if ($request->has('action') && $request->action === 'draft') {
-              return redirect('/userEntry/draft-complete')->with('jsonData', $jsonData);
+              return redirect("/$this->dir/draft-complete")->with('jsonData', $jsonData);
           }
 
           /*---------- ページ遷移 ----------*/
           if ($request->has('transit')) {
-              return redirect('/userEntry/' . $request->transit)->with('jsonData', $jsonData);
+              return redirect("/$this->dir/$request->transit")->with('jsonData', $jsonData);
           }
       }
 
@@ -625,7 +626,7 @@ class UserEntryController extends Controller
       /*---------- 表示用データを加工する場合はここ ----------*/
       /*----------------- ここまで -------------------------*/
 
-      return view('userEntry.confirm', [
+      return view("$this->dir.confirm", [
             'objData' => $objData,
             'jsonData' => $jsonData,
         ]);
@@ -644,7 +645,7 @@ class UserEntryController extends Controller
         $objData = $this->model;
         $objData->newEntry($jsonData, 'public');
 
-        return view('userEntry.complete');
+        return view("$this->dir.complete");
     }
 
     public function draft_complete(Request $request)
@@ -660,7 +661,7 @@ class UserEntryController extends Controller
         $objData = $this->model;
         $objData->newEntry($jsonData, 'draft');
 
-        return view('userEntry.draft-complete');
+        return view("$this->dir.draft-complete");
     }
 }
 </code></pre>
