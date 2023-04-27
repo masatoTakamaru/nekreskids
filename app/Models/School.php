@@ -78,9 +78,12 @@ class School extends Model
     {
         $query = DB::table('users')
             ->select(
-                'users.*',
+                'users.id',
+                'users.email',
                 'users.del_flg as u_del_flg',
-                'schools.*',
+                'schools.name',
+                'schools.pref',
+                'schools.city',
                 'schools.del_flg as s_del_flg',
             )
             ->leftJoin('schools', 'users.id', '=', 'schools.user_id');

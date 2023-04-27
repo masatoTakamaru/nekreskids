@@ -17,7 +17,7 @@ class SchoolScoreFactory extends Factory
     {
         return [
             'score' => mt_rand(0,4)?mt_rand(1,5):null,
-            'del_flg' => mt_rand(0, 4) ? 1 : 0,
+            'del_flg' => mt_rand(0, 4) ? 0 : 1,
 
         ];
     }        

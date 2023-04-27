@@ -23,7 +23,7 @@ class NoticeFactory extends Factory
             'content' => 'サンプル本文' . fake()->realText(990),
             'publish_date' => fake()->dateTimeBetween('-3 months','+1 week'),
             'status' => fake()->randomKey($statuses),
-            'del_flg' => mt_rand(0, 4) ? 1 : 0,
+            'del_flg' => mt_rand(0, 4) ? 0 : 1,
         ];
     }        
 }

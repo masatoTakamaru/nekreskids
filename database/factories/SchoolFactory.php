@@ -33,7 +33,7 @@ class SchoolFactory extends Factory
             'tel2' => mt_rand(0, 4) ? str_replace('-', '', fake()->phoneNumber()) : null,
             'charge' => fake()->name(),
             'score' => 0,
-            'del_flg' => mt_rand(0, 4) ? 1 : 0,
+            'del_flg' => mt_rand(0, 4) ? 0 : 1,
 
         ];
     }

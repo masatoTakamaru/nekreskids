@@ -18,7 +18,7 @@ class InquiryFactory extends Factory
         return [
             'email' => fake()->email(),
             'message' => 'サンプル内容' . fake()->realText(990),
-            'del_flg' => mt_rand(0, 4) ? 1 : 0,
+            'del_flg' => mt_rand(0, 4) ? 0 : 1,
         ];
     }
 }
