@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
-use App\Traits\Common;
+use App\Traits\ModelTrait;
 
 class School extends Model
 {
     use HasFactory;
-    use Common;
+    use ModelTrait;
 
     protected $fillable = [
         'name',

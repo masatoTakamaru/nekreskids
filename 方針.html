@@ -743,9 +743,42 @@ fillableの便利な点は，引数として与える連想配列にテーブル
 <pre><code class="language-php">
 </code></pre>
 <!----------------------------- 見出し ----------------------------->
-<h3>項目タイトル</h3>
+<h3>クラス同士で共通する処理―traitの活用</h3>
+コントローラーにおいても同様だが，様々なクラス同士で共通する処理が存在する場合，phpの機能であるtraitを活用する。<br><code>app\Traits</code>ディレクトリを作成し，モデル間の共通した処理ならファイル名を<code>ModelTraits.php</code>などとする。<br><br><code>app\Traits\ModelTraits.php</code>
 <pre><code class="language-php">
+&lt;?php
+
+namespace App\Traits;
+
+trait ModelTrait {
+    /**
+      * モデルのプロパティを連想配列でまとめて格納する
+      * @param $attrs array モデルのプロパティと値を格納した連想配列
+    */
+    public function setAttrs($attrs): void
+    {
+        foreach ($attrs as $key =&gt; $value) {
+            $this-&gt;$key = $value;
+        }
+    }
+}
 </code></pre>
+<code>User.php</code>
+<pre><code class="language-php">
+use App\Traits\ModelTrait;
+
+class User extends Model
+{
+    use ModelTrait;
+
+}
+</code></pre>
+コントローラーから利用する例は以下。
+<pre><code class="language-php">
+$model = new User;
+$model->setAttrs($obj); //モデル内にメソッドを書いた場合と同じように動く
+</code></pre>
+ここではモデルにtraitを設置する例を挙げたが，コントローラーやその他のものでもクラスに対して同様にtraitを設置することができる。
 <!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
@@ -774,7 +807,7 @@ fillableの便利な点は，引数として与える連想配列にテーブル
 <h2>ビュー</h2>
 <!----------------------------- 見出し ----------------------------->
 <h3>cssとJavaScriptの分離</h3>
-bladeの中にstyle要素やJavaScriptのコードが入ると保守性が下がるので、原則として別ファイルに記述して、layout側でファイルを読み込むように追記しておく。bootstrapやjQueryを使いたいときも同様。また，JavsScriptのコードは必ず関数でラップして、意図しないページでコードが動作しないようにしておく。<br>cssファイルは<code>public\asset\css</code>配下に置き，JavaScriptファイルは<code>public\asset\js</code>配下に置く。
+bladeの中にstyle要素やJavaScriptのコードが入ると保守性が下がるので、原則として別ファイルに記述して、layout側でファイルを読み込むように追記してお。bootstrapやjQueryを使いたいときも同様。また，JavsScriptのコードは必ず関数でラップして、意図しないページでコードが動作しないようにしておく。<br>cssファイルは<code>public\asset\css</code>配下に置き，JavaScriptファイルは<code>public\asset\js</code>配下に置く。
 <br>JavaScript
 <pre><code class="language-php">
 function myFunc() {
@@ -922,6 +955,41 @@ blade
 &lt;/x-admin-layout&gt;
 </code></pre>
 レイアウトファイル名が<code>admin.blade.php</code>なら，コンテンツ側のbladeファイルは内容全体を<code>&lt;x-admin-layout&gt;</code>～<code>&lt;/x-admin-layout&gt;</code>で囲む。
+
+<!----------------------------- 見出し ----------------------------->
+<h3>レイアウトの呼び出し</h3>
+レイアウトを追加した場合は，<code>app\View\Components</code>配下に<code>AdminLayout.php</code>のようなファイルを作り，レイアウトファイルを呼び出す。
+<pre><code class="language-php">
+&lt;?php
+
+namespace App\View\Components;
+
+use Illuminate\View\Component;
+use Illuminate\View\View;
+
+class AdminLayout extends Component
+{
+    /**
+      * Get the view / contents that represents the component.
+      */
+    public function render(): View
+    {
+        return view('layouts.admin');
+    }
+}  
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
 
 </section>
 

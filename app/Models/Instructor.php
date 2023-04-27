@@ -8,12 +8,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use App\Traits\Common;
+use App\Traits\ModelTrait;
 
 class Instructor extends Model
 {
     use HasFactory;
-    use Common;
+    use ModelTrait;
 
     protected $fillable = [
         //'user_id',
