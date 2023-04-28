@@ -10,7 +10,6 @@ use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InstructorStep1Request;
 use App\Http\Requests\InstructorStep2Request;
-use App\Models\School;
 use App\Models\User;
 use Carbon\Carbon;
 
@@ -22,11 +21,18 @@ class SchoolController extends Controller
 
     public function __construct()
     {
-        $this->model = new School();
+        $this->model = new User;
         $this->fillableExt = array_merge($this->model->getFillable(), [
             /*----------- 項目を追加する場合はここに記入 -----------*/
-            'email',
-            'password',
+            'name',
+            'zip',
+            'pref',
+            'city',
+            'address',
+            'tel1',
+            'tel2',
+            'charge',
+            'score',
             /*--------------------- ここまで ---------------------*/
         ]);
         $this->model->setAttrs(array_fill_keys($this->fillableExt, null));
@@ -40,6 +46,7 @@ class SchoolController extends Controller
     {
         if (!$request->isMethod('get') && !$request->isMethod('post')) abort(404);
 
+        /*---------- postの場合 ----------*/
         if ($request->isMethod('post')) {
             $arrTemp = json_decode($request->jsonData, true);
             $jsonData = json_encode(array_merge($arrTemp, $request->only($this->fillableExt)));
@@ -76,6 +83,7 @@ class SchoolController extends Controller
         if (!$request->isMethod('get') && !$request->isMethod('post')) abort(404);
         if ($request->isMethod('get') && !$request->session()->has('jsonData')) abort(404);
 
+        /*---------- postの場合 ----------*/
         if ($request->isMethod('post')) {
             $arrData = json_decode($request->jsonData, true);
             $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));

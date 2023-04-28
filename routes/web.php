@@ -31,10 +31,10 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::any('/{url}', function () {
-    $arrUrl = explode('/', request()->getRequestUri());
+    $arrUrl = explode('?', request()->getRequestUri());
+    $arrUrl = explode('/', $arrUrl[0]);
     $action = 'index';
     $path = 'App\Http\Controllers\\';
-
     switch (true) {
         case empty($arrUrl[1]):
             //0階層構成

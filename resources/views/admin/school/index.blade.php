@@ -13,24 +13,24 @@
       </div>
       <table class="index__table">
         <tbody>
-          <tr class="index_item">
+          <tr>
             <th class="index__label">ID</th>
-            <td class="index__value">{{$objData->id}}</td>
-          </tr>
-          <tr class="index_item">
             <th class="index__label">学校名</th>
-            <td class="index__value">
-              <a href="/admin/school/detail?id={{ $objData->id }}">{{$objData->name}}</a>
-            </td>
-          </tr>
-          <tr class="index_item">
             <th class="index__label">メールアドレス</th>
-            <td class="index__value">{{$objData->email}}</td>
-          </tr>
-          <tr class="index_item">
             <th class="index__label">住所</th>
-            <td class="index__value">{{$objData->pref}}{{$objData->city}}</td>
           </tr>
+          @if(!empty($objData))
+          @foreach($objData as $item)
+          <tr class="index_item">
+            <td class="index__value">{{$item->id}}</td>
+            <td class="index__value">
+              <a href="/admin/school/detail?id={{ $item->id }}">{{$item->name}}</a>
+            </td>
+            <td class="index__value">{{$item->email}}</td>
+            <td class="index__value">{{$item->pref}}{{$item->city}}</td>
+          </tr>
+          @endforeach
+          @endif
         </tbody>
       </table>
     </div>

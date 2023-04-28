@@ -770,14 +770,14 @@ use App\Traits\ModelTrait;
 
 class User extends Model
 {
-    use ModelTrait;
+    use ModelTrait;   // ←これでクラス内にsetAttrs()を書いた場合と同等になる
 
 }
 </code></pre>
 コントローラーから利用する例は以下。
 <pre><code class="language-php">
 $model = new User;
-$model->setAttrs($obj); //モデル内にメソッドを書いた場合と同じように動く
+$model->setAttrs($obj); //モデル内にメソッドを書いた場合と同様の書き方でよい
 </code></pre>
 ここではモデルにtraitを設置する例を挙げたが，コントローラーやその他のものでもクラスに対して同様にtraitを設置することができる。
 <!----------------------------- 見出し ----------------------------->
@@ -871,24 +871,25 @@ return view(&#039;user.create&#039;, [
 検索すると色々出てくるが以下が分かりやすい。<br>
 <a href="https://laraweb.net/surrounding/8081/#:~:text=Block%20Element%20Modifier%20%E3%81%AE%E7%95%A5,%E3%81%AAClass%E5%91%BD%E5%90%8D%E8%A6%8F%E5%89%87%E3%81%A7%E3%81%99%E3%80%82">Laravel学習帳</a><br>
 
-ビューの修正等でクラスを追加する場合，<code>public\asset\css</code>配下に<code>bls-web.css</code>を設置して記述するものとする。<br>システムメンバー側で設置するクラスはBEM記法の前に<code>bls-web__</code>を加えることで判別できるようにする。したがって，<code>bls-web.css</code>はコード全体を<code>.bls-web { }</code>でラップする形になり，その中に追加したいクラスを記述することになる。
+ビューの修正等でクラスを追加する場合，<code>public\asset\css</code>配下に<code>bsys.css</code>を設置して記述するものとする。<br>システムメンバー側で設置するクラスはBEM記法の前に<code>bsys__</code>を加えることで判別できるようにする。したがって，<code>bsys.css</code>はコード全体を<code>.bsys { }</code>でラップする形になり，その中に追加したいクラスを記述することになる。
 <pre><code class="language-css">
-.bls-web {
+.bsys {
   &__someBlock {
-    /* ↓ クラス名は bls-web__someBlock__someElem*/
+    /* ↓ クラス名は bsys__someBlock__someElem*/
     &__someElem {
       /* プロパティ */
     }
-    /* ↓ クラス名は bls-web__someBlock__anotherElem*/
+    /* ↓ クラス名は bsys__someBlock__anotherElem*/
     &__anotherElem {  
       /* プロパティ */
-      /* ↓ クラス名は bls-web__someBlock__anotherElem-add */
+      /* ↓ クラス名は bsys__someBlock__anotherElem-add */
       &-add {
         /* プロパティ */
       }
     }
   }
   &__anotherBlock {
+    /* ↓ クラス名は bsys__anotherBlock__someElem */
     &__someElem {
       /* プロパティ */
     }

@@ -31,8 +31,9 @@ class SchoolController extends Controller
 
     public function index(Request $request)
     {
-        $objData = $this->model;
-        $objData->getList($request->keywords);
+        if (!$request->isMethod('get')) abort(404);
+
+        $objData = $this->model->getList($request->keywords);
 
         return view("admin.$this->dir.index", [
             'objData' => $objData,
@@ -45,24 +46,33 @@ class SchoolController extends Controller
         return view('admin.school.school-create');
     }
 
-    public function detail(Request $request, $id)
+    public function detail(Request $request)
     {
-        $school = new School;
-        $entity = $school->getEntity($id);
-        if (empty($entity)) return back()->withInput();
+        if (!$request->isMethod('get') && !$request->isMethod('delete')) abort(404);
 
-        return view('admin.school.school-show', [
-            'objData' => $entity,
-        ]);        
+        $objData = $this->model->getDetail($request->id);
+        if (empty($objData)) abort(404);
+
+        /*--------------- deleteの場合 ---------------*/
+        if ($request->isMethod('delete')) {
+            $objData->delete();
+            return redirect("admin/$this->dir/index");
+        }
+
+        return view("admin.$this->dir.detail", [
+            'objData' => $objData,
+        ]);
     }
 
-    public function edit(Request $request, $id)
+    public function edit(Request $request)
     {
-        $school = new School;
-        $entity = $school->getEntity($id);
+        if (!$request->isMethod('get') && !$request->isMethod('patch')) abort(404);
 
-        return view('admin.school.school-edit', [
-            'objData' => empty($entity) ? null : $entity,
+        $objData = $this->model->getDetail($request->id);
+        if (empty($objData)) abort(404);
+
+        return view("admin.$this->dir.edit", [
+            'objData' => $objData,
         ]);
     }
 }

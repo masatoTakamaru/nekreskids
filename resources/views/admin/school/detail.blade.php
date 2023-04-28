@@ -7,7 +7,7 @@
       <section>
         <div>
           <a href="/admin/school/edit?id={{ $objData->id }}" class="edit__link">編集する</a>
-          <form action="/admin/school/delete" method="post">
+          <form action="/admin/school/detail?id={{ $objData->id }}" method="post">
             @method('delete')
             @csrf
             <button type="submit" id="deleteButton" class="edit__submit">削除する</button>
@@ -17,10 +17,6 @@
       <section>
         <table>
           <tbody>
-            <tr>
-              <th>メールアドレス</th>
-              <td>{{$objData->email}}</td>
-            </tr>
             <tr>
               <th>メールアドレス</th>
               <td>{{$objData->email}}</td>
@@ -69,4 +65,5 @@
 </x-admin-layout>
 <script>
   deleteConfirm('deleteButton');
+  deleteConfirm('form__delbutton');
 </script>
