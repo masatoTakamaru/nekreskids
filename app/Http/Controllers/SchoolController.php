@@ -103,7 +103,7 @@ class SchoolController extends Controller
 
         /*---------- getの場合 ----------*/
         $jsonData = $request->session()->get('jsonData');
-        $objData = new School;
+        $objData = $this->model;
         $objData->setAttrs(json_decode($jsonData, true));
 
         /*---------- データを整形する場合はここに記入 ----------*/
@@ -127,7 +127,7 @@ class SchoolController extends Controller
         /*---------- データを整形する場合はここに記入 ----------*/
         /*--------------------- ここまで ---------------------*/
 
-        $this->model->newEntry($jsonData, 'public');
+        $this->model->newEntry($jsonData, 2, 'public');
 
         return view("$this->dir.complete");
     }

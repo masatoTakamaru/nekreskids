@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
 use App\Traits\ModelTrait;
 
@@ -66,19 +67,21 @@ class User extends Authenticatable
      */
     public function newEntry($jsonData, $role, $status)
     {
+        $objData = null;
+
         $this->setAttrs(json_decode($jsonData, true));
         $this->password = bcrypt($this->password);
         $this->role = $role;
         $this->status = $status;
         $this->del_flg = 0;
 
-        $objResult = DB::transaction(function () use ($this) {
-            $arrData = $objData->toArray();
-            $user = $this->create($arrData);
-            $user->school()->create($arrData);
-            return $user;
+        $objData = DB::transaction(function () {
+            $arrData = $this->toArray();
+            $this->create($arrData);
+            $objData = $this->school()->create($arrData);
+            return $objData;
         });
 
-        return $objResult;
+        return $objData;
     }
 }
