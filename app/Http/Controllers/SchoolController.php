@@ -36,7 +36,6 @@ class SchoolController extends Controller
             /*--------------------- ここまで ---------------------*/
         ]);
         $this->model->setAttrs(array_fill_keys($this->fillableExt, null));
-
         /*---------- 初期値を与える場合はここに記入 ----------*/
         $this->model->score = 0;
         /*-------------------- ここまで --------------------*/

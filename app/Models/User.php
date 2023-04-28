@@ -21,7 +21,6 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
         'email',
         'password',
         'role',
@@ -67,18 +66,17 @@ class User extends Authenticatable
      */
     public function newEntry($jsonData, $role, $status)
     {
-        $objData = null;
+        $arrTemp = json_decode($jsonData, true);
+        $arrData = array_replace($arrTemp, [
+            'password' => bcrypt($this->password),
+            'role' => $role,
+            'status' => $status,
+            'del_flg' => 0,
+        ]);
 
-        $this->setAttrs(json_decode($jsonData, true));
-        $this->password = bcrypt($this->password);
-        $this->role = $role;
-        $this->status = $status;
-        $this->del_flg = 0;
-
-        $objData = DB::transaction(function () {
-            $arrData = $this->toArray();
-            $this->create($arrData);
-            $objData = $this->school()->create($arrData);
+        $objData = DB::transaction(function () use ($arrData) {
+            $user = $this->create($arrData);
+            $objData = $user->school()->create($arrData);
             return $objData;
         });
 
