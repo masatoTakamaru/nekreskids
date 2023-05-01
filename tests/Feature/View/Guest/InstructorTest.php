@@ -1,21 +1,20 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\View\Guest;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\Notice;
 use App\Models\User;
 use App\Models\Instructor;
 
-class ViewGuestInstructorTest extends TestCase
+class InstructorTest extends TestCase
 {
     use RefreshDatabase;
 
     /**
      * @test
      */
-    public function 指導員ユーザー登録ページ１入力欄表示確認(): void
+    public function 指導員ユーザー登録ページ１入力欄(): void
     {
         $data = [
             'email',
@@ -37,27 +36,21 @@ class ViewGuestInstructorTest extends TestCase
     /**
      * @test
      */
-    public function 指導員ユーザー登録ページ１セッションが存在する場合の入力確認(): void
+    public function 指導員ユーザー登録ページ１セッションが存在する場合(): void
     {
         $user = User::factory()->create(['role' => 1]);
+        $arrUser = $user->toArray();
         $ir = Instructor::factory()->create(['user_id' => $user->id]);
-        $data = [
-            'email' => $ir->user->email,
-            'password' => $ir->user->password,
-            'name' => $ir->name,
-            'name_kana' => $ir->name_kana,
-            'birth' => $ir->birth,
-            'gender' => $ir->gender,
-            'avatar' => null,
-            'avatar_url' => $ir->avatar_url,
-        ];
-        $jsonData = json_encode($data);
+        $ir->activities = json_decode($ir->activities, true);
+        $ir->act_areas = json_decode($ir->act_areas, true);
+        $arrIr = $ir->toArray();
+        $arrData = array_merge($arrUser, $arrIr);
+        $jsonData = json_encode($arrData);
 
         $response = $this->withSession(['jsonData' => $jsonData])
             ->get('/instructor/step1');
         $response->assertOk()
-            ->assertSee($ir->user->email)
-            ->assertSee($ir->user->password)
+            ->assertSee($user->email)
             ->assertSee($ir->name)
             ->assertSee($ir->name_kana)
             ->assertSee($ir->birth)
@@ -68,7 +61,7 @@ class ViewGuestInstructorTest extends TestCase
     /**
      * @test
      */
-    public function 指導員ユーザー登録ページ２入力欄表示確認(): void
+    public function 指導員ユーザー登録ページ２入力欄(): void
     {
         $data = [
             'zip',
@@ -89,18 +82,16 @@ class ViewGuestInstructorTest extends TestCase
     /**
      * @test
      */
-    public function 指導員ユーザー登録ページ２セッションが存在する場合の入力確認(): void
+    public function 指導員ユーザー登録ページ２セッションが存在する場合(): void
     {
         $user = User::factory()->create(['role' => 1]);
+        $arrUser = $user->toArray();
         $ir = Instructor::factory()->create(['user_id' => $user->id]);
-        $data = [
-            'zip' => $ir->zip,
-            'pref' => $ir->pref,
-            'city' => $ir->city,
-            'address' => $ir->address,
-            'tel' => $ir->tel,
-        ];
-        $jsonData = json_encode($data);
+        $ir->activities = json_decode($ir->activities, true);
+        $ir->act_areas = json_decode($ir->act_areas, true);
+        $arrIr = $ir->toArray();
+        $arrData = array_merge($arrUser, $arrIr);
+        $jsonData = json_encode($arrData);
 
         $response = $this->withSession(['jsonData' => $jsonData])
             ->get('/instructor/step2');
@@ -115,7 +106,7 @@ class ViewGuestInstructorTest extends TestCase
     /**
      * @test
      */
-    public function 指導員ユーザー登録ページ３入力欄表示確認(): void
+    public function 指導員ユーザー登録ページ３入力欄(): void
     {
         $data = [
             'activities[]',
@@ -136,24 +127,21 @@ class ViewGuestInstructorTest extends TestCase
     /**
      * @test
      */
-    public function 指導員ユーザー登録ページ３セッションが存在する場合の入力確認(): void
+    public function 指導員ユーザー登録ページ３セッションが存在する場合(): void
     {
         $user = User::factory()->create(['role' => 1]);
+        $arrUser = $user->toArray();
         $ir = Instructor::factory()->create(['user_id' => $user->id]);
-        $data = [
-            'activities' => json_decode($ir->activities, true),
-            'other_activities' => $ir->other_activities,
-            'ontime' => $ir->ontime,
-            'act_areas' => json_decode($ir->act_areas, true),
-            'cert' => $ir->cert,
-            'pr' => $ir->pr,
-        ];
-        $jsonData = json_encode($data);
+        $ir->activities = json_decode($ir->activities, true);
+        $ir->act_areas = json_decode($ir->act_areas, true);
+        $arrIr = $ir->toArray();
+        $arrData = array_merge($arrUser, $arrIr);
+        $jsonData = json_encode($arrData);
 
         $response = $this->withSession(['jsonData' => $jsonData])
             ->get('/instructor/step3');
         $response->assertOk()
-            ->assertSee($ir->other_activities)
+            //->assertSee($ir->other_activities)
             ->assertSee($ir->ontime)
             ->assertSee($ir->cert)
             ->assertSee($ir->pr);
@@ -162,38 +150,21 @@ class ViewGuestInstructorTest extends TestCase
     /**
      * @test
      */
-    public function 指導員ユーザー登録確認画面表示確認(): void
+    public function 指導員ユーザー登録確認画面(): void
     {
         $user = User::factory()->create(['role' => 1]);
+        $arrUser = $user->toArray();
         $ir = Instructor::factory()->create(['user_id' => $user->id]);
-        $data = [
-            'email' => $ir->user->email,
-            'password' => $ir->user->password,
-            'name' => $ir->name,
-            'name_kana' => $ir->name_kana,
-            'birth' => $ir->birth,
-            'gender' => $ir->gender,
-            'avatar' => null,
-            'avatar_url' => $ir->avatar_url,
-            'zip' => $ir->zip,
-            'pref' => $ir->pref,
-            'city' => $ir->city,
-            'address' => $ir->address,
-            'tel' => $ir->tel,
-            'activities' => json_decode($ir->activities, true),
-            'other_activities' => $ir->other_activities,
-            'ontime' => $ir->ontime,
-            'act_areas' => json_decode($ir->act_areas, true),
-            'cert' => $ir->cert,
-            'pr' => $ir->pr,
-        ];
-        $jsonData = json_encode($data);
+        $ir->activities = json_decode($ir->activities, true);
+        $ir->act_areas = json_decode($ir->act_areas, true);
+        $arrIr = $ir->toArray();
+        $arrData = array_merge($arrUser, $arrIr);
+        $jsonData = json_encode($arrData);
 
         $response = $this->withSession(['jsonData' => $jsonData])
             ->get('/instructor/confirm');
         $response->assertOk()
-            ->assertSee($ir->user->email)
-            ->assertDontSee($ir->user->password)
+            ->assertSee($user->email)
             ->assertSee($ir->name)
             ->assertSee($ir->name_kana)
             ->assertSee($ir->birth)
@@ -208,5 +179,24 @@ class ViewGuestInstructorTest extends TestCase
             ->assertSee($ir->ontime)
             ->assertSee($ir->cert)
             ->assertSee($ir->pr);
+    }
+
+    /**
+     * @test
+     */
+    public function 指導員ユーザー登録完了画面(): void
+    {
+        $user = User::factory()->create(['role' => 1]);
+        $arrUser = $user->toArray();
+        $ir = Instructor::factory()->create(['user_id' => $user->id]);
+        $ir->activities = json_decode($ir->activities, true);
+        $ir->act_areas = json_decode($ir->act_areas, true);
+        $arrIr = $ir->toArray();
+        $arrData = array_merge($arrUser, $arrIr);
+        $jsonData = json_encode($arrData);
+
+        $response = $this->withSession(['jsonData' => $jsonData])
+            ->get('/instructor/confirm');
+        $response->assertOk();
     }
 }

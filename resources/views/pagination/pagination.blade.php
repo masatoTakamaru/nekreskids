@@ -1,43 +1,42 @@
 @if($paginator->hasPages())
+@php
+$pagerSide = 2;   //現在のページ番号の左右に表示するページの数
+$pagerCurrent = $paginator->currentPage();
+$pagerLast = $paginator->lastPage();
+$pagerPrev = 1;
+$pagerPrev = $pagerCurrent > 1 ? $pagerCurrent - 1 : 1;
+$pagerNext = $pagerCurrent < $pagerLast ? $pagerCurrent + 1 : $pagerCurrent;
+$pagerTotal = $paginator->total();
+$pagerBegin = ($pagerCurrent - 1) * $paginator->perPage() + 1;
+$pagerEnd = ($pagerCurrent - 1) * $paginator->perPage() + $paginator->count();
+$pagerCountText = "{$pagerTotal}件中{$pagerBegin}～{$pagerEnd}件表示";
+@endphp
 <div class="pager">
-  <div class="pager__button -prev">
-    <a class="button__link" href="{{ $paginator->url(1) }}"></a>
+  <div class="pager__button-first">
+    <a class="pager__link" href="{{ $paginator->url(1) }}">最初</a>
   </div>
-  @if($paginator->currentPage() > 1)
-  <div class="pager__button -prev">
-    <a class="button__link" href="{{ $paginator->url($paginator->currentPage() - 1) }}"></a>
+  <div class="pager__button-prev">
+    <a class="pager__link" href="{{ $paginator->url($pagerPrev) }}">前へ</a>
   </div>
-  @else
-  <div class="pager__button -prev">
-    <a class="button__link" href="{{ $paginator->url(1) }}"></a>
+  @for ($i = 1; $i <= $pagerLast; $i++)
+  @if ($i === $pagerCurrent)
+  <div class="pager__button-current">
+    <span class="pager__link">{{ $i }}</span>
+  </div>
+  @elseif (($i <= $pagerCurrent + $pagerSide || $i - 1 < $pagerSide * 2 + 1) && ($i >= $pagerCurrent - $pagerSide || $pagerLast - $i < $pagerSide * 2 + 1))
+  <div class="pager__button">
+    <a class="pager__link" href="{{ $paginator->url($i) }}">{{ $i }}</a>
   </div>
   @endif
-  @for ($i = 1; $i <= $paginator->lastPage(); $i++)
-    @if($i == $paginator->currentPage())
-    <div class="pager__num{{ $i === 1 ? ' -first' : '' }}">
-      <span class="-current">{{ $i }}</span>
-    </div>
-    @elseif(
-    ($i <= $paginator->currentPage() + 2 || $i - 1 < 5) && ($i>= $paginator->currentPage() - 2 ||
-        $paginator->lastPage() - $i < 5)) <div class="pager__num{{ $i === 1 ? ' -first' : '' }}">
-          <a class="button__link" href="{{ $paginator->url($i) }}">{{ $i }}</a>
+  @endfor
+  <div class="pager__button-next">
+    <a class="pager__link" href="{{ $paginator->url($pagerNext) }}">次へ</a>
+  </div>
+  <div class="pager__button-last">
+    <a class="pager__link" href="{{ $paginator->url($pagerLast) }}">最後</a>
+  </div>
+</div>
+<div class="pager__counter">
+  <span class="pager__counter-text">{{ $pagerCountText }}</span>
 </div>
 @endif
-@endfor
-@if($paginator->currentPage() < $paginator->lastPage())
-  <div class="pager__button1 -next">
-    <a class="button__link" href="{{ $paginator->url($paginator->currentPage() + 1) }}"></a>
-  </div>
-  @else
-  <div class="pager__button1 -next">
-    <a class="button__link" href="{{ $paginator->url($paginator->currentPage()) }}"></a>
-  </div>
-  @endif
-  <div class="pager__button2 -next">
-    <a class="button__link" href="{{ $paginator->url($paginator->lastPage()) }}"></a>
-  </div>
-  </div>
-  <div class="pager__counter">{{ $paginator->total() }}件中{{($paginator->currentPage() - 1) *
-    $paginator->perPage() + 1}}～{{ ($paginator->currentPage() - 1) * $paginator->perPage() + $paginator->count() }}件表示
-  </div>
-  @endif

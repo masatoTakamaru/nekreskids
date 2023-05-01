@@ -14,7 +14,7 @@
               @foreach($arrActivities as $key => $value)
               <div class="edit__checkboxItem">
                 <input type="checkbox" name="activities[]" id="{{ $key }}" class="edit__checkbox" value="{{ $key }}"
-                  @if(old('activities')===$key||in_array($key, $objData->activities)) checked="checked" @endif>
+                  @checked(in_array($key, !empty(old('activities')) ? old('activities') : $objData->activities))>
                 <label for="{{ $key }}" class="">{{ $value }}</label>
               </div>
               @endforeach
@@ -23,11 +23,19 @@
           </div>
           <div class="edit__item">
             <label for="other_activities" class="edit__label">指導できる活動<br>（その他）</label>
-            <input type="text" name="other_activities" class="" value="{{ old('other_activities', $objData->other_activities) }}">
+            <div>
+              <input type="text" name="other_activities" class=""
+                value="{{ old('other_activities', $objData->other_activities) }}">
+              @error('other_activities') <p class="edit__alert">{{ $message }}</p> @enderror
+            </div>
           </div>
           <div class="edit__item">
             <label for="ontime" class="edit__label">指導できる曜日<br>や時間帯</label>
-            <input type="text" name="ontime" class="" placeholder="平日１７：００～１９：００など" value="{{ old('ontime', $objData->ontime) }}">
+            <div>
+              <input type="text" name="ontime" class="" placeholder="平日１７：００～１９：００など"
+                value="{{ old('ontime', $objData->ontime) }}">
+              @error('ontime') <p class="edit__alert">{{ $message }}</p> @enderror
+            </div>
           </div>
           <div class="edit__item">
             <label for="actAreas" class="edit__label">指導できる地域</label>
@@ -39,12 +47,16 @@
           </div>
           <div class="edit__item">
             <label for="cert" class="edit__label">所有資格</label>
-            <input type="text" name="cert" class="" value="{{ old('cert', $objData->cert) }}">
+            <div>
+              <input type="text" name="cert" class="" value="{{ old('cert', $objData->cert) }}">
+              @error('cert') <p class="edit__alert">{{ $message }}</p> @enderror
+            </div>
           </div>
           <div class="edit__item">
             <label for="pr" class="edit__label">自己紹介</label>
             <div>
-              <textarea name="pr" class="pr__content" id="pr__content" cols="50" rows="10">{{ old('pr_content', $objData->pr) }}</textarea>
+              <textarea name="pr" class="pr__content" id="pr__content" cols="50"
+                rows="10">{{ old('pr_content', $objData->pr) }}</textarea>
               <p class="edit__prCount" id="pr__count"></p>
             </div>
           </div>
@@ -61,11 +73,12 @@
   </article>
 </x-guest-layout>
 <script>
-  setActArea({
+  /*  setActArea({
     'actAreas': <?php echo old('act_areas', $jsonActAreas); ?>,
     'prefs': <?php echo $jsonPrefs; ?>,
     'cities': <?php echo $jsonCities; ?>
   });
+*/
   setCounter({
     textArea: 'pr__content',
     count: 'pr__count',

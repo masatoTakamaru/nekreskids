@@ -6,9 +6,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 use App\Traits\ModelTrait;
+
 
 class User extends Authenticatable
 {
@@ -68,17 +71,206 @@ class User extends Authenticatable
     {
         $arrTemp = json_decode($jsonData, true);
         $arrData = array_replace($arrTemp, [
-            'password' => bcrypt($this->password),
+            'password' => bcrypt($arrTemp['password']),
             'role' => $role,
             'status' => $status,
             'del_flg' => 0,
         ]);
 
         $objData = DB::transaction(function () use ($arrData) {
-            $user = $this->create($arrData);
-            $objData = $user->school()->create($arrData);
-            return $objData;
+
+            if ($arrData['role'] === 1) {
+
+                //アバター画像の保存
+                if (!empty($arrData['avatar'])) {
+                    $dirName = 'avatars';
+                    $fileName = Str::uuid();
+                    $arrData['avatar_url'] = $fileName;
+                    $data = base64_decode(str_replace('data:image/png;base64,', '', $arrData['avatar']));
+                    Storage::put("$dirName/$fileName.png", $data);
+                }
+                
+                $arrData = array_replace($arrData, [
+                    'activities' => json_encode($arrData['activities']),
+                    'act_areas' => json_encode($arrData['act_areas']),
+                ]);
+                $user = $this->create($arrData);
+                $objData = $user->instructor()->create($arrData);
+                return $objData;
+            }
+
+            if ($arrData['role'] === 2) {
+                $user = $this->create($arrData);
+                $objData = $user->school()->create($arrData);
+                return $objData;
+            }
         });
+
+        return $objData;
+    }
+
+    /**
+     * 指導員ユーザー更新
+     * @param array $arrData フォームで入力されたデータ
+     */
+    public function updateInstructorUser($arrData): void
+    {
+        if (!empty($arrData['password'])) {
+            $arrData['password'] = bcrypt($arrData['password']);
+        }
+
+        $objData = $this->find($arrData['id']);
+        $objData->fill($arrData)
+            ->save();
+        $objData->school
+            ->fill($arrData)
+            ->save();
+    }
+
+    /**
+     * 指導員ユーザー削除
+     * @param int $id ユーザーID
+     */
+    public function deleteInstructorUser($id): void
+    {
+        $objData = $this->find($id);
+        if (!empty($objData)) {
+            $objData->fill(['del_flg' => 1])
+                ->save();
+            $objData->school
+                ->fill(['del_flg' => 1])
+                ->save();
+        }
+    }
+
+    /**
+     * 指導員ユーザー一覧
+     * @param array $keywords 絞込検索キーワード（複数）
+     * @return obj
+     */
+    public function getInstructorUserList($keywords)
+    {
+        $query = $this->select(
+            'users.id',
+            'users.email',
+            'instructors.name',
+            'instructors.pref',
+            'instructors.city',
+        )
+            ->leftJoin('instructors', 'users.id', '=', 'instructors.user_id');
+
+        $condition = ['users.del_flg' => 0, 'instructors.del_flg' => 0];
+        $objData = $query->where($condition)->paginate(10);
+
+        return $objData;
+    }
+
+    /**
+     * 指導員ユーザー詳細
+     * @param int $id ユーザーID
+     * @return obj
+     */
+    public function getInstructorUserDetail($id)
+    {
+        $query = $this->select(
+            'users.id',
+            'users.email',
+            'schools.name',
+            'schools.zip',
+            'schools.pref',
+            'schools.city',
+            'schools.address',
+            'schools.tel1',
+            'schools.tel2',
+            'schools.charge',
+        )
+            ->leftJoin('schools', 'users.id', '=', 'schools.user_id');
+
+        $condition = ['users.id' => $id];
+        $objData = $query->where($condition)->first();
+
+        return $objData;
+    }
+
+    /**
+     * 学校ユーザー更新
+     * @param array $arrData フォームで入力されたデータ
+     */
+    public function updateSchoolUser($arrData): void
+    {
+        if (!empty($arrData['password'])) {
+            $arrData['password'] = bcrypt($arrData['password']);
+        }
+
+        $objData = $this->find($arrData['id']);
+        $objData->fill($arrData)
+            ->save();
+        $objData->school
+            ->fill($arrData)
+            ->save();
+    }
+
+    /**
+     * 学校ユーザー削除
+     * @param int $id ユーザーID
+     */
+    public function deleteSchoolUser($id): void
+    {
+        $objData = $this->find($id);
+        if (!empty($objData)) {
+            $objData->fill(['del_flg' => 1])
+                ->save();
+            $objData->school
+                ->fill(['del_flg' => 1])
+                ->save();
+        }
+    }
+
+    /**
+     * 学校ユーザー一覧
+     * @param array $keywords 絞込検索キーワード（複数）
+     * @return obj
+     */
+    public function getSchoolUserList($keywords)
+    {
+        $query = $this->select(
+            'users.id',
+            'users.email',
+            'schools.name',
+            'schools.pref',
+            'schools.city',
+        )
+            ->leftJoin('schools', 'users.id', '=', 'schools.user_id');
+
+        $condition = ['users.del_flg' => 0, 'schools.del_flg' => 0];
+        $objData = $query->where($condition)->paginate(10);
+
+        return $objData;
+    }
+
+    /**
+     * 学校ユーザー詳細
+     * @param int $id ユーザーID
+     * @return obj
+     */
+    public function getSchoolUserDetail($id)
+    {
+        $query = $this->select(
+            'users.id',
+            'users.email',
+            'schools.name',
+            'schools.zip',
+            'schools.pref',
+            'schools.city',
+            'schools.address',
+            'schools.tel1',
+            'schools.tel2',
+            'schools.charge',
+        )
+            ->leftJoin('schools', 'users.id', '=', 'schools.user_id');
+
+        $condition = ['users.id' => $id];
+        $objData = $query->where($condition)->first();
 
         return $objData;
     }

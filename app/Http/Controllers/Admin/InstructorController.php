@@ -4,145 +4,133 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\Instructor;
+use App\Models\User;
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
+use App\Consts\RecruitConst;
+use App\Consts\AddressConst;
+use App\Consts\UserConst;
+
 
 class InstructorController extends Controller
 {
+    private $model = null;
+    private $dir = 'instructor';
+    private $fillableExt = [];  //メソッド間の受け渡し項目
+
+    public function __construct()
+    {
+        $this->model = new User;
+        $this->fillableExt = array_merge($this->model->getFillable(), [
+            /*-- メソッド間の受け渡し項目を追加する場合はここに記入 --*/
+            'name',
+            'name_kana',
+            'avatar_url',
+            'pr',
+            'activities',
+            'other_activities',
+            'ontime',
+            'act_areas',
+            'birth',
+            'cert',
+            'gender',
+            'zip',
+            'pref',
+            'city',
+            'address',
+            'tel',
+            'keep',
+            'avatar',
+            /*--------------------- ここまで ---------------------*/
+        ]);
+        $this->model->setAttrs(array_fill_keys($this->fillableExt, null));
+
+        /*---------- 初期値を与える場合はここに記入 ----------*/
+        $this->model->birth = Carbon::now()->format('Y-m-d');
+        $this->model->gender = 'male';
+        $this->model->activities = [];
+        $this->model->act_areas = ['1' => ['pref' => '', 'city' => '']];
+        /*-------------------- ここまで --------------------*/
+    }
+
     public function index(Request $request)
     {
-        $instructor = new Instructor;
 
-        if ($request->keywords) {
-            $entity = $instructor->searchEntity($request->keywords);
-        } else {
-            $entity = $instructor->getEntityList();
+        if (!$request->isMethod('get')) abort(404);
+
+        $objData = $this->model->getInstructorUserList($request->keywords);
+
+        foreach($objData as $item){
+            $item->city = "test";
         }
 
-        return view('admin.instructor.instructor-index', [
-            'objData' => !empty($entity) ? $entity : null,
+        return view("admin.$this->dir.index", [
+            'objData' => $objData,
             'keywords' => $request->keywords,
         ]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('admin.instructor.instructor-create');
-    }
+        if (!$request->isMethod('get') && !$request->isMethod('post')) abort(404);
 
-    public function store(InstructorRequest $request)
-    {
-        $result = Instructor::create([
-            'user_id' => $request->user_id,
-            'name' => $request->name,
-            'name_kana' => $request->name_kana,
-            'avatar_url' => $request->avatar_url,
-            'pr' => $request->pr,
-            'activities' => $request->activities,
-            'other_activities' => $request->other_activities,
-            'ontime' => $request->ontime,
-            'act_pref1' => $request->act_pref1,
-            'act_city1' => $request->act_city1,
-            'act_pref2' => $request->act_pref2,
-            'act_city2' => $request->act_city2,
-            'act_pref3' => $request->act_pref3,
-            'act_city3' => $request->act_city3,
-            'act_pref4' => $request->act_pref4,
-            'act_city4' => $request->act_city4,
-            'act_pref5' => $request->act_pref5,
-            'act_city5' => $request->act_city5,
-            'gender' => $request->gender,
-            'zip' => $request->zip,
-            'pref' => $request->pref,
-            'city' => $request->city,
-            'address' => $request->address,
-            'tel' => $request->tel,
-            'keep' => $request->keep,
+        /*--------------- postの場合 ---------------*/
+        $objData = $this->model;
 
-        ]);
-
-        if (!empty($result)) {
-            return redirect()->route('admin.instructor.instructor-index');
-        } else {
-            return back()->withInput();
+        if ($request->isMethod('post')) {
+            $arrData = array_merge($objData->toArray(), $request->input());
+            $jsonData = json_encode($arrData);
+            $this->model->newEntry($jsonData, 1, 'public');
+            return redirect("/admin/$this->dir/index");
         }
-    }
 
-    public function show($id)
-    {
-        $instructor = new Instructor;
-        $entity = $instructor->getEntity($id);
-        if (empty($entity)) return back()->withInput();
-
-        return view('admin.instructor.instructor-show', [
-            'objData' => $entity,
-        ]);        
-    }
-
-    public function edit($id)
-    {
-        $instructor = new Instructor;
-        $entity = $instructor->getEntity($id);
-
-        return view('admin.instructor.instructor-edit', [
-            'objData' => empty($entity) ? null : $entity,
+        /*--------------- getの場合 ---------------*/
+        return view("admin.$this->dir.create", [
+            'genders' => UserConst::GENDERS,
+            'status' => UserConst::STATUS,
+            'arrActivities' => RecruitConst::ACTIVITIES,
+            'jsonActAreas' => json_encode($objData->act_areas),
+            'jsonPrefs' => json_encode(['' => '選択して下さい'] + AddressConst::PREFECTURES),
+            'jsonCities' => json_encode(['' => ['' => '未選択']] + AddressConst::CITIES),
         ]);
     }
 
-    public function update(InstructorRequest $request, $id)
+    public function detail(Request $request)
     {
-        $instructor = new Instructor;
-        if (empty($entity)) return back()->withInput();
+        if (!$request->isMethod('get') && !$request->isMethod('delete')) abort(404);
 
-        $entity = $instructor->getEntity($id);
+        $objData = $this->model->getSchoolUserDetail($request->id);
+        if (empty($objData)) abort(404);
 
-        $result = $entity->update([
-            'user_id' => $request->user_id,
-            'name' => $request->name,
-            'name_kana' => $request->name_kana,
-            'avatar_url' => $request->avatar_url,
-            'pr' => $request->pr,
-            'activities' => $request->activities,
-            'other_activities' => $request->other_activities,
-            'ontime' => $request->ontime,
-            'act_pref1' => $request->act_pref1,
-            'act_city1' => $request->act_city1,
-            'act_pref2' => $request->act_pref2,
-            'act_city2' => $request->act_city2,
-            'act_pref3' => $request->act_pref3,
-            'act_city3' => $request->act_city3,
-            'act_pref4' => $request->act_pref4,
-            'act_city4' => $request->act_city4,
-            'act_pref5' => $request->act_pref5,
-            'act_city5' => $request->act_city5,
-            'gender' => $request->gender,
-            'zip' => $request->zip,
-            'pref' => $request->pref,
-            'city' => $request->city,
-            'address' => $request->address,
-            'tel' => $request->tel,
-            'keep' => $request->keep,
-
-        ]);
-        if ($result) {
-            return redirect()->route('admin.instructor.instructor-index');
-        } else {
-            return back()->withInput();
+        /*--------------- deleteの場合 ---------------*/
+        if ($request->isMethod('delete')) {
+            $objData->deleteSchoolUser($request->id);
+            return redirect("admin/$this->dir/index");
         }
+
+        return view("admin.$this->dir.detail", [
+            'objData' => $objData,
+        ]);
     }
 
-    public function destroy($id)
+    public function edit(Request $request)
     {
-        $instructor = new Instructor;
-        $entity = $instructor->getEntity($id);
-        if (empty($entity)) return back()->withInput();
-    
-        $result = $entity->destroy();
+        if (!$request->isMethod('get') && !$request->isMethod('patch')) abort(404);
 
-        if () {
-            return redirect()->route('admin.instructor.instructor-index');
-        } else {
-            return back()->withInput();
+        /*--------------- patchの場合 ---------------*/
+        if ($request->isMethod('patch')) {
+            $arrData = $request->input();
+            $arrData['id'] = $request->id;
+            $objData = $this->model;
+            $objData->updateSchoolUser($arrData);
         }
+
+        /*--------------- getの場合 ---------------*/
+        $objData = $this->model->getSchoolUserDetail($request->id);
+        if (empty($objData)) abort(404);
+
+        return view("admin.$this->dir.edit", [
+            'objData' => $objData,
+        ]);
     }
 }

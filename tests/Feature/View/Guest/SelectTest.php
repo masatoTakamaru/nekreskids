@@ -1,12 +1,12 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\View\Guest;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\Notice;
 
-class ViewGuestSelectTest extends TestCase
+class SelectTest extends TestCase
 {
     use RefreshDatabase;
 

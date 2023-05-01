@@ -51,6 +51,9 @@ body {
 }
 
 .edit {
+    &__alert {
+        color: red;
+    }
     &__item {
         display: flex;
         //align-items: center;

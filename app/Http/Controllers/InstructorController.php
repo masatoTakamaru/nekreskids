@@ -5,14 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Consts\RecruitConst;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\InstructorStep1Request;
-use App\Http\Requests\InstructorStep2Request;
+use App\Consts\RecruitConst;
 use App\Consts\AddressConst;
 use App\Consts\UserConst;
-use App\Models\Instructor;
 use App\Models\User;
+use App\Http\Requests\InstructorStep3Request;
 use Carbon\Carbon;
 
 class InstructorController extends Controller
@@ -23,13 +21,27 @@ class InstructorController extends Controller
 
     public function __construct()
     {
-        $this->model = new Instructor;
+        $this->model = new User;
         $this->fillableExt = array_merge($this->model->getFillable(), [
             /*-- メソッド間の受け渡し項目を追加する場合はここに記入 --*/
-            'email',
-            'password',
+            'name',
+            'name_kana',
+            'avatar_url',
+            'pr',
+            'activities',
+            'other_activities',
+            'ontime',
+            'act_areas',
+            'birth',
+            'cert',
+            'gender',
+            'zip',
+            'pref',
+            'city',
+            'address',
+            'tel',
+            'keep',
             'avatar',
-            'actPref',
             /*--------------------- ここまで ---------------------*/
         ]);
         $this->model->setAttrs(array_fill_keys($this->fillableExt, null));
@@ -48,7 +60,10 @@ class InstructorController extends Controller
 
         if ($request->isMethod('post')) {
             $arrData = json_decode($request->jsonData, true);
-            $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
+            $input = $request->only($this->fillableExt);
+            /*---------- 入力値を加工する場合はここに記入 ----------*/
+            /*--------------------- ここまで ---------------------*/
+            $jsonData = json_encode(array_merge($arrData, $input));
 
             /*---------- 下書き保存 ----------*/
             if ($request->has('action') && $request->action === 'draft') {
@@ -67,7 +82,7 @@ class InstructorController extends Controller
 
         /*---------- セッションが存在する場合セッション値を反映 ----------*/
         if ($request->session()->has('jsonData')) {
-            $jsonData = $request->session()->get('jsonData');
+            $jsonData = $request->session()->pull('jsonData');
             $objData->setAttrs(json_decode($jsonData, true));
         }
 
@@ -84,7 +99,11 @@ class InstructorController extends Controller
 
         if ($request->isMethod('post')) {
             $arrData = json_decode($request->jsonData, true);
-            $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
+            $input = $request->only($this->fillableExt);
+            /*---------- 入力値を加工する場合はここに記入 ----------*/
+            /*--------------------- ここまで ---------------------*/
+
+            $jsonData = json_encode(array_merge($arrData, $input));
 
             /*---------- 下書き保存 ----------*/
             if ($request->has('action') && $request->action === 'draft') {
@@ -102,7 +121,7 @@ class InstructorController extends Controller
         $jsonData = json_encode($objData);
         /*---------- セッションが存在する場合セッション値を反映 ----------*/
         if ($request->session()->has('jsonData')) {
-            $jsonData = $request->session()->get('jsonData');
+            $jsonData = $request->session()->pull('jsonData');
             $objData->setAttrs(json_decode($jsonData, true));
         }
 
@@ -112,13 +131,22 @@ class InstructorController extends Controller
         ]);
     }
 
-    public function step3(Request $request)
+    public function step3(InstructorStep3Request $request)
     {
         if (!$request->isMethod('get') && !$request->isMethod('post')) abort(404);
 
         if ($request->isMethod('post')) {
             $arrData = json_decode($request->jsonData, true);
-            $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
+            $input = $request->only($this->fillableExt);
+            /*---------- 入力値を加工する場合はここに記入 ----------*/
+            $arrTemp = [];
+            if (!empty($input['activities'])) {
+                $arrTemp = array_values($input['activities']);
+            }
+            $input['activities'] = $arrTemp;
+            /*--------------------- ここまで ---------------------*/
+            $jsonData = json_encode(array_merge($arrData, $input));
+
             //下書き保存
             if ($request->has('action') && $request->action === 'draft') {
                 return redirect("$this->dir/draft-complete")->with('jsonData', $jsonData);
@@ -134,7 +162,7 @@ class InstructorController extends Controller
         $jsonData = json_encode($objData);
         //セッションが存在する場合セッション値を反映
         if ($request->session()->has('jsonData')) {
-            $jsonData = $request->session()->get('jsonData');
+            $jsonData = $request->session()->pull('jsonData');
             $objData->setAttrs(json_decode($jsonData, true));
         }
         return view("$this->dir.step3", [
@@ -154,7 +182,12 @@ class InstructorController extends Controller
 
         if ($request->isMethod('post')) {
             $arrData = json_decode($request->jsonData, true);
-            $jsonData = json_encode(array_merge($arrData, $request->only($this->fillableExt)));
+            $input = $request->only($this->fillableExt);
+            /*---------- 入力値を加工する場合はここに記入 ----------*/
+            /*--------------------- ここまで ---------------------*/
+
+            $jsonData = json_encode(array_merge($arrData, $input));
+
             //下書き保存
             if ($request->has('action') && $request->action === 'draft') {
                 return redirect("/$this->dir/draft-complete")->with('jsonData', $jsonData);
@@ -167,7 +200,7 @@ class InstructorController extends Controller
 
         //getの場合
         $objData = $this->model;
-        $jsonData = $request->session()->get('jsonData');
+        $jsonData = $request->session()->pull('jsonData');
         $objData->setAttrs(json_decode($jsonData, true));
 
         /*  表示用データを整形する場合はここ  */
@@ -175,10 +208,13 @@ class InstructorController extends Controller
         $objData->address = $objData->pref . $objData->city . $objData->address;
         $activities = [];
         if (!empty($objData->activities)) {
-            foreach ($objData->activities as $key) {
-                $activities[] = RecruitConst::ACTIVITIES[$key];
+            foreach ($objData->activities as $value) {
+                $activities[] = RecruitConst::ACTIVITIES[$value];
             }
             $objData->activities = implode(' ', $activities);
+        }
+        if (empty($objData->activities)) {
+            $objData->activities = '';
         }
         $actAreas = [];
         foreach ($objData->act_areas as $actArea) {
@@ -201,9 +237,9 @@ class InstructorController extends Controller
         if ($request->isMethod('get') && !$request->session()->has('jsonData')) abort(404);
 
         //getの場合
-        $jsonData = $request->session()->get('jsonData');
+        $jsonData = $request->session()->pull('jsonData');
         $objData = $this->model;
-        $objData->newEntry($jsonData, 'public');
+        $objData->newEntry($jsonData, 1, 'public');
 
         return view("$this->dir.complete");
     }
@@ -214,9 +250,9 @@ class InstructorController extends Controller
         if ($request->isMethod('get') && !$request->session()->has('jsonData')) abort(404);
 
         //getの場合
-        $jsonData = $request->session()->get('jsonData');
+        $jsonData = $request->session()->pull('jsonData');
         $objData = $this->model;
-        $objData->newEntry($jsonData, 'draft');
+        $objData->newEntry($jsonData, 1, 'draft');
 
         return view("$this->dir.draft-complete");
     }

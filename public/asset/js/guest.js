@@ -4,7 +4,7 @@
  */
 function togglePassIcon(id) {
     const passElem = $(`#${id}`);
-    const iconElem = $('<span class="password__icon password__eye"></span>');
+    const iconElem = $('<span id="password__icon" class="password__icon password__eye"></span>');
     passElem.after(iconElem);
     iconElem.on('click', function () {
         if (passElem.attr('type') === 'password') {
@@ -74,7 +74,11 @@ function setDate(obj) {
         if (i === day) elem.prop("selected", true);
     }
 
-    yearMonthElem.on("change", function () {
+    $(window).on('load', function () {
+        inputElem.val(date.toLocaleDateString());
+    });
+
+    yearMonthElem.on('change', function () {
         const beginOfMonth = new Date(yearElem.val(), monthElem.val() - 1, 1);
         const endOfMonth = new Date(yearElem.val(), monthElem.val(), 0);
         const year = beginOfMonth.getFullYear();
@@ -87,7 +91,7 @@ function setDate(obj) {
         inputElem.val(`${year}-${month}-${day}`);
     });
 
-    dayElem.on("change", () => {
+    dayElem.on('change', () => {
         const date = `${yearElem.val()}-${monthElem.val()}-${dayElem.val()}`;
         inputElem.val(date);
     });

@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-admin-layout>
   <article class="contents">
     <div class="contents__inner">
       <header>
@@ -64,13 +64,22 @@
             @error('charge') <p class="alert">{{ $message }}</p> @enderror
           </div>
           <div>
+            <label for="status" class="edit__label">ステータス</label>
+            <select name="status" class="edit__select">
+              @foreach ($status as $key => $value)
+              <option class="edit__option" value="{{ $key }}" @selected(old('status') === $key)>{{ $value }}</option>
+              @endforeach
+            </select>
+            @error('charge') <p class="alert">{{ $message }}</p> @enderror
+          </div>
+          <div>
             <button type="submit" class="edit__submit">登録する</button>
           </div>
         </form>
       </div>
     </div>
   </article>
-</x-guest-layout>
+</x-admin-layout>
 <script>
   togglePassIcon('password');
   setJpostal({

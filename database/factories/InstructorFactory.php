@@ -57,12 +57,20 @@ class InstructorFactory extends Factory
         $fileName = fake()->md5() . '.jpg';
         Storage::put($targetDir . '/' . $fileName, $image);
 
+        $arrTemp = fake()->randomElements(array_keys($activities), mt_rand(0, 5));
+        $activities = [];
+        $count = 1;
+        foreach($arrTemp as $item) {
+            $activities[$count] = $item;
+            $count++;
+        }
+
         return [
             'name' => fake()->name(),
             'name_kana' => fake()->kanaName(),
             'avatar_url' => $fileName,
             'pr' => mt_rand(0, 4) ? fake()->realText(500) : null,
-            'activities' => mt_rand(0, 4) ? json_encode(fake()->randomElements(array_keys($activities), mt_rand(0, 5))) : null,
+            'activities' => mt_rand(0,4) ? json_encode($activities) : null,
             'other_activities' => mt_rand(0, 4) ? '指導できる活動その他' . fake()->realText(100) : null,
             'ontime' => mt_rand(0, 4) ? '指導できる曜日や時間帯' . fake()->realText(100) : null,
             'act_areas' => !empty($act_areas) ? json_encode($act_areas) : null,

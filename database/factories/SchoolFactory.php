@@ -24,7 +24,7 @@ class SchoolFactory extends Factory
         $city = fake()->randomElement(array_keys($cities[$pref]));
 
         return [
-            'name' => 'サンプル学校名' . fake()->realText(70),
+            'name' => 'サンプル学校名' . fake()->text(5),
             'zip' => str_replace('-', '', fake()->postcode()),
             'pref' => $pref,
             'city' => $city,

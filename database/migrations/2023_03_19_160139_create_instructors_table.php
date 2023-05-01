@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('user_id')->nullable(false)->comment('登録者名');
             $table->string('name', 128)->nullable(false)->comment('名前');
             $table->string('name_kana', 128)->nullable(false)->comment('名前カナ');
-            $table->string('avatar_url', 255)->nullable(false)->default('no-image.jpg')->comment('アバター画像URL');
+            $table->string('avatar_url', 255)->nullable()->default('no-image.png')->comment('アバター画像URL');
             $table->text('pr')->nullable()->comment('自己紹介');
             $table->text('activities')->nullable()->comment('指導できる活動');
             $table->string('other_activities', 255)->nullable()->comment('指導できる活動（その他）');

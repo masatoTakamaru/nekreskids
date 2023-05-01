@@ -3,40 +3,27 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Carbon\Carbon;
 
-class InstructorStep2Request extends FormRequest
+class InstructorStep3Request extends FormRequest
 {
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
 
-    public function rules()
+    public function rules(): array
     {
+        if (!$this->isMethod('post')) return [];
+
         return [
-            'zip' => 'required|integer',
-            'pref' => 'required|string|max:80',
-            'city' => 'required|string|max:80',
-            'address' => 'required|string|max:80',
-            'tel' => 'required|integer',
+            'other_activities' => 'required|string|max:80',
         ];
     }
 
-    public function attributes()
+    public function attributes(): array
     {
         return [
-            'zip'=>'郵便番号',
-            'pref'=>'都道府県',
-            'city'=>'市区町村',
-            'address'=>'町域・番地・建物名など',
-            'tel'=>'電話番号',
+            'other_activities' => 'その他の活動',
         ];
     }
-
-    public function messages()
-    {
-        return [
-        ];
-    }
-};
+}

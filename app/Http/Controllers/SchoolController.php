@@ -36,6 +36,7 @@ class SchoolController extends Controller
             /*--------------------- ここまで ---------------------*/
         ]);
         $this->model->setAttrs(array_fill_keys($this->fillableExt, null));
+
         /*---------- 初期値を与える場合はここに記入 ----------*/
         $this->model->score = 0;
         /*-------------------- ここまで --------------------*/
@@ -67,7 +68,7 @@ class SchoolController extends Controller
 
         /*---------- セッションが存在する場合セッション値を反映 ----------*/
         if ($request->session()->has('jsonData')) {
-            $jsonData = $request->session()->get('jsonData');
+            $jsonData = $request->session()->pull('jsonData');
             $objData->setAttrs(json_decode($jsonData, true));
         }
 
@@ -101,7 +102,7 @@ class SchoolController extends Controller
         }
 
         /*---------- getの場合 ----------*/
-        $jsonData = $request->session()->get('jsonData');
+        $jsonData = $request->session()->pull('jsonData');
         $objData = $this->model;
         $objData->setAttrs(json_decode($jsonData, true));
 
@@ -121,7 +122,7 @@ class SchoolController extends Controller
         if ($request->isMethod('get') && !$request->session()->has('jsonData')) abort(404);
 
         /*---------- getの場合 ----------*/
-        $jsonData = $request->session()->get('jsonData');
+        $jsonData = $request->session()->pull('jsonData');
 
         /*---------- データを整形する場合はここに記入 ----------*/
         /*--------------------- ここまで ---------------------*/
@@ -137,7 +138,7 @@ class SchoolController extends Controller
         if ($request->isMethod('get') && !$request->session()->has('jsonData')) abort(404);
 
         /*---------- getの場合 ----------*/
-        $jsonData = $request->session()->get('jsonData');
+        $jsonData = $request->session()->pull('jsonData');
         $this->model->newEntry($jsonData, 'draft');
 
         /*---------- データを整形する場合はここに記入 ----------*/

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 
 class DatabaseSeeder extends Seeder
 {
@@ -27,12 +28,14 @@ class DatabaseSeeder extends Seeder
         \App\Models\Search::truncate();
         \App\Models\User::truncate();
 
-        $amount = 30;
+        Storage::deleteDirectory('avatars');
+
+        $amount = 10;
 
         \App\Models\User::factory()->create([
             'email' => 'admin@example.com',
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
-            'role' => 3
+            'role' => 3,
         ]);
         \App\Models\User::factory($amount)->hasInstructor(1)->create(['role' => 1]);
         $schools = \App\Models\User::factory($amount)->hasSchool(1)->create(['role' => 2]);

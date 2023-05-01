@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="/asset/bootstrap-5.0.2-dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="/asset/css/normalize.css">
   <link rel="stylesheet" href="/asset/css/front.css">
+  <link rel="stylesheet" href="/asset/css/admin.css">
   <script src="/asset/js/jquery-3.6.4.min.js"></script>
 </head>
 
@@ -29,8 +30,11 @@
       @endguest
     </div>
   </header>
-  <main class="container">
-    <main>
+  <main class="container-fluid row pt-3 mb-5">
+    <nav class="col-3">
+      <x-sidebar/>
+    </nav>
+    <main class="col-9">
       {{ $slot }}
     </main>
   </main>
