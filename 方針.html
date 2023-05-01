@@ -959,56 +959,68 @@ protected $hidden = [
 <br>
 <code>authorize()</code>は<code>return true</code>としておかないとエラーになるので注意が必要。
 <br>
-リクエストのデータの前処理を行いたい場合は<code>prepareForValidation()</code>を設置する。加工したデータは<code>merge()</code>で他のデータと統合する。必要なければ設置しない。
+リクエストのデータの前処理を行いたい場合は<code>prepareForValidation()</code>を設置する。加工したデータは<code>merge()</code>で他のデータと統合する。必要なければ関数自体設置しない。
 <br>
-<code>rules()</code>でバリデーションルールを書くが、GETでもPOSTでも呼び出されることになるので、POST以外は最初に除外しておく。
+<code>rules()</code>でバリデーションルールを書くが、GETでもPOSTでも呼び出されることになるので、POST以外は初めに除外しておく。
+<br>
+<code>attribute()</code>はエラーメッセージを表示するときに必要。
+<br>
+<code>message()</code>は独自のエラーメッセージを設定したい場合に設置する。必要なければ関数自体設置しない。
+<br>
 <code>app\Http\Requests\UserRequest.php</code>
 <pre><code class="language-php">
-  &lt;?php
+&lt;?php
 
-  namespace App\Http\Requests;
-  
-  use Illuminate\Foundation\Http\FormRequest;
-  
-  class UserRequest extends FormRequest
-  {
-      public function authorize(): bool
-      {
-          return true;
-      }
-  
-      protected function prepareForValidation(): void
-      {
-          $name = $this-&gt;request-&gt;name;
-          $this-&gt;merge([
-              'slug' =&gt; Str::slug($this-&gt;slug),
-          ]);
-      }
-  
-      public function rules(): array
-      {
-          if (!$this-&gt;isMethod('post')) return [];
+namespace App\Http\Requests;
 
-          return [
-              'name' =&gt; 'required|string|max:80',
-              'someColumn' =&gt; 'exclude',
-          ];
-      }
-    
-      public function attributes(): array
-      {
-          return [
-              'name' =&gt; '名前',
-          ];
-      }
+use Illuminate\Foundation\Http\FormRequest;
+
+class UserRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $name = $this-&gt;request-&gt;name;
+        $this-&gt;merge([
+            'slug' =&gt; Str::slug($this-&gt;slug),
+        ]);
+    }
+
+    public function rules(): array
+    {
+        if (!$this-&gt;isMethod('post')) return [];
+
+        return [
+            'name' =&gt; 'required|string|max:80',
+            'someColumn' =&gt; 'exclude',
+        ];
+    }
   
-      public function messages(): array
-      {
-          return [
-              'name.required' =&gt; ':attributeは必須です。',
-          ];
-      }
-  }
+    public function attributes(): array
+    {
+        return [
+            'name' =&gt; '名前',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' =&gt; ':attributeは必須です。',
+        ];
+    }
+}
+</code></pre>
+コントローラー
+<pre><code class="language-php">
+public function index(UserRequest $request)
+{
+  ・・・・・
+}
 </code></pre>
 
 </section>  
@@ -1362,6 +1374,80 @@ return view('/someEdit', [
 </code></pre>
 </section>
 
+<!--------------------------- セクションここまで --------------------------->
+
+<!----------------------------- セクション開始 ----------------------------->
+
+<section>
+<h2>Factory</h2>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>テストの実行</h3>
+<pre><code class="language-powershell">
+php artisan test
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+</section>
+<!--------------------------- セクションここまで --------------------------->
+
+<!----------------------------- セクション開始 ----------------------------->
+
+<section>
+<h2>シーダー</h2>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>テストの実行</h3>
+<pre><code class="language-powershell">
+php artisan test
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+</section>
+<!--------------------------- セクションここまで --------------------------->
+<!----------------------------- セクション開始 ----------------------------->
+
+<section>
+<h2>テスト</h2>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>テストの実行</h3>
+<pre><code class="language-powershell">
+php artisan test
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+</section>
 <!--------------------------- セクションここまで --------------------------->
 
 <!----------------------------- セクション開始 ----------------------------->
@@ -1992,6 +2078,40 @@ class sendResizedImg {
 
 </section>
 
+<!--------------------------- セクションここまで --------------------------->
+
+<!----------------------------- セクション開始 ----------------------------->
+<section>
+<h2>Laravelのセットアップ</h2>
+<!----------------------------- 見出し ----------------------------->
+<h3>インストール</h3>
+以下，PowerShellより操作。
+<pre><code class="language-powershell">
+composer create-project laravel/laravel example-app
+</code></pre>
+<h3>ローカル開発サーバーの起動</h3>
+xampp環境で動かす場合は以下。
+<pre><code class="language-powershell">
+php artisan serve
+</code></pre>    
+<h3>日本語化</h3>
+日本語化については<a href="https://laravel-lang.com/installation/" target="_blank">Laravel Lang</a>を参照。
+<pre><code class="language-powershell">
+composer require laravel-lang/common --dev
+
+php artisan lang:add ja
+
+php artisan lang:update
+</code></pre>    
+<h3>Storageのシンボリックリンク</h3>
+<pre><code class="language-powershell">
+php artisan storage:link
+</code></pre>
+<h3>Breezeのインストール</h3>
+<pre><code class="language-powershell">
+composer require laravel/breeze --dev
+</code></pre>  
+</section>  
 <!--------------------------- セクションここまで --------------------------->
 
 <!----------------------------- セクション開始 ----------------------------->
