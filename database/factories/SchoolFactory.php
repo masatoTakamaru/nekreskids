@@ -21,7 +21,7 @@ class SchoolFactory extends Factory
         $cities = AddressConst::CITIES;
 
         $pref = fake()->randomKey($prefs);
-        $city = fake()->randomElement(array_keys($cities[$pref]));
+        $city = fake()->randomKey($cities[$pref]);
 
         return [
             'name' => 'サンプル学校名' . fake()->text(5),

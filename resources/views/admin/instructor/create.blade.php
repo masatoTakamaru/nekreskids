@@ -14,7 +14,7 @@
           </div>
           <div class="edit__item">
             <label for="password" class="edit__label">パスワード</label>
-            <input type="password" name="password" id="password" class="edit__input"
+            <input type="password" name="password" id="password" class="edit__password"
               value="{{ old('password') }}">
             @error('password') <p class="alert">{{ $message }}</p> @enderror
           </div>

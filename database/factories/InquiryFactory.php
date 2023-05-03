@@ -16,7 +16,7 @@ class InquiryFactory extends Factory
     public function definition()
     {
         return [
-            'email' => fake()->email(),
+            'email' => fake()->safeEmail(),
             'message' => 'サンプル内容' . fake()->realText(990),
             'del_flg' => mt_rand(0, 2) ? 0 : 1,
         ];
