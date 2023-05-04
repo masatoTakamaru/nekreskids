@@ -55,18 +55,13 @@ class InstructorController extends Controller
 
     public function index(Request $request)
     {
-
         if (!$request->isMethod('get')) abort(404);
 
-        $objData = $this->model->getInstructorUserList($request->keywords);
-
-        foreach($objData as $item){
-            $item->city = "test";
-        }
+        $objData = $this->model->getInstructorUserList($request->keyword);
 
         return view("admin.$this->dir.index", [
             'objData' => $objData,
-            'keywords' => $request->keywords,
+            'keyword' => $request->keyword,
         ]);
     }
 

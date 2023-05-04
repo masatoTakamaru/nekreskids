@@ -5,7 +5,7 @@
         <h2>学校ユーザー一覧</h2>
       </header>
       <div class="search__wrapper">
-        <form action="/admin/school/index" method="post">
+        <form action="/admin/school/index" method="get">
           @csrf
           <span>絞り込み検索：</span><input class="search__input" value="{{$keywords}}">
           <button type="submit" class="search__submit">検索する</button>

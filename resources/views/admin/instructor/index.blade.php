@@ -5,10 +5,9 @@
         <h2>指導員ユーザー一覧</h2>
       </header>
       <div class="search__wrapper">
-        <form action="/admin/instructor/index" method="post">
-          @csrf
-          <span>絞り込み検索：</span><input class="search__input" value="{{$keywords}}">
-          <button type="submit" class="search__submit">検索する</button>
+        <form action="/admin/instructor/index" method="get">
+          <span>絞り込み検索：</span><input class="search__input" name="keyword" value="{{ $keyword }}">
+          <button type="submit" class="search__submit">検索</button>
         </form>
         <a href="/admin/instructor/create">新規登録</a>
       </div>

@@ -28,7 +28,7 @@ main{margin:15px;}nav{position:fixed;width:300px;top:0;bottom:0;left:0;overflow-
 <h2>変数・配列・オブジェクト</h2>
 <!----------------------------- 見出し ----------------------------->
 <h3>配列は連想配列を用いる</h3>
-配列は何らかのキーを持つこととする。キーに意味を持たせない場合は連番の数字を与える。
+原則として、配列は何らかのキーを持つこととする。キーに意味を持たせない場合は連番の数字を与える。
 <pre><code class="language-php">
 //NGパターン
 $arrSome = ['value1', 'value2', 'value3'];
@@ -201,10 +201,7 @@ $status_type = StatusConst::STATUS;
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
-<!----------------------------- 見出し ----------------------------->
-<h3>項目タイトル</h3>
-<pre><code class="language-php">
-</code></pre>
+
 </section>
 <!--------------------------- セクションここまで --------------------------->
 
@@ -1024,8 +1021,10 @@ protected $hidden = [
 </code></pre>
 一方で、<code>$fillable</code>にもパスワードを記述し、新規登録と更新で用いる（取り出せないが書き込むことはできる）。パスワードを書き込む際には<code>bcrypt($request->password)</code>として、ハッシュ化した上で書き込む。ハッシュ化しないでテーブルに書き込むとログインできなくなるので注意する。
 <!----------------------------- 見出し ----------------------------->
-<h3>項目タイトル</h3>
+<h3>SQLクエリの確認</h3>
+クエリビルダを使用している場合、以下で発行されたクエリを確認できる。
 <pre><code class="language-php">
+dd(preg_replace_array('/\?/', $query->getBindings(), $query->toSql()));
 </code></pre>
 <!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
@@ -1046,7 +1045,7 @@ protected $hidden = [
 <section>
 <h2>バリデーション</h2>
 <!----------------------------- 見出し ----------------------------->
-<h3>バリデーションの書き方</h3>
+<h3>フォームリクエストバリデーション</h3>
 バリデーションはフォームリクエストバリデーションを用いる。詳しくは<a href="https://readouble.com/laravel/10.x/ja/validation.html#form-request-validation">公式</a>を参照。
 <br>
 <code>authorize()</code>は<code>return true</code>としておかないとエラーになるので注意が必要。
@@ -1179,7 +1178,7 @@ return view(&#039;user.create&#039;, [
 ]);
 </code></pre>
 <!----------------------------- 見出し ----------------------------->
-<h3>bladeのバリデーションエラー表示は@errorを使う</h3>
+<h3>bladeのバリデーションエラー表示</h3>
 <pre><code class="language-php">
 @error(&#039;email&#039;) &lt;p class=&quot;alert&quot;&gt;{{ $message }}&lt;/p&gt; @enderror
 </code></pre>
@@ -1394,9 +1393,25 @@ return view('/someEdit', [
 @endforeach  
 </code></pre>
 <!----------------------------- 見出し ----------------------------->
-<h3>項目タイトル</h3>
-<pre><code class="language-php">
+<h3>@csrfの設置</h3>
+POST、PATCH、DELETEメソッドでフォームリクエストを送信する場合は、<code>@csrf</code>を設置する。GETの場合は設置しない。設置しても動作するが、パラメータが送信できなくなる。
+<pre><code class="language-html">
+&lt;!---------- POST、PATCH、DELETEの場合 ----------&gt;
+&lt;form action=&quot;/company/edit&quot; method=&quot;post&quot;&gt;
+  @method('patch')
+  @csrf
+
+  &lt;input name=&quot;name&quot;&gt;
+  &lt;button type=&quot;submit&quot;&gt;送信&lt;/button&gt;
+&lt;/form&gt;
+
+&lt;!------------------ getの場合 ------------------&gt;
+&lt;form action=&quot;/company/index&quot; method=&quot;get&quot;&gt;
+  &lt;input name=&quot;keyword&quot;&gt;
+  &lt;button type=&quot;submit&quot;&gt;検索&lt;/button&gt;
+&lt;/form&gt;
 </code></pre>
+
 <!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
@@ -1474,12 +1489,7 @@ return view('/someEdit', [
 <h2>ファクトリ</h2>
 
 <!----------------------------- 見出し ----------------------------->
-<h3></h3>
-<pre><code class="language-powershell">
-php artisan test
-</code></pre>
-<!----------------------------- 見出し ----------------------------->
-<h3>Fakerのサンプル</h3>
+<h3>ファクトリのサンプル</h3>
 Fakerの詳細は<a href="https://fwhy.github.io/faker-docs/formatters/" target="_blank">FakerPHP非公式リファレンス</a>を参照。
 <pre><code class="language-php">
 &lt;?php
@@ -1523,11 +1533,15 @@ fakerの例
 </tr>
 <tr>
   <td>名</td>
-  <td><code class="language-php">'first_name' =&gt; fake()-&gt;firstName(),</code><br>男性<br><code class="language-php">'first_name' =&gt; fake()-&gt;firstName('male'),</code><br>女性<br><code class="language-php">'first_name' =&gt; fake()-&gt;firstName('female'),</code></td>
+  <td><code class="language-php">'first_name' =&gt; fake()-&gt;firstName(),</code></td>
+</tr>
+<tr>
+  <td>姓フリガナ</td>
+  <td><code class="language-php">'last_name_kana' =&gt; fake()-&gt;lastKanaName(),</code></td>
 </tr>
 <tr>
   <td>名フリガナ</td>
-  <td>上と同様に'male'、'female'の設定可<br><code class="language-php">'first_name_kana' =&gt; fake()-&gt;firstKanaName(),</code></td>
+  <td><code class="language-php">'first_name_kana' =&gt; fake()-&gt;firstKanaName(),</code></td>
 </tr>
 <tr>
   <td>会社名</td>
@@ -1662,15 +1676,36 @@ class sampleFactory extends Factory
 }  
 </code></pre>
 
+画像をランダムに選択してstorageに配置する
+<pre><code class="language-php">
+use Illuminate\Support\Facades\Storage;
+
+// アバター画像（avatar_seed配下に元になる画像ファイルを複数置く）
+$sourceDir = base_path('/assets/avatar_seed');
+$targetDir = 'avatars';
+
+// 画像ファイルのパスのリストを取得する
+$files = File::allFiles($sourceDir);
+$imagePaths = array_map(function ($file) {
+    return $file->getPathname();
+}, $files);
+
+// 画像ファイルをランダムに選択する
+$randomImagePath = $imagePaths[array_rand($imagePaths)];
+
+// 画像ファイルを読み込む
+$image = file_get_contents($randomImagePath);
+
+// 画像ファイルをStorageに保存する
+$fileName = fake()->md5() . '.jpg';
+Storage::put($targetDir . '/' . $fileName, $image);
+</code></pre>
 
 <!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
 <pre><code class="language-php">
 </code></pre>
-<!----------------------------- 見出し ----------------------------->
-<h3>項目タイトル</h3>
-<pre><code class="language-php">
-</code></pre>
+
 </section>
 <!--------------------------- セクションここまで --------------------------->
 
@@ -1678,15 +1713,71 @@ class sampleFactory extends Factory
 
 <section>
 <h2>シーダー</h2>
-
 <!----------------------------- 見出し ----------------------------->
-<h3>テストの実行</h3>
-<pre><code class="language-powershell">
-php artisan test
-</code></pre>
-<!----------------------------- 見出し ----------------------------->
-<h3>項目タイトル</h3>
+<h3>シーダーのサンプル</h3>
+<code>database\seeders\DatabaseSeeder.php</code>
 <pre><code class="language-php">
+&lt;?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+
+class sampleseed extends Seeder
+{
+    /**
+      * Run the database seeds.
+      */
+    public function run(): void
+    {
+        //
+    }
+}  
+</code></pre>
+<pre><code class="language-php">
+use App\Models\User;
+use App\Models\Company;
+use Illuminate\Support\Facades\Storage;
+  
+// テーブルのデータを全消去
+
+User::truncate();
+
+// Storageのフォルダを全消去
+
+Storage::deleteDirectory('avatars');
+
+// 管理者ユーザーの生成（パスワード：'password'）
+
+User::factory()-&gt;create([
+    'email' =&gt; 'admin@example.com',
+    'password' =&gt; '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    'role' =&gt; 3,
+]);
+
+// レコードを１０件生成
+
+$amount = 10;
+
+User::factory($amount)-&gt;create();
+
+// リレーション先のレコードも同時に1件生成
+
+User::factory($amount)-&gt;hasCompany(1)-&gt;create(['role' =&gt; 1]);
+
+// リレーション先のレコードをランダムに1～10件生成
+
+User::factory($amount)-&gt;hasCompany(mt_rand(1, 10))-&gt;create(['status' =&gt; 'private']);
+
+// リレーション先のレコードをランダムに1～5個、1/3の確率で生成しない
+
+$users = User::factory($amount)-&gt;create(['role' =&gt; 1]);
+
+foreach($users as $user) {
+  Company::factory(mt_rand(1, 5))-&gt;create(['user_id' =&gt; $user-&gt;id]);
+}
+
 </code></pre>
 <!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
@@ -1698,6 +1789,7 @@ php artisan test
 </code></pre>
 </section>
 <!--------------------------- セクションここまで --------------------------->
+
 <!----------------------------- セクション開始 ----------------------------->
 
 <section>
@@ -1707,10 +1799,88 @@ php artisan test
 <h3>テストの実行</h3>
 <pre><code class="language-powershell">
 php artisan test
+
+// ファイル名を指定して実行
+
+php artisan test tests/Feature/Model/UserTest.php
 </code></pre>
 <!----------------------------- 見出し ----------------------------->
-<h3>項目タイトル</h3>
+<h3>テストを実行するとデータが全て消える場合</h3>
+テスト用のデータベースを指定し忘れると、テスト実行時にデータベースのデータがすべて消えてしまうので注意が必要。laravelはインストール時に<code>test</code>という名前のデータベースが作成されているはずなので、それを指定する。<br>
+phpunit.xml
 <pre><code class="language-php">
+&lt;php&gt;
+    &lt;env name=&quot;APP_ENV&quot; value=&quot;testing&quot;/&gt;
+    &lt;env name=&quot;BCRYPT_ROUNDS&quot; value=&quot;4&quot;/&gt;
+    &lt;env name=&quot;CACHE_DRIVER&quot; value=&quot;array&quot;/&gt;
+
+    &lt;!-- テスト用のデータベースを指定 --&gt;
+
+    &lt;env name=&quot;DB_DATABASE&quot; value=&quot;test&quot;/&gt;
+
+    &lt;!---------- ここまで ----------&gt;
+
+    &lt;env name=&quot;MAIL_MAILER&quot; value=&quot;array&quot;/&gt;
+    &lt;env name=&quot;QUEUE_CONNECTION&quot; value=&quot;sync&quot;/&gt;
+    &lt;env name=&quot;SESSION_DRIVER&quot; value=&quot;array&quot;/&gt;
+    &lt;env name=&quot;TELESCOPE_ENABLED&quot; value=&quot;false&quot;/&gt;
+&lt;/php&gt;
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>ページの表示確認テスト</h3>
+画面が表示できるかどうかをテストする。必要なページを追加することで、全ページの表示確認を一度に行うことができる。
+<pre><code class="language-php">
+&lt;?php
+
+namespace Tests\Feature;
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+use App\Models\User;
+
+class AccessibleTest extends TestCase
+{
+    use RefreshDatabase;
+
+    /**
+      * @test
+      */
+    public function 各ページが表示される(): void
+    {
+        //シーダーの実行
+        $this-&gt;seed();
+
+        //未ログインでアクセスできるページの表示確認
+        $response = $this-&gt;get('/');
+        $response-&gt;assertOk();
+
+        $response = $this-&gt;get('/login');
+        $response-&gt;assertOk();
+
+        //ログインが必要なページの表示確認
+        $model = new User;
+        $user = $model-&gt;where(['role' =&gt; 1])-&gt;first();
+
+        //ログイン状態を作る
+        $this-&gt;actingAs($user);
+
+        $response = $this-&gt;get('/admin/dashboard');
+        $response-&gt;assertOk();
+
+        $response = $this-&gt;get(&quot;/admin/company/edit?id=$user-&gt;id&quot;);
+        $response-&gt;assertOk();
+    }
+}
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>複数キーワードによる検索テスト</h3>
+<pre><code class="language-php">
+
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>複数キーワードによる検索テスト</h3>
+<pre><code class="language-php">
+
 </code></pre>
 <!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
@@ -1727,6 +1897,20 @@ php artisan test
 
 <section>
 <h2>パーツ集</h2>
+<!----------------------------- 見出し ----------------------------->
+<h3>検索キーワード分割</h3>
+<code>trait</code>で設置するのが望ましい。
+<pre><code class="language-html">
+/**
+* 検索キーワードを分割して配列で返す
+* @param $keywords string
+*/
+public function splitKeyword($keyword): array
+{
+    //半角スペースと全角スペースで分割
+    return preg_split('/[\s\xE3\x80\x80]/u', $keyword);
+}
+</code></pre>
 
 <!----------------------------- 見出し ----------------------------->
 <h3>パスワード表示・非表示アイコン</h3>

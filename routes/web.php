@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 
 /**
  *  -------------------- ルーティングの説明 --------------------
@@ -31,8 +32,7 @@ use Illuminate\Support\Str;
 
 $authDir = 'admin';     //認証が必要なディレクトリ
 
-$branchTunnel = function () use ($authDir) {
-
+$branchTunnel = function (Request $request) use ($authDir) {
     $arrUrl = explode('?', request()->getRequestUri());
     $arrUrl = explode('/', $arrUrl[0]);
     $action = 'index';
