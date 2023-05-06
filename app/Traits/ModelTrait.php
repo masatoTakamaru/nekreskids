@@ -17,7 +17,7 @@ trait ModelTrait {
 
     /**
      * 検索キーワードを分割して配列で返す
-     * @param $keywords string
+     * @param $keyword string
      */
     public function splitKeyword($keyword): array
     {

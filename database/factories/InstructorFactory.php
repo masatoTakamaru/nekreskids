@@ -22,8 +22,8 @@ class InstructorFactory extends Factory
      */
     public function definition()
     {
-        $activities = RecruitConst::ACTIVITIES;
-        $prefs = AddressConst::PREFECTURES;
+        $activities = RecruitConst::ACTIVITY;
+        $prefs = AddressConst::PREFECTURE;
         $cities = AddressConst::CITIES;
         $genders = UserConst::GENDERS;
         $act_areas = [];

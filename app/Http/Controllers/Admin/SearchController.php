@@ -13,15 +13,15 @@ class SearchController extends Controller
     {
         $search = new Search;
 
-        if ($request->keywords) {
-            $entity = $search->searchEntity($request->keywords);
+        if ($request->keyword) {
+            $entity = $search->searchEntity($request->keyword);
         } else {
             $entity = $search->getEntityList();
         }
 
         return view('admin.search.search-index', [
             'objData' => !empty($entity) ? $entity : null,
-            'keywords' => $request->keywords,
+            'keyword' => $request->keyword,
         ]);
     }
 

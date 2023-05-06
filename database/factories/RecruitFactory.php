@@ -16,16 +16,16 @@ class RecruitFactory extends Factory
      */
     public function definition()
     {
-        $recruit_types = RecruitConst::RECRUIT_TYPES;
-        $activities = RecruitConst::ACTIVITIES;
-        $payment_types=RecruitConst::PAYMENT_TYPES;
-        $commutation_types=RecruitConst::PAYMENT_TYPES;
-        $statuses=RecruitConst::STATUSES;
+        $recruit_type = RecruitConst::RECRUIT_TYPE;
+        $activities = RecruitConst::ACTIVITY;
+        $payment_types=RecruitConst::PAYMENT_TYPE;
+        $commutation_types=RecruitConst::PAYMENT_TYPE;
+        $statuses=RecruitConst::STATUS;
 
         return [
             'header' => 'サンプル件名' . fake()->realText(70),
-            'pr' => mt_rand(0, 4) ? 'サンプル紹介文' . fake()->realText(990) : null,
-            'recruit_type' => fake()->randomKey($recruit_types),
+            'pr' => mt_rand(0, 4) ? 'サンプル紹介文' . fake()->realText(50) : null,
+            'recruit_type' => fake()->randomKey($recruit_type),
             'activities' => json_encode(fake()->randomElements(array_keys($activities), mt_rand(0, 5))),
             'other_activities' => mt_rand(0, 4) ? '募集する活動その他' . fake()->realText(100) : null,
             'ontime' => '募集する日時' . fake()->realText(100),

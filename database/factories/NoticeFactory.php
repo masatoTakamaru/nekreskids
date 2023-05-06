@@ -17,7 +17,7 @@ class NoticeFactory extends Factory
      */
     public function definition()
     {
-        $statuses = NoticeConst::RECRUIT_TYPES;
+        $statuses = NoticeConst::RECRUIT_TYPE;
 
         return [
             'header' => 'サンプル見出し' . fake()->realText(15),

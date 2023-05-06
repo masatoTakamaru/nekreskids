@@ -22,24 +22,22 @@ class SchoolController extends Controller
     public function __construct()
     {
         $this->model = new User;
-        $this->fillableExt = array_merge($this->model->getFillable(), [
-            /*----------- 項目を追加する場合はここに記入 -----------*/
-            'name',
-            'zip',
-            'pref',
-            'city',
-            'address',
-            'tel1',
-            'tel2',
-            'charge',
-            'score',
-            /*--------------------- ここまで ---------------------*/
-        ]);
-        $this->model->setAttrs(array_fill_keys($this->fillableExt, null));
+        $this->model->setAttrs(array_fill_keys($this->model->getFillable(), null));
 
-        /*---------- 初期値を与える場合はここに記入 ----------*/
-        $this->model->score = 0;
+        /*-------- 項目追加・初期値の代入はここに記入 --------*/
+        $this->model->name = null;
+        $this->model->zip = null;
+        $this->model->pref = null;
+        $this->model->city = null;
+        $this->model->address = null;
+        $this->model->tel1 = null;
+        $this->model->tel2 = [];
+        $this->model->charge = null;
+        $this->model->score = null;
         /*-------------------- ここまで --------------------*/
+
+        $this->fillableExt = array_keys(collect($this->model)->toArray());
+        array_push($this->fillableExt, 'password');
     }
 
     public function create(Request $request)
@@ -53,12 +51,14 @@ class SchoolController extends Controller
 
             /*---------- 下書き保存 ----------*/
             if ($request->has('action') && $request->action === 'draft') {
-                return redirect("$this->dir/draft-complete")->with('jsonData', $jsonData);
+                return redirect("$this->dir/draft-complete")
+                    ->with('jsonData', $jsonData);
             }
 
             /*---------- ページ遷移 ----------*/
             if ($request->has('transit')) {
-                return redirect("/$this->dir/" . $request->transit)->with('jsonData', $jsonData);
+                return redirect("/$this->dir/" . $request->transit)
+                    ->with('jsonData', $jsonData);
             }
         }
 

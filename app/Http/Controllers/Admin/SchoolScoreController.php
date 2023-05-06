@@ -13,15 +13,15 @@ class SchoolScoreController extends Controller
     {
         $school_score = new SchoolScore;
 
-        if ($request->keywords) {
-            $entity = $school_score->searchEntity($request->keywords);
+        if ($request->keyword) {
+            $entity = $school_score->searchEntity($request->keyword);
         } else {
             $entity = $school_score->getEntityList();
         }
 
         return view('admin.school_score.school_score-index', [
             'objData' => !empty($entity) ? $entity : null,
-            'keywords' => $request->keywords,
+            'keyword' => $request->keyword,
         ]);
     }
 

@@ -7,98 +7,42 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Application;
 use App\Http\Controllers\Controller;
 
+
 class ApplicationController extends Controller
 {
+    private $dir = 'recruit';
+    private $model = null;
+    private $fillableExt = [];
+
+    public function __construct()
+    {
+        $this->model = new Application;
+        $this->model->setAttrs(array_fill_keys($this->model->getFillable(), null));
+
+        /*-------- 項目追加・初期値の代入はここに記入 --------*/
+        $this->model->recruit_header = null;
+        $this->model->instructor_name = null;
+        /*-------------------- ここまで --------------------*/
+
+        $this->fillableExt = array_keys(collect($this->model)->toArray());
+    }
+
     public function index(Request $request)
     {
-        $application = new Application;
+        if (!$request->isMethod('get')) abort(404);
 
-        if ($request->keywords) {
-            $entity = $application->searchEntity($request->keywords);
-        } else {
-            $entity = $application->getEntityList();
+        $objData = $this->model->getList($request->keyword);
+
+        foreach ($objData as $item) {
+            if (strlen($item->header) > 15) {
+                $item->header = mb_substr($item->header, 0, 15) . '…';
+            }
+            $item->area = $item->school->pref . $item->school->city;
         }
 
-        return view('admin.application.application-index', [
-            'objData' => !empty($entity) ? $entity : null,
-            'keywords' => $request->keywords,
+        return view("admin.$this->dir.index", [
+            'objData' => $objData,
+            'keyword' => $request->keyword,
         ]);
-    }
-
-    public function create()
-    {
-        return view('admin.application.application-create');
-    }
-
-    public function store(ApplicationRequest $request)
-    {
-        $result = Application::create([
-            'recruit_id' => $request->recruit_id,
-            'instructor_id' => $request->instructor_id,
-            'message' => $request->message,
-
-        ]);
-
-        if (!empty($result)) {
-            return redirect()->route('admin.application.application-index');
-        } else {
-            return back()->withInput();
-        }
-    }
-
-    public function show($id)
-    {
-        $application = new Application;
-        $entity = $application->getEntity($id);
-        if (empty($entity)) return back()->withInput();
-
-        return view('admin.application.application-show', [
-            'objData' => $entity,
-        ]);        
-    }
-
-    public function edit($id)
-    {
-        $application = new Application;
-        $entity = $application->getEntity($id);
-
-        return view('admin.application.application-edit', [
-            'objData' => empty($entity) ? null : $entity,
-        ]);
-    }
-
-    public function update(ApplicationRequest $request, $id)
-    {
-        $application = new Application;
-        if (empty($entity)) return back()->withInput();
-
-        $entity = $application->getEntity($id);
-
-        $result = $entity->update([
-            'recruit_id' => $request->recruit_id,
-            'instructor_id' => $request->instructor_id,
-            'message' => $request->message,
-
-        ]);
-        if ($result) {
-            return redirect()->route('admin.application.application-index');
-        } else {
-            return back()->withInput();
-        }
-    }
-
-    public function destroy($id)
-    {
-        $application = new Application;
-        $entity = $application->getEntity($id);
-        if (empty($entity)) return back()->withInput();
-    
-        $result = $entity->destroy();
-
-        if () {
-            return redirect()->route('admin.application.application-index');
-        } else {
-            return back()->withInput();
-        }
     }
 }

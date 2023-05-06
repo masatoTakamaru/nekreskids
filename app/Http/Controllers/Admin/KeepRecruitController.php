@@ -13,15 +13,15 @@ class KeepRecruitController extends Controller
     {
         $keep_recruit = new KeepRecruit;
 
-        if ($request->keywords) {
-            $entity = $keep_recruit->searchEntity($request->keywords);
+        if ($request->keyword) {
+            $entity = $keep_recruit->searchEntity($request->keyword);
         } else {
             $entity = $keep_recruit->getEntityList();
         }
 
         return view('admin.keep_recruit.keep_recruit-index', [
             'objData' => !empty($entity) ? $entity : null,
-            'keywords' => $request->keywords,
+            'keyword' => $request->keyword,
         ]);
     }
 

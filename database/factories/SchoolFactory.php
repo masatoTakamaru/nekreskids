@@ -17,7 +17,7 @@ class SchoolFactory extends Factory
      */
     public function definition()
     {
-        $prefs = AddressConst::PREFECTURES;
+        $prefs = AddressConst::PREFECTURE;
         $cities = AddressConst::CITIES;
 
         $pref = fake()->randomKey($prefs);

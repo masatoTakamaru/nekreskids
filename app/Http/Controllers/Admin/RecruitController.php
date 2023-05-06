@@ -4,125 +4,122 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\Recruit;
 use App\Http\Controllers\Controller;
+use App\Consts\AddressConst;
+use App\Consts\UserConst;
+use App\Consts\RecruitConst;
+use App\Models\Recruit;
+use App\Models\School;
 
 class RecruitController extends Controller
 {
+    private $dir = 'recruit';
+    private $model = null;
+    private $fillableExt = [];
+
+    public function __construct()
+    {
+        $this->model = new Recruit;
+        $this->fillableExt = array_merge($this->model->getFillable(), [
+            /*----------- 項目を追加する場合はここに記入 -----------*/
+            'school_id',
+            'school_name',
+            'area',
+            /*--------------------- ここまで ---------------------*/
+        ]);
+        $this->model->setAttrs(array_fill_keys($this->fillableExt, null));
+
+        /*---------- 初期値を与える場合はここに記入 ----------*/
+        /*-------------------- ここまで --------------------*/
+    }
+
     public function index(Request $request)
     {
-        $recruit = new Recruit;
+        if (!$request->isMethod('get')) abort(404);
 
-        if ($request->keywords) {
-            $entity = $recruit->searchEntity($request->keywords);
-        } else {
-            $entity = $recruit->getEntityList();
+        $objData = $this->model->getList($request->keyword);
+
+        foreach ($objData as $item) {
+            if (strlen($item->header) > 15) {
+                $item->header = mb_substr($item->header, 0, 15) . '…';
+            }
+            $item->area = $item->school->pref . $item->school->city;
         }
 
-        return view('admin.recruit.recruit-index', [
-            'objData' => !empty($entity) ? $entity : null,
-            'keywords' => $request->keywords,
+        return view("admin.$this->dir.index", [
+            'objData' => $objData,
+            'keyword' => $request->keyword,
         ]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('admin.recruit.recruit-create');
-    }
+        if (!$request->isMethod('get') && !$request->isMethod('post')) abort(404);
+        if ($request->isMethod('get') && empty(School::find($request->id))) abort(404);
 
-    public function store(RecruitRequest $request)
-    {
-        $result = Recruit::create([
-            'school_id' => $request->school_id,
-            'header' => $request->header,
-            'pr' => $request->pr,
-            'recruit_type' => $request->recruit_type,
-            'activities' => $request->activities,
-            'other_activities' => $request->other_activities,
-            'ontime' => $request->ontime,
-            'payment_type' => $request->payment_type,
-            'payment' => $request->payment,
-            'commutation_type' => $request->commutation_type,
-            'commutation' => $request->commutation,
-            'number' => $request->number,
-            'status' => $request->status,
-            'end_date' => $request->end_date,
-            'keep' => $request->keep,
-
-        ]);
-
-        if (!empty($result)) {
-            return redirect()->route('admin.recruit.recruit-index');
-        } else {
-            return back()->withInput();
+        /*--------------- postの場合 ---------------*/
+        if ($request->isMethod('post')) {
+            $objData = $this->model;
+            $arrData = array_merge($objData->toArray(), $request->input());
+            $jsonData = json_encode($arrData);
+            $this->model->newEntry($jsonData);
+            return redirect("/admin/$this->dir/index");
         }
-    }
-
-    public function show($id)
-    {
-        $recruit = new Recruit;
-        $entity = $recruit->getEntity($id);
-        if (empty($entity)) return back()->withInput();
-
-        return view('admin.recruit.recruit-show', [
-            'objData' => $entity,
-        ]);        
-    }
-
-    public function edit($id)
-    {
-        $recruit = new Recruit;
-        $entity = $recruit->getEntity($id);
-
-        return view('admin.recruit.recruit-edit', [
-            'objData' => empty($entity) ? null : $entity,
+        /*--------------- getの場合 ---------------*/
+        return view("admin.$this->dir.create", [
+            'school_id' => $request->id,
+            'arrRecruitType' => RecruitConst::RECRUIT_TYPE,
+            'arrActivities' => RecruitConst::ACTIVITY,
+            'arrPaymentType' => RecruitConst::PAYMENT_TYPE,
+            'arrCommutationType' => RecruitConst::COMMUTATION_TYPE,
+            'arrStatus' => RecruitConst::STATUS,
         ]);
     }
 
-    public function update(RecruitRequest $request, $id)
+    public function detail(Request $request)
     {
-        $recruit = new Recruit;
-        if (empty($entity)) return back()->withInput();
+        if (!$request->isMethod('get') && !$request->isMethod('delete')) abort(404);
 
-        $entity = $recruit->getEntity($id);
+        $objData = $this->model->getDetail($request->id);
+        if (empty($objData)) abort(404);
 
-        $result = $entity->update([
-            'school_id' => $request->school_id,
-            'header' => $request->header,
-            'pr' => $request->pr,
-            'recruit_type' => $request->recruit_type,
-            'activities' => $request->activities,
-            'other_activities' => $request->other_activities,
-            'ontime' => $request->ontime,
-            'payment_type' => $request->payment_type,
-            'payment' => $request->payment,
-            'commutation_type' => $request->commutation_type,
-            'commutation' => $request->commutation,
-            'number' => $request->number,
-            'status' => $request->status,
-            'end_date' => $request->end_date,
-            'keep' => $request->keep,
-
-        ]);
-        if ($result) {
-            return redirect()->route('admin.recruit.recruit-index');
-        } else {
-            return back()->withInput();
+        /*--------------- deleteの場合 ---------------*/
+        if ($request->isMethod('delete')) {
+            $objData->deleteData($request->id);
+            return redirect("admin/$this->dir/index");
         }
+
+        return view("admin.$this->dir.detail", [
+            'objData' => $objData,
+        ]);
     }
 
-    public function destroy($id)
+    public function edit(Request $request)
     {
-        $recruit = new Recruit;
-        $entity = $recruit->getEntity($id);
-        if (empty($entity)) return back()->withInput();
-    
-        $result = $entity->destroy();
+        if (!$request->isMethod('get') && !$request->isMethod('patch')) abort(404);
 
-        if () {
-            return redirect()->route('admin.recruit.recruit-index');
-        } else {
-            return back()->withInput();
+        /*--------------- patchの場合 ---------------*/
+        if ($request->isMethod('patch')) {
+            $arrData = $request->input();
+            $arrData['id'] = $request->id;
+            $objData = $this->model;
+            $objData->updateData($arrData);
+            return redirect("admin/$this->dir/index");
         }
+
+        /*--------------- getの場合 ---------------*/
+        $objData = $this->model->getDetail($request->id);
+        if (empty($objData)) abort(404);
+
+        $objData->activities = json_decode($objData->activities, true) ?? [];
+
+        return view("admin.$this->dir.edit", [
+            'objData' => $objData,
+            'arrRecruitType' => RecruitConst::RECRUIT_TYPE,
+            'arrActivities' => RecruitConst::ACTIVITY,
+            'arrPaymentType' => RecruitConst::PAYMENT_TYPE,
+            'arrCommutationType' => RecruitConst::COMMUTATION_TYPE,
+            'arrStatus' => RecruitConst::STATUS,
+        ]);
     }
 }

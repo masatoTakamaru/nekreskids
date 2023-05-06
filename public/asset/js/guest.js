@@ -187,33 +187,72 @@ function setActArea(obj) {
 
 /**
  * 残り文字数カウンター
- * @param obj obj{textArea: string, count: string} textareaとカウンタを表示する要素のID
+ * @param obj {
+ *      textArea: textareaの要素ID,
+ *      count: カウンタのP要素ID
+ *      limit: 最大文字数,
+ * }
  */
 function setCounter(obj) {
-    const maxLength = 200;  //最大文字数
     const textElem = $(`#${obj.textArea}`);
     const countElem = $(`#${obj.count}`);
-    $(window).on('load', function () {
-        countElem.text(`あと${maxLength}文字`);
-    });
+    const limit = obj.limit;
+    const regex = /(\r\n|\n|\r)/gm;
+    const keys = [
+        'Backspace',
+        'ArrowUp',
+        'ArrowDown',
+        'ArrowLeft',
+        'ArrowRight',
+    ];
 
-    textElem.on('input', function () {
-        const text = textElem.val().replace(/(\r\n|\n|\r)/gm, "");
-        if (text.length >= maxLength) {
-            textElem.attr('readonly', true);
+    function toggleReadOnly() {
+        const text = textElem.val();
+        const arrBreak = text.match(regex);
+        const countBreak = Array.isArray(arrBreak) ? arrBreak.length : 0;
+        if (text.length > limit + countBreak) {
+            textElem.val(text.slice(0, limit + countBreak))
+                .attr('readonly', true);
+            countElem.addClass('edit__alert')
+                .text('最大文字数を超えています。これ以上入力できません。');
         } else {
             textElem.removeAttr('readonly');
+            const len = limit - text.replace(regex, '').length;
+            countElem.removeClass('edit__alert')
+                .text(`あと${len}文字`);
         }
-        const len = maxLength - text.length;
-        countElem.text(`あと${len}文字`);
-    });
+    }
 
-    textElem.on('keydown', function (e) {
-        if (textElem.attr('readonly')) {
-            if (e.keyCode === 8 || e.keyCode === 46) {
-                textElem.removeAttr('readonly');
+    $(window).on('load', toggleReadOnly);
+    textElem.on('input', toggleReadOnly)
+        .on('keydown', function (e) {
+            if (textElem.attr('readonly') && keys.includes(e.key)) {
+                toggleReadOnly();
             }
-        }
-    });
+        });
 }
 
+/**
+ * セレクトボックスの選択によってinput要素を入力不可にする
+ * @param obj {
+ *      select: セレクトボックスの要素ID,
+ *      condition: 入力不可にするvalue値（配列で指定）,
+ *      target: 入力不可にする要素ID,
+ * }
+ */
+function toggleDisabled(obj) {
+    const selectElem = $(`#${obj.select}`);
+    const condition = obj.condition;
+    const targetElem = $(`#${obj.target}`);
+
+    function toggleAttr() {
+        if (condition.includes(selectElem.val())) {
+            targetElem.val('').attr('disabled', true);
+        } else {
+            targetElem.removeAttr('disabled');
+        }
+    }
+
+    $(window).on('load', toggleAttr);
+    selectElem.on('change', toggleAttr);
+}

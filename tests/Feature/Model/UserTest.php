@@ -38,7 +38,7 @@ class UserTest extends TestCase
     /**
      * @test
      */
-    public function 検索で有効な指導員ユーザーが5件取得される(): void
+    public function 検索でユーザーが5件取得される(): void
     {
         //valid
         for ($i = 0; $i < 5; $i++) {
@@ -47,7 +47,7 @@ class UserTest extends TestCase
                     'name' => 'tanaka',
                     'pref' => 'okinawa',
                     'city' => 'nahashi',
-                    'del_flg' => 0
+                    'del_flg' => 0,
                 ])
                 ->create(['role' => 1, 'del_flg' => 0]);
         }

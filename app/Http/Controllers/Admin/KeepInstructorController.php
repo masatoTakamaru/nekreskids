@@ -13,15 +13,15 @@ class KeepInstructorController extends Controller
     {
         $keep_instructor = new KeepInstructor;
 
-        if ($request->keywords) {
-            $entity = $keep_instructor->searchEntity($request->keywords);
+        if ($request->keyword) {
+            $entity = $keep_instructor->searchEntity($request->keyword);
         } else {
             $entity = $keep_instructor->getEntityList();
         }
 
         return view('admin.keep_instructor.keep_instructor-index', [
             'objData' => !empty($entity) ? $entity : null,
-            'keywords' => $request->keywords,
+            'keyword' => $request->keyword,
         ]);
     }
 

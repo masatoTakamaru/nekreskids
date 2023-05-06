@@ -12,6 +12,8 @@
             @csrf
             <button type="submit" id="deleteButton" class="edit__submit">削除する</button>
           </form>
+          <a href="/admin/recruit/create?id={{ $objData->school_id }}"
+            class="edit__link">指導員募集新規作成</a>
         </div>
       </section>
       <section>
@@ -19,7 +21,7 @@
           <tbody>
             <tr>
               <th>メールアドレス</th>
-              <td>{{$objData->email}}</td>
+              <td>{{ $objData->email }}</td>
             </tr>
             <tr>
               <th>パスワード</th>
@@ -27,35 +29,35 @@
             </tr>
             <tr>
               <th>学校名</th>
-              <td>{{$objData->name}}</td>
+              <td>{{ $objData->name }}</td>
             </tr>
             <tr>
               <th>郵便番号</th>
-              <td>{{$objData->zip}}</td>
+              <td>{{ $objData->zip }}</td>
             </tr>
             <tr>
               <th>都道府県</th>
-              <td>{{$objData->pref}}</td>
+              <td>{{ $objData->pref }}</td>
             </tr>
             <tr>
               <th>市区町村</th>
-              <td>{{$objData->city}}</td>
+              <td>{{ $objData->city }}</td>
             </tr>
             <tr>
               <th>町域・番地・建物名など</th>
-              <td>{{$objData->address}}</td>
+              <td>{{ $objData->address }}</td>
             </tr>
             <tr>
               <th>電話番号１</th>
-              <td>{{$objData->tel1}}</td>
+              <td>{{ $objData->tel1 }}</td>
             </tr>
             <tr>
               <th>電話番号２</th>
-              <td>{{$objData->tel2}}</td>
+              <td>{{ $objData->tel2 }}</td>
             </tr>
             <tr>
               <th>担当者名</th>
-              <td>{{$objData->charge}}</td>
+              <td>{{ $objData->charge }}</td>
             </tr>
           </tbody>
         </table>

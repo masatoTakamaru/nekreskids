@@ -149,7 +149,7 @@ class User extends Authenticatable
      */
     public function getInstructorUserList($keyword): object
     {
-        $prefs = AddressConst::PREFECTURES;
+        $prefs = AddressConst::PREFECTURE;
         $prefCities = AddressConst::CITIES;
 
         $query = $this->select(
@@ -178,9 +178,7 @@ class User extends Authenticatable
                     $prefMatches = array_keys($prefTemp);
 
                     foreach ($prefMatches as $pref) {
-                        $query->orWhere(function ($query) use ($pref) {
-                            $query->where('instructors.pref', 'LIKE', "%$pref%");
-                        });
+                        $query->orWhere('instructors.pref', 'LIKE', "%$pref%");
                     }
 
                     //市区町村で検索
@@ -191,9 +189,7 @@ class User extends Authenticatable
                     }
 
                     foreach ($cityMatches as $city) {
-                        $query->orWhere(function ($query) use ($city) {
-                            $query->where('instructors.city', 'LIKE', "%$city%");
-                        });
+                        $query->orWhere('instructors.city', 'LIKE', "%$city%");
                     }
                 });
             }
@@ -269,9 +265,9 @@ class User extends Authenticatable
 
     /**
      * 学校ユーザー一覧
-     * @param array $keywords 絞込検索キーワード（複数）
+     * @param array $keyword 絞込検索キーワード（複数）
      */
-    public function getSchoolUserList($keywords): object
+    public function getSchoolUserList($keyword): object
     {
         $query = $this->select(
             'users.id',
@@ -297,6 +293,7 @@ class User extends Authenticatable
         $query = $this->select(
             'users.id',
             'users.email',
+            'schools.id as school_id',
             'schools.name',
             'schools.zip',
             'schools.pref',
