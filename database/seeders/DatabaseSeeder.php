@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
 
         Storage::deleteDirectory('avatars');
 
-        $amount = 100;
+        $amount = 5;
 
         User::factory()->create([
             'email' => 'admin@example.com',
