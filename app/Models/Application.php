@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
+use App\Traits\ModelTrait;
 
 class Application extends Model
 {
     use HasFactory;
+    use ModelTrait;
 
     protected $fillable = [
         'message',
@@ -33,8 +35,15 @@ class Application extends Model
      */
     public function getList($keyword): object
     {
-        $query = $this->select('applications.*');
+        $query = $this->select(
+            'applications.*',
+            'recruits.header as recruit_header',
+            'instructors.name as instructor_name'
+        )
+            ->leftJoin('recruits', 'applications.recruit_id', '=', 'recruits.id')
+            ->leftJoin('instructors', 'applications.instructor_id', '=', 'instructors.id');
 
+        /*
         if (!empty($keyword)) {
 
             $arrKeyword = $this->splitKeyword($keyword);
@@ -68,8 +77,13 @@ class Application extends Model
                 });
             }
         }
+        */
 
-        $condition = ['recruits.del_flg' => 0, 'schools.del_flg' => 0];
+        $condition = [
+            'applications.del_flg' => 0,
+            'recruits.del_flg' => 0,
+            'instructors.del_flg' => 0,
+        ];
         //dd(preg_replace_array('/\?/', $query->getBindings(), $query->toSql()));
 
         $objData = $query->where($condition)->paginate(10);

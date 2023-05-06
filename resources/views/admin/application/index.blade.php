@@ -31,14 +31,11 @@
                   </a>
                 </td>
                 <td class="index__value">
-                  <a href="/admin/instructor/detail?id={{ $item->instrctor_id }}">
+                  <a href="/admin/instructor/detail?id={{ $item->instructor->user->id }}">
                     {{ $item->instructor_name }}
                   </a>
                 </td>
-                <td class="index__value">
-                  {{ $item->instructor_id }}</td>
-                <td class="index__value">
-                  {{ $item->message }}</td>
+                <td class="index__value">{{ $item->message }}</td>
               </tr>
             @endforeach
           </tbody>
