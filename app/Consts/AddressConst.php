@@ -4,7 +4,7 @@ namespace App\Consts;
 
 class AddressConst
 {
-    const PREFECTURES = [
+    const PREFECTURE = [
         'hokkaido' => '北海道',
         'aomori' => '青森県',
         'iwate' => '岩手県',

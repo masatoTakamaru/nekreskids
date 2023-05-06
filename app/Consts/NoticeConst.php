@@ -5,7 +5,7 @@ namespace App\Consts;
 class NoticeConst
 {
 
-    const RECRUIT_TYPES = [
+    const RECRUIT_TYPE = [
         'public' => '公開',
         'unpublic' => '非公開',
     ];

@@ -20,6 +20,14 @@
       <a href="/">ネクレスキッズ</a>
     </div>
     <div>
+      @auth
+      <div>
+        <form action="logout" method="post">
+          @csrf
+          <input type="submit" value="ログアウト">
+        </form>
+      </div>
+      @endauth
       @guest
       <div>
         <a href="/login">ログイン</a>

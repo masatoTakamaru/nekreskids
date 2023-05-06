@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 use App\Traits\ModelTrait;
+use App\Consts\AddressConst;
 
 
 class User extends Authenticatable
@@ -65,9 +66,8 @@ class User extends Authenticatable
      * 
      * @param string $jsonData json文字列化したuserとschoolモデル
      * @param string $status ステータス
-     * @return object $objResult 保存されたuserモデル
      */
-    public function newEntry($jsonData, $role, $status)
+    public function newEntry($jsonData, $role, $status): object
     {
         $arrTemp = json_decode($jsonData, true);
         $arrData = array_replace($arrTemp, [
@@ -89,7 +89,7 @@ class User extends Authenticatable
                     $data = base64_decode(str_replace('data:image/png;base64,', '', $arrData['avatar']));
                     Storage::put("$dirName/$fileName.png", $data);
                 }
-                
+
                 $arrData = array_replace($arrData, [
                     'activities' => json_encode($arrData['activities']),
                     'act_areas' => json_encode($arrData['act_areas']),
@@ -145,11 +145,13 @@ class User extends Authenticatable
 
     /**
      * 指導員ユーザー一覧
-     * @param array $keywords 絞込検索キーワード（複数）
-     * @return obj
+     * @param string $keyword 絞込検索キーワード（複数）
      */
-    public function getInstructorUserList($keywords)
+    public function getInstructorUserList($keyword): object
     {
+        $prefs = AddressConst::PREFECTURE;
+        $prefCities = AddressConst::CITIES;
+
         $query = $this->select(
             'users.id',
             'users.email',
@@ -159,7 +161,43 @@ class User extends Authenticatable
         )
             ->leftJoin('instructors', 'users.id', '=', 'instructors.user_id');
 
+        if (!empty($keyword)) {
+
+            $arrKeyword = $this->splitKeyword($keyword);
+
+            foreach ($arrKeyword as $search) {
+
+                $query->where(function ($query) use ($search, $prefs, $prefCities) {
+
+                    //名前とメールアドレスで検索
+                    $query->where('instructors.name', 'LIKE', "%$search%")
+                        ->orWhere('users.email', 'LIKE', "%$search%");
+
+                    //都道府県で検索
+                    $prefTemp = preg_grep('/' . preg_quote($search, '/') . '/u', $prefs);
+                    $prefMatches = array_keys($prefTemp);
+
+                    foreach ($prefMatches as $pref) {
+                        $query->orWhere('instructors.pref', 'LIKE', "%$pref%");
+                    }
+
+                    //市区町村で検索
+                    $cityMatches = [];
+                    foreach ($prefCities as $cities) {
+                        $cityTemp = preg_grep('/' . preg_quote($search, '/') . '/u', $cities);
+                        $cityMatches = array_merge($cityMatches, array_keys($cityTemp));
+                    }
+
+                    foreach ($cityMatches as $city) {
+                        $query->orWhere('instructors.city', 'LIKE', "%$city%");
+                    }
+                });
+            }
+        }
+
         $condition = ['users.del_flg' => 0, 'instructors.del_flg' => 0];
+        //dd(preg_replace_array('/\?/', $query->getBindings(), $query->toSql()));
+
         $objData = $query->where($condition)->paginate(10);
 
         return $objData;
@@ -168,9 +206,8 @@ class User extends Authenticatable
     /**
      * 指導員ユーザー詳細
      * @param int $id ユーザーID
-     * @return obj
      */
-    public function getInstructorUserDetail($id)
+    public function getInstructorUserDetail($id): object
     {
         $query = $this->select(
             'users.id',
@@ -228,10 +265,9 @@ class User extends Authenticatable
 
     /**
      * 学校ユーザー一覧
-     * @param array $keywords 絞込検索キーワード（複数）
-     * @return obj
+     * @param array $keyword 絞込検索キーワード（複数）
      */
-    public function getSchoolUserList($keywords)
+    public function getSchoolUserList($keyword): object
     {
         $query = $this->select(
             'users.id',
@@ -251,13 +287,13 @@ class User extends Authenticatable
     /**
      * 学校ユーザー詳細
      * @param int $id ユーザーID
-     * @return obj
      */
-    public function getSchoolUserDetail($id)
+    public function getSchoolUserDetail($id): object
     {
         $query = $this->select(
             'users.id',
             'users.email',
+            'schools.id as school_id',
             'schools.name',
             'schools.zip',
             'schools.pref',

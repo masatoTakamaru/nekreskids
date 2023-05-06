@@ -5,12 +5,12 @@ namespace App\Consts;
 class RecruitConst
 {
 
-    const RECRUIT_TYPES = [
+    const RECRUIT_TYPE = [
         'single' => '単発',
         'regular' => '継続',
     ];
 
-    const ACTIVITIES = [
+    const ACTIVITY = [
         'baseball' => '野球',
         'soccer' => 'サッカー',
         'basketball' => 'バスケットボール',
@@ -38,21 +38,21 @@ class RecruitConst
         'camera' => '写真',
     ];
 
-    const PAYMENT_TYPES = [
+    const PAYMENT_TYPE = [
         'free' => '無償',
         'hour' => '時給',
         'day' => '日給',
         'month' => '月給',
     ];
 
-    const STATUSES = [
+    const STATUS = [
         'public' => '全体に公開',
         'member' => '登録ユーザーのみ公開',
         'draft' => '下書き',
         'expire' => '掲載終了',
     ];
 
-    const COMMUTATION_TYPES = [
+    const COMMUTATION_TYPE = [
         'fixed' => 'あり（一律）',
         'flex' => 'あり（通勤形態・距離に応じる）',
         'none' => 'なし',

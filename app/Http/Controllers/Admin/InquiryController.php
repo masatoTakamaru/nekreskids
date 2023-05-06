@@ -13,15 +13,15 @@ class InquiryController extends Controller
     {
         $inquiry = new Inquiry;
 
-        if ($request->keywords) {
-            $entity = $inquiry->searchEntity($request->keywords);
+        if ($request->keyword) {
+            $entity = $inquiry->searchEntity($request->keyword);
         } else {
             $entity = $inquiry->getEntityList();
         }
 
         return view('admin.inquiry.inquiry-index', [
             'objData' => !empty($entity) ? $entity : null,
-            'keywords' => $request->keywords,
+            'keyword' => $request->keyword,
         ]);
     }
 

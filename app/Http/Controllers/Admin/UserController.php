@@ -13,15 +13,15 @@ class UserController extends Controller
     {
         $user = new User;
 
-        if ($request->keywords) {
-            $entity = $user->searchEntity($request->keywords);
+        if ($request->keyword) {
+            $entity = $user->searchEntity($request->keyword);
         } else {
             $entity = $user->getEntityList();
         }
 
         return view('admin.user.user-index', [
             'objData' => !empty($entity) ? $entity : null,
-            'keywords' => $request->keywords,
+            'keyword' => $request->keyword,
         ]);
     }
 

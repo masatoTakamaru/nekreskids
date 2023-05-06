@@ -16,9 +16,9 @@ class SchoolScoreFactory extends Factory
     public function definition()
     {
         return [
-            'score' => mt_rand(0,4)?mt_rand(1,5):null,
+            'score' => mt_rand(0, 4) ? mt_rand(1, 5) : null,
             'del_flg' => mt_rand(0, 2) ? 0 : 1,
 
         ];
-    }        
+    }
 }

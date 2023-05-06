@@ -22,19 +22,19 @@ class InstructorFactory extends Factory
      */
     public function definition()
     {
-        $activities = RecruitConst::ACTIVITIES;
-        $prefs = AddressConst::PREFECTURES;
+        $activities = RecruitConst::ACTIVITY;
+        $prefs = AddressConst::PREFECTURE;
         $cities = AddressConst::CITIES;
         $genders = UserConst::GENDERS;
         $act_areas = [];
         $loop = mt_rand(1, 5);
 
-        $pref = fake()->randomElement(array_keys($prefs));
-        $city = fake()->randomElement(array_keys($cities[$pref]));
+        $pref = fake()->randomKey($prefs);
+        $city = fake()->randomKey($cities[$pref]);
 
         for ($i = 1; $i <= $loop; $i++) {
-            $act_pref = fake()->randomElement(array_keys($prefs));
-            $act_city = fake()->randomElement(array_keys($cities[$pref]));
+            $act_pref = fake()->randomKey($prefs);
+            $act_city = fake()->randomKey($cities[$pref]);
             $act_areas[] = [$i => ['pref' => $act_pref, 'city' => $act_city]];
         }
         //avatar画像

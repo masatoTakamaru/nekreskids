@@ -13,15 +13,15 @@ class MessageController extends Controller
     {
         $message = new Message;
 
-        if ($request->keywords) {
-            $entity = $message->searchEntity($request->keywords);
+        if ($request->keyword) {
+            $entity = $message->searchEntity($request->keyword);
         } else {
             $entity = $message->getEntityList();
         }
 
         return view('admin.message.message-index', [
             'objData' => !empty($entity) ? $entity : null,
-            'keywords' => $request->keywords,
+            'keyword' => $request->keyword,
         ]);
     }
 

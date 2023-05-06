@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 
 /**
  *  -------------------- ルーティングの説明 --------------------
@@ -16,25 +17,32 @@ use Illuminate\Support\Str;
  *  2階層   例  /user/create
  *      コントローラー：UserController
  *      メソッド：create
- *  3階層   例  /admin/company/user-delete
- *      コントローラー：Admin/CompanyController
+ *  3階層   例  /dir/company/user-delete
+ *      コントローラー：Dir/CompanyController
  *      メソッド：user_delete
  *      3階層構成の場合は第1階層がディレクトリ名となる
+ * 
+ * 認証が必要なページについて
+ * 
+ * 例えば認証が必要なページをadminディレクトリ配下に置く場合、admin
+ * の1つ下の階層を1階層とする。
+ * 
  *  ----------------------------------------------------------
  */
 
-require __DIR__ . '/auth.php';
+$authDir = 'admin';     //認証が必要なディレクトリ
 
-Route::middleware('auth')->group(function () {
-    Route::get('/admin/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index']);
-    return;
-});
-
-Route::any('/{url}', function () {
+$branchTunnel = function (Request $request) use ($authDir) {
     $arrUrl = explode('?', request()->getRequestUri());
     $arrUrl = explode('/', $arrUrl[0]);
     $action = 'index';
     $path = 'App\Http\Controllers\\';
+
+    if (!empty($arrUrl[1]) && $arrUrl[1] === $authDir) {
+        array_shift($arrUrl);
+        $path = 'App\Http\Controllers\\' . Str::studly($authDir) . '\\';
+    }
+
     switch (true) {
         case empty($arrUrl[1]):
             //0階層構成
@@ -42,7 +50,7 @@ Route::any('/{url}', function () {
             break;
         case !empty($arrUrl[1]) && empty($arrUrl[2]):
             //1階層構成
-            $path .= $arrUrl[1] . 'Controller';
+            $path .= Str::studly($arrUrl[1]) . 'Controller';
             break;
         case !empty($arrUrl[2]) && empty($arrUrl[3]):
             //2階層構成
@@ -59,5 +67,17 @@ Route::any('/{url}', function () {
             break;
     }
 
-    return app()->call($path . '@' . $action);
-})->where('url', '.*');
+    return app()->call("$path@$action");
+};
+
+require __DIR__ . '/auth.php';
+
+Route::prefix($authDir)->middleware('auth')
+    ->group(function () use ($branchTunnel) {
+
+        Route::any('/{url}', $branchTunnel)->where('url', '.*');
+
+        return;
+    });
+
+Route::any('/{url}', $branchTunnel)->where('url', '.*');

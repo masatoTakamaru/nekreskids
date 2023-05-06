@@ -36,6 +36,11 @@ class Instructor extends Model
         'del_flg',
     ];
 
+    public function applications()
+    {
+        return $this->hasMany(Application::class);
+    }
+
     public function searches()
     {
         return $this->hasMany(Search::class);

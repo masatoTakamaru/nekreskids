@@ -17,35 +17,34 @@ class SchoolController extends Controller
     public function __construct()
     {
         $this->model = new User;
-        $this->fillableExt = array_merge($this->model->getFillable(), [
-            /*----------- 項目を追加する場合はここに記入 -----------*/
-            'name',
-            'zip',
-            'pref',
-            'city',
-            'address',
-            'tel1',
-            'tel2',
-            'charge',
-            'score',
-            /*--------------------- ここまで ---------------------*/
-        ]);
-        $this->model->setAttrs(array_fill_keys($this->fillableExt, null));
+        $this->model->setAttrs(array_fill_keys($this->model->getFillable(), null));
 
-        /*---------- 初期値を与える場合はここに記入 ----------*/
-        $this->model->score = 0;
+        /*-------- 項目追加・初期値の代入はここに記入 --------*/
+        $this->model->name = null;
+        $this->model->zip = null;
+        $this->model->pref = null;
+        $this->model->city = null;
+        $this->model->address = null;
+        $this->model->tel1 = null;
+        $this->model->tel2 = [];
+        $this->model->charge = null;
+        $this->model->score = null;
         /*-------------------- ここまで --------------------*/
+
+        $this->fillableExt = array_keys(collect($this->model)->toArray());
+        array_push($this->fillableExt, 'password');
     }
+
 
     public function index(Request $request)
     {
         if (!$request->isMethod('get')) abort(404);
 
-        $objData = $this->model->getSchoolUserList($request->keywords);
+        $objData = $this->model->getSchoolUserList($request->keyword);
 
         return view("admin.$this->dir.index", [
             'objData' => $objData,
-            'keywords' => $request->keywords,
+            'keyword' => $request->keyword,
         ]);
     }
 
@@ -96,6 +95,8 @@ class SchoolController extends Controller
             $arrData['id'] = $request->id;
             $objData = $this->model;
             $objData->updateSchoolUser($arrData);
+
+            return redirect("admin/$this->dir/index");
         }
 
         /*--------------- getの場合 ---------------*/

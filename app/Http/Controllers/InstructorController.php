@@ -15,43 +15,39 @@ use Carbon\Carbon;
 
 class InstructorController extends Controller
 {
-    private $model = null;
     private $dir = 'instructor';
-    private $fillableExt = [];  //メソッド間の受け渡し項目
+    private $model = null;
+    private $fillableExt = [];
 
     public function __construct()
     {
         $this->model = new User;
-        $this->fillableExt = array_merge($this->model->getFillable(), [
-            /*-- メソッド間の受け渡し項目を追加する場合はここに記入 --*/
-            'name',
-            'name_kana',
-            'avatar_url',
-            'pr',
-            'activities',
-            'other_activities',
-            'ontime',
-            'act_areas',
-            'birth',
-            'cert',
-            'gender',
-            'zip',
-            'pref',
-            'city',
-            'address',
-            'tel',
-            'keep',
-            'avatar',
-            /*--------------------- ここまで ---------------------*/
-        ]);
-        $this->model->setAttrs(array_fill_keys($this->fillableExt, null));
+        $this->model->setAttrs(array_fill_keys($this->model->getFillable(), null));
 
-        /*---------- 初期値を与える場合はここに記入 ----------*/
-        $this->model->birth = Carbon::now()->format('Y-m-d');
-        $this->model->gender = 'male';
+        /*-------- 項目追加・初期値の代入はここに記入 --------*/
+        $this->model->password = null;
+        $this->model->name = null;
+        $this->model->name_kana = null;
+        $this->model->avatar_url = null;
+        $this->model->avatar = null;
+        $this->model->pr = null;
         $this->model->activities = [];
+        $this->model->other_activities = null;
+        $this->model->ontime = null;
         $this->model->act_areas = ['1' => ['pref' => '', 'city' => '']];
+        $this->model->birth = Carbon::now()->format('Y-m-d');
+        $this->model->cert = null;
+        $this->model->gender = 'male';
+        $this->model->zip = null;
+        $this->model->pref = null;
+        $this->model->city = null;
+        $this->model->address = null;
+        $this->model->tel = null;
+        $this->model->keep = null;
         /*-------------------- ここまで --------------------*/
+
+        $this->fillableExt = array_keys(collect($this->model)->toArray());
+        array_push($this->fillableExt, 'password');
     }
 
     public function step1(Request $request)
@@ -168,9 +164,9 @@ class InstructorController extends Controller
         return view("$this->dir.step3", [
             'objData' => $objData,
             'jsonData' => $jsonData,
-            'arrActivities' => RecruitConst::ACTIVITIES,
+            'arrActivities' => RecruitConst::ACTIVITY,
             'jsonActAreas' => json_encode($objData->act_areas),
-            'jsonPrefs' => json_encode(['' => '選択して下さい'] + AddressConst::PREFECTURES),
+            'jsonPrefs' => json_encode(['' => '選択して下さい'] + AddressConst::PREFECTURE),
             'jsonCities' => json_encode(['' => ['' => '未選択']] + AddressConst::CITIES),
         ]);
     }
@@ -209,7 +205,7 @@ class InstructorController extends Controller
         $activities = [];
         if (!empty($objData->activities)) {
             foreach ($objData->activities as $value) {
-                $activities[] = RecruitConst::ACTIVITIES[$value];
+                $activities[] = RecruitConst::ACTIVITY[$value];
             }
             $objData->activities = implode(' ', $activities);
         }
@@ -219,7 +215,7 @@ class InstructorController extends Controller
         $actAreas = [];
         foreach ($objData->act_areas as $actArea) {
             if (!empty($acrArea['pref']) && !empty($acrArea['city'])) {
-                $actAreas[] = AddressConst::PREFECTURES[$actArea['pref']] . AddressConst::CITIES[$actArea['pref']][$actArea['city']];
+                $actAreas[] = AddressConst::PREFECTURE[$actArea['pref']] . AddressConst::CITIES[$actArea['pref']][$actArea['city']];
             }
         }
         $objData->act_areas = implode('<br>', $actAreas);

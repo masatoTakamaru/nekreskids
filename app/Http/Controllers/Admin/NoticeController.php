@@ -13,15 +13,15 @@ class NoticeController extends Controller
     {
         $notice = new Notice;
 
-        if ($request->keywords) {
-            $entity = $notice->searchEntity($request->keywords);
+        if ($request->keyword) {
+            $entity = $notice->searchEntity($request->keyword);
         } else {
             $entity = $notice->getEntityList();
         }
 
         return view('admin.notice.notice-index', [
             'objData' => !empty($entity) ? $entity : null,
-            'keywords' => $request->keywords,
+            'keyword' => $request->keyword,
         ]);
     }
 
