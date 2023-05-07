@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Traits\ModelTrait;
 use App\Consts\AddressConst;
+use App\Consts\RecruitConst;
 use App\Models\School;
 
 class Recruit extends Model
@@ -65,7 +66,7 @@ class Recruit extends Model
         ]);
         $school = School::find($arrData['school_id']);
 
-        if(!empty($school)) {
+        if (!empty($school)) {
             $objData = $school->recruits()->create($arrData);
         }
 
@@ -104,6 +105,7 @@ class Recruit extends Model
     {
         $pref = AddressConst::PREFECTURE;
         $prefCity = AddressConst::CITIES;
+        $activity = RecruitConst::ACTIVITY;
 
         $query = $this->select(
             'recruits.*',
@@ -117,13 +119,14 @@ class Recruit extends Model
 
             foreach ($arrKeyword as $search) {
 
-                $query->where(function ($query) use ($search, $pref, $prefCity) {
+                $query->where(function ($query)
+                use ($search, $pref, $prefCity, $activity) {
 
-                    //件名・学校名で検索
+                    // 件名・学校名で検索
                     $query->where('recruits.header', 'LIKE', "%$search%")
                         ->orWhere('schools.name', 'LIKE', "%$search%");
 
-                    //都道府県で検索
+                    // 都道府県で検索
                     $prefTemp = preg_grep('/' . preg_quote($search, '/') . '/u', $pref);
                     $prefMatch = array_keys($prefTemp);
 
@@ -131,7 +134,7 @@ class Recruit extends Model
                         $query->orWhere('schools.pref', 'LIKE', "%$value%");
                     }
 
-                    //市区町村で検索
+                    // 市区町村で検索
                     $cityMatch = [];
                     foreach ($prefCity as $value) {
                         $cityTemp = preg_grep('/' . preg_quote($search, '/') . '/u', $value);
@@ -141,12 +144,20 @@ class Recruit extends Model
                     foreach ($cityMatch as $value) {
                         $query->orWhere('schools.city', 'LIKE', "%$value%");
                     }
+
+                    // 活動名で検索
+                    $actTemp = preg_grep('/' . preg_quote($search, '/') . '/u', $activity);
+                    $actMatch = array_keys($actTemp);
+
+                    foreach ($actMatch as $value) {
+                        $query->orWhere('recruits.activities', 'LIKE', "%$value%");
+                    }
+
                 });
             }
         }
 
         $condition = ['recruits.del_flg' => 0, 'schools.del_flg' => 0];
-        //dd(preg_replace_array('/\?/', $query->getBindings(), $query->toSql()));
 
         $objData = $query->where($condition)->paginate(10);
 
