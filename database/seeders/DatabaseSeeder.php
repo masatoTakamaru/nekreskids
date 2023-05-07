@@ -40,9 +40,9 @@ class DatabaseSeeder extends Seeder
         Search::truncate();
         User::truncate();
 
-        Storage::deleteDirectory('avatars');
+        Storage::deleteDirectory('public/avatars');
 
-        $amount = 5;
+        $amount = 50;
 
         User::factory()->create([
             'email' => 'admin@example.com',

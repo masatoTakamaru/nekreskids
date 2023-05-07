@@ -9,98 +9,48 @@ use App\Http\Controllers\Controller;
 
 class MessageController extends Controller
 {
+    private $dir = 'message';
+    private $model = null;
+    private $fillableExt = [];
+
+    public function __construct()
+    {
+        $this->model = new Message;
+        $this->model->setAttrs(array_fill_keys($this->model->getFillable(), null));
+
+        /*-------- 項目追加・初期値の代入はここに記入 --------*/
+        /*-------------------- ここまで --------------------*/
+
+        $this->fillableExt = array_keys(collect($this->model)->toArray());
+    }
+
     public function index(Request $request)
     {
-        $message = new Message;
+        if (!$request->isMethod('get')) abort(404);
 
-        if ($request->keyword) {
-            $entity = $message->searchEntity($request->keyword);
-        } else {
-            $entity = $message->getEntityList();
-        }
+        $objData = $this->model->getSchoolUserList($request->keyword);
 
-        return view('admin.message.message-index', [
-            'objData' => !empty($entity) ? $entity : null,
+        return view("admin.$this->dir.index", [
+            'objData' => $objData,
             'keyword' => $request->keyword,
         ]);
     }
 
-    public function create()
+    public function detail(Request $request)
     {
-        return view('admin.message.message-create');
-    }
+        if (!$request->isMethod('get') && !$request->isMethod('delete')) abort(404);
 
-    public function store(MessageRequest $request)
-    {
-        $result = Message::create([
-            'sender' => $request->sender,
-            'recipient' => $request->recipient,
-            'message' => $request->message,
-            'read_flg' => $request->read_flg,
+        $objData = $this->model->getSchoolUserDetail($request->id);
+        if (empty($objData)) abort(404);
 
-        ]);
-
-        if (!empty($result)) {
-            return redirect()->route('admin.message.message-index');
-        } else {
-            return back()->withInput();
+        /*--------------- deleteの場合 ---------------*/
+        if ($request->isMethod('delete')) {
+            $objData->deleteSchoolUser($request->id);
+            return redirect("admin/$this->dir/index");
         }
-    }
 
-    public function show($id)
-    {
-        $message = new Message;
-        $entity = $message->getEntity($id);
-        if (empty($entity)) return back()->withInput();
-
-        return view('admin.message.message-show', [
-            'objData' => $entity,
-        ]);        
-    }
-
-    public function edit($id)
-    {
-        $message = new Message;
-        $entity = $message->getEntity($id);
-
-        return view('admin.message.message-edit', [
-            'objData' => empty($entity) ? null : $entity,
+        return view("admin.$this->dir.detail", [
+            'objData' => $objData,
         ]);
-    }
-
-    public function update(MessageRequest $request, $id)
-    {
-        $message = new Message;
-        if (empty($entity)) return back()->withInput();
-
-        $entity = $message->getEntity($id);
-
-        $result = $entity->update([
-            'sender' => $request->sender,
-            'recipient' => $request->recipient,
-            'message' => $request->message,
-            'read_flg' => $request->read_flg,
-
-        ]);
-        if ($result) {
-            return redirect()->route('admin.message.message-index');
-        } else {
-            return back()->withInput();
-        }
-    }
-
-    public function destroy($id)
-    {
-        $message = new Message;
-        $entity = $message->getEntity($id);
-        if (empty($entity)) return back()->withInput();
-    
-        $result = $entity->destroy();
-
-        if () {
-            return redirect()->route('admin.message.message-index');
-        } else {
-            return back()->withInput();
-        }
     }
 }

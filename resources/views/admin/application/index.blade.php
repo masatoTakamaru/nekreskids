@@ -11,15 +11,24 @@
             value="{{ $keyword }}">
           <button type="submit" class="search__submit">検索</button>
         </form>
+        <form action="/admin/application/index" method="get">
+          <select name="end_date" id="select__end_date" class="edit__select">
+            <option class="edit__option" value="all"
+              @selected($end_date === 'all')>全て
+            </option>
+            <option class="edit__option" value="before"
+              @selected($end_date === 'before')>募集中のみ</option>
+          </select>
+        </form>
       </div>
       @if (!empty($objData))
         <table class="index__table">
           <tbody>
             <tr>
               <th class="index__label">ID</th>
-              <th class="index__label">募集ID</th>
-              <th class="index__label">指導員ID</th>
-              <th class="index__label">メッセージ</th>
+              <th class="index__label">件名</th>
+              <th class="index__label">指導員</th>
+              <th class="index__label">期限</th>
             </tr>
             @foreach ($objData as $item)
               <tr class="index_item">
@@ -31,11 +40,12 @@
                   </a>
                 </td>
                 <td class="index__value">
-                  <a href="/admin/instructor/detail?id={{ $item->instructor->user->id }}">
+                  <a
+                    href="/admin/instructor/detail?id={{ $item->instructor->user_id }}">
                     {{ $item->instructor_name }}
                   </a>
                 </td>
-                <td class="index__value">{{ $item->message }}</td>
+                <td class="index__value">{{ $item->end_date }}</td>
               </tr>
             @endforeach
           </tbody>
@@ -47,3 +57,6 @@
     </div>
   </article>
 </x-admin-layout>
+<script>
+  onchangeSubmit('select__end_date');
+</script>

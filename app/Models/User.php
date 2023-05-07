@@ -84,7 +84,7 @@ class User extends Authenticatable
                 //アバター画像の保存
                 if (!empty($arrData['avatar'])) {
                     $dirName = 'avatars';
-                    $fileName = Str::uuid();
+                    $fileName = Str::ulid();
                     $arrData['avatar_url'] = $fileName;
                     $data = base64_decode(str_replace('data:image/png;base64,', '', $arrData['avatar']));
                     Storage::put("$dirName/$fileName.png", $data);
@@ -209,24 +209,19 @@ class User extends Authenticatable
      */
     public function getInstructorUserDetail($id): object
     {
+        $objData = null;
+
         $query = $this->select(
-            'users.id',
+            'instructors.*',
             'users.email',
-            'schools.name',
-            'schools.zip',
-            'schools.pref',
-            'schools.city',
-            'schools.address',
-            'schools.tel1',
-            'schools.tel2',
-            'schools.charge',
+            'users.status',
         )
-            ->leftJoin('schools', 'users.id', '=', 'schools.user_id');
+            ->leftJoin('instructors', 'users.id', '=', 'instructors.user_id');
 
         $condition = ['users.id' => $id];
         $objData = $query->where($condition)->first();
 
-        return $objData;
+        return !empty($objData) ? $objData : null;
     }
 
     /**

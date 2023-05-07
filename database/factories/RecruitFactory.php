@@ -35,7 +35,7 @@ class RecruitFactory extends Factory
             'commutation' => mt_rand(0, 4) ? mt_rand(1000, 10000) : null,
             'number' => mt_rand(1, 20),
             'status' => fake()->randomKey($statuses),
-            'end_date' => fake()->dateTimeBetween('-3 months', '+1 year'),
+            'end_date' => fake()->dateTimeBetween('-3 months', '+3 month'),
             'keep' => 0,
             'del_flg' => mt_rand(0, 2) ? 0 : 1,
 

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use App\Traits\ModelTrait;
+use Carbon\Carbon;
 
 class Application extends Model
 {
@@ -33,11 +34,12 @@ class Application extends Model
      * 指導員募集一覧
      * @param string $keyword 絞込検索キーワード（複数）
      */
-    public function getList($keyword): object
+    public function getList($keyword, $end_date): object
     {
         $query = $this->select(
             'applications.*',
             'recruits.header as recruit_header',
+            'recruits.end_date',
             'instructors.name as instructor_name'
         )
             ->leftJoin('recruits', 'applications.recruit_id', '=', 'recruits.id')
@@ -78,6 +80,11 @@ class Application extends Model
             }
         }
         */
+
+        if ($end_date === 'before') {
+            $today = Carbon::today();
+            $query->whereDate('recruits.end_date', '>=', $today);
+        }
 
         $condition = [
             'applications.del_flg' => 0,

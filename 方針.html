@@ -58,32 +58,31 @@ $arrSome = json_decode($fieldData, true);
 データが連想配列なら<code>$arrData</code>、オブジェクト型なら<code>$objData</code>、json文字列なら<code>$jsonData</code>などとする。SQLで抽出したデータはオブジェクト型だから<code>$objData</code>に格納する。<br>複数のモデルを扱う場合は，<code>$objData['user']</code>や<code>$objData['company']</code>など，連想配列にそれぞれのモデルを格納する。
 <!----------------------------- 見出し ----------------------------->
 <h3>変数名の単数形と複数形</h3>
-格納するデータが単数・複数に関係なく、変数名は単数形にして保守性を高めるようにしておく。処理の過程で単数形と複数形を分けた方が良い場合に限り複数形を用いる。例えば配列を<code>foreach</code>でループ処理する場合は配列の変数名を複数形にしておいた方が良い場合もあるが、単に<code>$key => $value</code>と定義して片付くならば、その必要はない。
+格納するデータが単数・複数に関係なく、変数名は単数形にして保守性を高めるようにしておく。処理の過程で単数形と複数形を分けた方が良い場合に限り複数形を用いる。例えば配列を<code>foreach</code>でループ処理する場合は配列の変数名を複数形にしておいた方が良い場合もあるが、ループ内の変数を<code>$key => $value</code>と定義して片付くならば、その必要はない。
 <!----------------------------- 見出し ----------------------------->
 <h3>コンストラクタでモデルを定義する</h3>
 コントローラーのメソッド内でモデルのインスタンスを行わず、あらかじめコンストラクタでモデルを定義する。モデルに追加の項目が必要になる場合、それぞれのメソッド内で追加すると混乱の原因になるため、コンストラクタに記述する。これにより、モデルはそれぞれのメソッドで単一の構造を持つものとして扱い、コンストラクタを見ればモデルの構造が分かるようにしておく。
 <pre><code class="language-php">
 use App\Models\Company;
 
-private $model = null;
-private $fillableExt = [];  //fillableの項目を拡張したもの，fillableExtendedの略
+private $dir = 'company';
+private $model = null;  
+private $fillableExt = [];
 
 public function __construct()
 {
-    $this->model = new User;
-    $this->fillableExt = array_merge($this->model->getFillable(), [
-        /*----------- 項目を追加する場合はここに記入 -----------*/
-        'status',
-        'role',
-        /*--------------------- ここまで ---------------------*/
-    ]);
-    $this->model->setAttrs(array_fill_keys($this->fillableExt, null));
+    $this-&gt;model = new Company;
+    $this-&gt;model-&gt;setAttrs(array_fill_keys($this-&gt;model-&gt;getFillable(), null));
 
-    /*---------- 初期値を与える場合はここに記入 ----------*/
-    $this->model->status = 'private';
-    $this->model->role = 1;
+    /*-------- 項目追加・初期値の代入はここに記入 --------*/
+    $this-&gt;model-&gt;address = null;       // 項目追加
+    $this-&gt;model-&gt;status = 'private';   // 初期値の代入
     /*-------------------- ここまで --------------------*/
-}
+
+    $this-&gt;fillableExt = array_keys(collect($this-&gt;model)-&gt;toArray());
+    // passwordが必要なときは以下に追加（passwordのみ扱いが特殊になる）
+    array_push($this->fillableExt, 'password');
+  }
 </code></pre>
 モデルをインスタンスした後、<code>getFillable()</code>でモデル内に記述されている<code>$fillable</code>を取得して項目を追加し、<code>setAttrs()</code>ですべての項目にいったん<code>null</code>を代入している。
 <pre><code class="language-php">
@@ -96,8 +95,6 @@ protected $fillable = [
 $this->model = [
     'email' => null,
     'password' => null,
-    'status' => null,
-    'role' => null,
 ];
 </code></pre>
 項目の追加や初期値の代入は指定の場所に記述する。コントローラーのメソッド内では<code>$this->model</code>でモデルを呼び出してデータの読み書きをしたり、<code>$this->model->メソッド名()</code>でモデルに操作を加えたりする。<br>
@@ -136,38 +133,37 @@ use App\Models\User;
 use App\Models\Company;
 
 private $model = [
-    'user' => null,
-    'company' => null,
+    'user' =&gt; null,
+    'company' =&gt; null,
 ];
-private $fillableExt = [];
+
+private $fillableExt = [
+    'user' =&gt; null,
+    'company' =&gt; null,
+];
 
 public function __construct()
 {
-    $this->model['user'] = new User;
-    $this->fillableExt = array_merge($this->model['user']->getFillable(), [
-        /*----------- 項目を追加する場合はここに記入 -----------*/
-        'status',
-        'role',
-        /*--------------------- ここまで ---------------------*/
-    ]);
-    $this->model['user']->setAttrs(array_fill_keys($this->fillableExt, null));
+  $this-&gt;model['user'] = new User;
+  $this-&gt;model['user']-&gt;setAttrs(array_fill_keys($this-&gt;model-&gt;getFillable(), null));
 
-    /*---------- 初期値を与える場合はここに記入 ----------*/
-    $this->model['user']->status = 'private';
-    $this->model['user']->role = 1;
-    /*-------------------- ここまで --------------------*/
+  /*-------- 項目追加・初期値の代入はここに記入 --------*/
+  $this-&gt;model['user']-&gt;address = null;       // 項目追加
+  $this-&gt;model['user']-&gt;status = 'private';   // 初期値の代入
+  /*-------------------- ここまで --------------------*/
 
-    $this->model['company'] = new Company;
-    $this->fillableExt = array_merge($this->model['company']->getFillable(), [
-        /*----------- 項目を追加する場合はここに記入 -----------*/
-        'status',
-        /*--------------------- ここまで ---------------------*/
-    ]);
-    $this->model['company']->setAttrs(array_fill_keys($this->fillableExt, null));
+  $this-&gt;fillableExt['user'] = array_keys(collect($this-&gt;model)-&gt;toArray());
 
-    /*---------- 初期値を与える場合はここに記入 ----------*/
-    $this->model['company']->status = 'private';
-    /*-------------------- ここまで --------------------*/
+  $this-&gt;model['company'] = new Company;
+  $this-&gt;model['company']-&gt;setAttrs(array_fill_keys($this-&gt;model-&gt;getFillable(), null));
+
+  /*-------- 項目追加・初期値の代入はここに記入 --------*/
+  $this-&gt;model['company']-&gt;address = null;       // 項目追加
+  $this-&gt;model['company']-&gt;status = 'private';   // 初期値の代入
+  /*-------------------- ここまで --------------------*/
+
+  $this-&gt;fillableExt['company'] = array_keys(collect($this-&gt;model)-&gt;toArray());
+
 }  
 </code></pre>
 <!----------------------------- 見出し ----------------------------->
@@ -543,25 +539,21 @@ draft-complete
 <pre><code class="language-php">
 class UserEntryController extends Controller
 {
-    private $model = null;
-    private $dir = 'userEntry'; //コントローラー内で共通して使うディレクトリ名
+    private $dir = 'userEntry';
+    private $model = null;  
     private $fillableExt = [];
-
+    
     public function __construct()
     {
-        $this->model = new User;
-        $this->fillableExt = array_merge($this->model->getFillable(), [
-            /*----------- 項目を追加する場合はここに記入 -----------*/
-            'name',
-            'address',
-            /*--------------------- ここまで ---------------------*/
-        ]);
-        $this->model->setAttrs(array_fill_keys($this->fillableExt, null));
-
-        /*---------- 初期値を与える場合はここに記入 ----------*/
-        /*-------------------- ここまで --------------------*/
+      $this-&gt;model = new User;
+      $this-&gt;model-&gt;setAttrs(array_fill_keys($this-&gt;model-&gt;getFillable(), null));
+  
+      /*-------- 項目追加・初期値の代入はここに記入 --------*/
+      /*-------------------- ここまで --------------------*/
+  
+      $this-&gt;fillableExt = array_keys(collect($this-&gt;model)-&gt;toArray());
     }
-
+  
     public function step1(Request $request)
     {
         //メソッドを確認してGETとPOST以外は404エラーページに遷移させる
@@ -784,8 +776,25 @@ class UserEntryController extends Controller
 </code></pre>
 
 <!----------------------------- 見出し ----------------------------->
-<h3>アップロード画像等はstorageに保存</h3>
-アップロードされた画像などは<code>storage\app</code>配下に<code>image</code>などのディレクトリを作り，そこに保存する。ただし，storageは<code>public</code>ディレクトリにシンボリックリンクが貼られた状態でなければ機能しないので注意が必要。詳細は<a href="https://readouble.com/laravel/10.x/ja/filesystem.html" target="_blank">公式</a>を参照。
+<h3>アップロードしたファイルはstorageに保存</h3>
+アップロードされた画像などのファイルは<code>storage\app\public</code>配下に<code>image</code>などのディレクトリを作り，そこに保存する。ただし，storageは<code>public</code>ディレクトリにシンボリックリンクが貼られた状態でなければ機能しないので注意が必要。詳細は<a href="https://readouble.com/laravel/10.x/ja/filesystem.html" target="_blank">公式</a>を参照。
+<br>
+シンボリックリンクが機能している場合、エクスプローラーで<code>public\storage</code>配下にファイルが存在していることが確認できる。ファイルが見えない場合、ディレクトリの配置に誤りがあるので確認する。
+<br>
+<pre><code class="language-php">
+// 画像ファイルを保存する
+
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+
+$targetDir = 'public/image';
+$fileName = Str::ulid() . '.jpg';
+Storage::put($targetDir . '/' . $fileName, $imageFile);
+
+// ファイルを参照する
+
+$image_url = asset(&quot;storage/image/$objData-&gt;image_url&quot;);
+</code></pre>
 
 <!----------------------------- 見出し ----------------------------->
 <h3>CRUD操作</h3>
@@ -843,8 +852,9 @@ class UserEntryController extends Controller
 use Illuminate\Support\Facades\DB;
 
 DB::transaction(function () {
-    DB::update('update users set votes = 1');
-    DB::delete('delete from posts');
+
+  ・・・・・・
+
 });
 </code></pre>
 <!----------------------------- 見出し ----------------------------->
@@ -1129,7 +1139,8 @@ public function getUserList($keyword): object
         // のような形であれば正解
         foreach ($arrKeyword as $search) {
 
-            // コールバック関数でラップすると、SQLクエリで( )に変換される
+            // コールバック関数でラップすると、
+            // SQLクエリで WHERE ( ・・・ ) に変換される
             $query-&gt;where(function ($query) use ($search, $prefs) {
 
                 // 名前とメールアドレスで検索
@@ -1999,7 +2010,7 @@ $randomImagePath = $imagePaths[array_rand($imagePaths)];
 $image = file_get_contents($randomImagePath);
 
 // 画像ファイルをStorageに保存する
-$fileName = fake()->md5() . '.jpg';
+$fileName = Str::ulid() . '.jpg';
 Storage::put($targetDir . '/' . $fileName, $image);
 </code></pre>
 
@@ -2631,8 +2642,36 @@ JavaScript
 * @param id string 削除ボタンの要素Id
 */
 function deleteConfirm(id) {
-    $(`#${id}`).on('click', (event) => {
-        if (!confirm("削除してもよろしいですか？")) return event.preventDefault();
+  $(`#${id}`).on('click', (event) =&gt; {
+      if (!confirm(&quot;削除してもよろしいですか？&quot;)) return event.preventDefault();
+  });
+}</code></pre>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>セレクトボックスを選択するとsubmitを実行</h3>
+blade
+<pre><code class="language-html">
+&lt;form action=&quot;/user/index&quot; method=&quot;get&quot;&gt;
+  &lt;select name=&quot;status&quot; id=&quot;select__status&quot; class=&quot;edit__select&quot;&gt;
+    &lt;option class=&quot;edit__option&quot; value=&quot;all&quot;
+      @selected($status === 'all')&gt;全て&lt;/option&gt;
+    &lt;option class=&quot;edit__option&quot; value=&quot;valid&quot;
+      @selected($status === 'valid')&gt;承認済みのみ&lt;/option&gt;
+  &lt;/select&gt;
+&lt;/form&gt;
+&lt;script&gt;
+  onchangeSubmit('select__status');
+&lt;/script&gt;
+</code></pre>
+JavaScript
+<pre><code class="language-javascript">
+/**
+* セレクトボックスを選択するとsubmitを実行
+* @param string id セレクトボックスの要素ID
+*/
+function onchangeSubmit(id) {
+    $(`#${id}`).on('change', function () {
+        this.form.submit();
     });
 }
 </code></pre>
@@ -3045,7 +3084,7 @@ composer require fakerphp/faker
 <ul>
   <li><code>ctrl</code>+<code>,</code>で設定を開く。</li>  
   <li><code>Blade Formatter: format Indent Size</code>を入力してインデントを2に設定。</li>
-  <li><code>Blade Formatter: format Wrap Line Length</code>を入力して折り返し文字数を90に設定。</li>
+  <li><code>Blade Formatter: format Wrap Line Length</code>を入力して折り返し文字数を80に設定。</li>
 </ul>
 
 <pre><code class="language-php">

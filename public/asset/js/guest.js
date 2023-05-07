@@ -256,3 +256,13 @@ function toggleDisabled(obj) {
     $(window).on('load', toggleAttr);
     selectElem.on('change', toggleAttr);
 }
+
+/**
+ * セレクトボックスを選択するとsubmitを実行
+ * @param string id セレクトボックスの要素ID
+ */
+function onchangeSubmit(id) {
+    $(`#${id}`).on('change', function () {
+        this.form.submit();
+    });
+}

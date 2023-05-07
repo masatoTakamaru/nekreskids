@@ -11,7 +11,7 @@ use App\Http\Controllers\Controller;
 class ApplicationController extends Controller
 {
     private $dir = 'application';
-    private $model = null;
+    private $model = null;  
     private $fillableExt = [];
 
     public function __construct()
@@ -29,7 +29,7 @@ class ApplicationController extends Controller
     {
         if (!$request->isMethod('get')) abort(404);
 
-        $objData = $this->model->getList($request->keyword);
+        $objData = $this->model->getList($request->keyword, $request->end_date);
 
         foreach ($objData as $item) {
             if (strlen($item->message) > 10) {
@@ -43,6 +43,7 @@ class ApplicationController extends Controller
         return view("admin.$this->dir.index", [
             'objData' => $objData,
             'keyword' => $request->keyword,
+            'end_date' => !empty($request->end_date) ? $request->end_date : null,
         ]);
     }
 }

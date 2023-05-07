@@ -39,7 +39,7 @@ class InstructorFactory extends Factory
         }
         //avatar画像
         $sourceDir = base_path('/assets/avatar_seed');
-        $targetDir = 'avatars';
+        $targetDir = 'public/avatars';
 
         // 画像ファイルのパスのリストを取得する
         $files = File::allFiles($sourceDir);
@@ -54,7 +54,7 @@ class InstructorFactory extends Factory
         $image = file_get_contents($randomImagePath);
 
         // 画像ファイルをターゲットディレクトリに保存する
-        $fileName = fake()->md5() . '.jpg';
+        $fileName = Str::ulid() . '.jpg';
         Storage::put($targetDir . '/' . $fileName, $image);
 
         $arrTemp = fake()->randomElements(array_keys($activities), mt_rand(0, 5));

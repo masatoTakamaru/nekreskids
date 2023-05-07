@@ -2,3 +2,11 @@
   display: flex;
   gap: 1rem;
 }
+
+.detail__header {
+  white-space: nowrap;
+}
+
+.index__value {
+  padding-right: 1rem;
+}

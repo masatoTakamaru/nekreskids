@@ -90,12 +90,15 @@ class InstructorController extends Controller
     {
         if (!$request->isMethod('get') && !$request->isMethod('delete')) abort(404);
 
-        $objData = $this->model->getSchoolUserDetail($request->id);
+        $objData = $this->model->getInstructorUserDetail($request->id);
+
         if (empty($objData)) abort(404);
+
+        $objData->avatar_url = asset("storage/avatars/$objData->avatar_url");
 
         /*--------------- deleteの場合 ---------------*/
         if ($request->isMethod('delete')) {
-            $objData->deleteSchoolUser($request->id);
+            $objData->deleteInstructorUser($request->id);
             return redirect("admin/$this->dir/index");
         }
 

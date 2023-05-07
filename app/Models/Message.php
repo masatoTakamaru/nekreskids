@@ -34,7 +34,9 @@ class Message extends Model
             'users.id',
             'users.role'
         )
-        ->leftJoin('users','messages.sender','=','users.id')
+        ->leftJoin('users','messages.sender','=','users.id');
+
+        $objData = $query->paginate(10);
 
         return $objData;
     }
