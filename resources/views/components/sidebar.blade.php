@@ -7,6 +7,6 @@
   <li><a href="">気になるリスト：募集</a></li>
   <li><a href="">気になるリスト：指導員</a></li>
   <li><a href="">お知らせ</a></li>
-  <li><a href="">メッセージ</a></li>
+  <li><a href="/admin/message/index">メッセージ</a></li>
   <li><a href="">お問い合わせ</a></li>
 </ul>

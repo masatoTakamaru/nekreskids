@@ -7,7 +7,7 @@
       @if (!empty($objData))
         <section>
           <div>
-            <form action="/admin/school/detail?id={{ $objData->id }}" method="post">
+            <form action="/admin/message/detail?id={{ $objData->id }}" method="post">
               @method('delete')
               @csrf
               <button type="submit" id="deleteButton" class="edit__submit">削除する</button>
@@ -19,7 +19,7 @@
             <tbody>
               <tr>
                 <th>送信者</th>
-                <td>{{ $objdata->sender_name }}</td>
+                <td>{{ $objData->sender_name }}</td>
               </tr>
               <tr>
                 <th>受信者</th>

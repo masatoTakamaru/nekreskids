@@ -18,9 +18,8 @@
               <th class="index__label">ID</th>
               <th class="index__label">件名</th>
               <th class="index__label">学校名</th>
-              <th class="index__label">地域</th>
+              <th class="index__label">募集活動</th>
               <th class="index__label">募集期限日</th>
-              <th class="index__label">公開状況</th>
               <th class="index__label">気になるリスト登録数</th>
             </tr>
             @foreach ($objData as $item)
@@ -34,9 +33,8 @@
                   <a
                     href="/admin/school/detail?id={{ $item->school->user->id }}">{{ $item->school_name }}</a>
                 </td>
-                <td class="index__value">{{ $item->area }}</td>
+                <td class="index__value">{{ $item->activities }}</td>
                 <td class="index__value">{{ $item->end_date }}</td>
-                <td class="index__value">{{ $item->status }}</td>
                 <td class="index__value">{{ $item->keep }}</td>
               </tr>
             @endforeach

@@ -28,7 +28,7 @@ class MessageFactory extends Factory
         return [
             'sender' => $sender->id,
             'recipient' => $recipient->id,
-            'message' => 'サンプルメッセージ' . fake()->realText(490),
+            'message' => 'サンプルメッセージ' . fake()->realText(20),
             'read_flg' => 0,
             'del_flg' => mt_rand(0, 2) ? 0 : 1,
         ];

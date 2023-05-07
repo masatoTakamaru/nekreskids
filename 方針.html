@@ -102,8 +102,8 @@ $this->model = [
 $objData = $this->model;      //モデルをいったん$objDataに格納する（可読性を確保）
 $role = $objData->role;       //データを取得する場合
 $objData->status = 'public';  //データを書き込む場合
-$items = $this->fillableExt;  //拡張された項目の配列を取得する場合
-$items = $objData->getFillable();   //モデルの$fillableを取得する場合
+$item = $this->fillableExt;  //拡張された項目の配列を取得する場合
+$item = $objData->getFillable();   //モデルの$fillableを取得する場合
 
 /*---------- メソッドの実行 ----------*/
 // 以下の例ならモデル側に
@@ -145,24 +145,24 @@ private $fillableExt = [
 public function __construct()
 {
   $this-&gt;model['user'] = new User;
-  $this-&gt;model['user']-&gt;setAttrs(array_fill_keys($this-&gt;model-&gt;getFillable(), null));
+  $this-&gt;model['user']-&gt;setAttrs(array_fill_keys($this-&gt;model['user']-&gt;getFillable(), null));
 
   /*-------- 項目追加・初期値の代入はここに記入 --------*/
   $this-&gt;model['user']-&gt;address = null;       // 項目追加
   $this-&gt;model['user']-&gt;status = 'private';   // 初期値の代入
   /*-------------------- ここまで --------------------*/
 
-  $this-&gt;fillableExt['user'] = array_keys(collect($this-&gt;model)-&gt;toArray());
+  $this-&gt;fillableExt['user'] = array_keys(collect($this-&gt;model['user'])-&gt;toArray());
 
   $this-&gt;model['company'] = new Company;
-  $this-&gt;model['company']-&gt;setAttrs(array_fill_keys($this-&gt;model-&gt;getFillable(), null));
+  $this-&gt;model['company']-&gt;setAttrs(array_fill_keys($this-&gt;model['company']-&gt;getFillable(), null));
 
   /*-------- 項目追加・初期値の代入はここに記入 --------*/
   $this-&gt;model['company']-&gt;address = null;       // 項目追加
   $this-&gt;model['company']-&gt;status = 'private';   // 初期値の代入
   /*-------------------- ここまで --------------------*/
 
-  $this-&gt;fillableExt['company'] = array_keys(collect($this-&gt;model)-&gt;toArray());
+  $this-&gt;fillableExt['company'] = array_keys(collect($this-&gt;model['company'])-&gt;toArray());
 
 }  
 </code></pre>
@@ -191,6 +191,9 @@ $status_type = StatusConst::STATUS;
 <!----------------------------- 見出し ----------------------------->
 <h3>比較演算子は===を使う</h3>
 コード内に<code>==</code>と<code>===</code>が混在すると分かりにくいので<code>===</code>で統一する。
+<br>
+型一致はphpの内部で処理を行う上でそれほど重要ではないが、SQLに対するデータの送受信で役に立つときがある。例えば、本来カラムをint型にすべきところを、誤ってvarchar型で作成してしまった場合など、人為的ミスを発見することができる。
+<br>
 比較演算子についてはphpの<a href="https://www.php.net/manual/ja/language.operators.comparison.php" target="_blank">公式</a>を参照。
 <!----------------------------- 見出し ----------------------------->
 <h3>項目タイトル</h3>
@@ -772,6 +775,30 @@ class UserEntryController extends Controller
 
         return view("$this->dir.draft-complete");
     }
+}
+</code></pre>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>処理の関数化</h3>
+メソッド内で処理が長大化した場合、処理をブロックごとに関数にして切り分けるように努める。明確な基準は無いが、一つのメソッドが50行を超えることは避けるべきである。
+<br>
+設置する関数は<code>private</code>で宣言し、関数が同一コントローラーのメソッドでのみ用いられることを明示する。
+<br>
+もし、関数が複数のコントローラーから呼び出すものであるなら、<code>trait</code>に記述する。
+<pre><code class="language-php">
+public function index($request): View
+{
+    // 処理を関数として呼び出す
+    $data = $this-&gt;someFunction();
+
+    ・・・・・・
+}
+
+private function someFunction(): object
+{
+  ・・・・・・
+
+  return $objData;
 }
 </code></pre>
 

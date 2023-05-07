@@ -16,7 +16,7 @@ class InstructorTest extends TestCase
      */
     public function 指導員ユーザー登録ページ１入力欄(): void
     {
-        $data = [
+        $item = [
             'email',
             'password',
             'name',
@@ -27,7 +27,7 @@ class InstructorTest extends TestCase
         ];
         $response = $this->get('/instructor/step1');
         $response->assertOk();
-        foreach ($data as $value) {
+        foreach ($item as $value) {
             $response->assertSee("name=\"{$value}\"", $escaped = false);
         }
         $response->assertSee('次に進む');
@@ -63,7 +63,7 @@ class InstructorTest extends TestCase
      */
     public function 指導員ユーザー登録ページ２入力欄(): void
     {
-        $data = [
+        $item = [
             'zip',
             'pref',
             'city',
@@ -72,7 +72,7 @@ class InstructorTest extends TestCase
         ];
         $response = $this->get('/instructor/step2');
         $response->assertOk();
-        foreach ($data as $value) {
+        foreach ($item as $value) {
             $response->assertSee("name=\"{$value}\"", $escaped = false);
         }
         $response->assertSee("前に戻る")
@@ -108,7 +108,7 @@ class InstructorTest extends TestCase
      */
     public function 指導員ユーザー登録ページ３入力欄(): void
     {
-        $data = [
+        $item = [
             'activities[]',
             'other_activities',
             'ontime',
@@ -117,7 +117,7 @@ class InstructorTest extends TestCase
         ];
         $response = $this->get('/instructor/step3');
         $response->assertOk();
-        foreach ($data as $value) {
+        foreach ($item as $value) {
             $response->assertSee("name=\"{$value}\"", $escaped = false);
         }
         $response->assertSee("前に戻る")

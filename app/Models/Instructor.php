@@ -71,9 +71,9 @@ class Instructor extends Model
 
         //アバター画像をstorageに保存
         if ($objData->avatar) {
-            $data = base64_decode(str_replace('data:image/png;base64,', '', $objData->avatar));
+            $item = base64_decode(str_replace('data:image/png;base64,', '', $objData->avatar));
             $fileName = Str::uuid().'.png';
-            if(Storage::put("avatars/{$fileName}", $data)) {
+            if(Storage::put("avatars/{$fileName}", $item)) {
                 $objData->avatar_url = $fileName;
             }
         }

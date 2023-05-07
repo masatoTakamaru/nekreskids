@@ -16,7 +16,7 @@ class SchoolTest extends TestCase
      */
     public function 学校ユーザー登録ページ入力欄表示(): void
     {
-        $data = [
+        $item = [
             'email',
             'password',
             'name',
@@ -30,7 +30,7 @@ class SchoolTest extends TestCase
         ];
         $response = $this->get('/school/create');
         $response->assertOk();
-        foreach ($data as $value) {
+        foreach ($item as $value) {
             $response->assertSee("name=\"{$value}\"", $escaped = false);
         }
         $response->assertSee('次に進む');

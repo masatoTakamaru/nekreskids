@@ -29,16 +29,31 @@ class Message extends Model
 
     public function getList($keyword): object
     {
+
         $query = $this->select(
             'messages.*',
-            'users.id',
-            'users.role'
-        )
-        ->leftJoin('users','messages.sender','=','users.id');
+        );
 
-        $objData = $query->paginate(10);
+        $condition = ['del_flg' => 0];
+        $objData = $query->where($condition)->paginate(10);
 
         return $objData;
     }
 
+    public function getDetail($id): object
+    {
+        $objData = $this->find($id);
+
+        return !empty($objData) ? $objData : null;
+    }
+
+    public function deleteItem($id): void
+    {
+        $objData = $this->find($id);
+        $condition = ['del_flg' => 1];
+
+        if (!empty($objData)) {
+            $objData->fill($condition)->save();
+        }
+    }
 }
