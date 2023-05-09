@@ -90,5 +90,27 @@ class AccessibleTest extends TestCase
 
         $response = $this->get("/admin/recruit/edit?id=$user->id");
         $response->assertOk();
+
+        $response = $this->get("/admin/recruit/index");
+        $response->assertOk();
+
+        $response = $this->get("/admin/application/index");
+        $response->assertOk();
+
+        $message = DB::table('messages')->where(['del_flg' => 0])->first();
+
+        $response = $this->get("/admin/message/index");
+        $response->assertOk();
+
+        $response = $this->get("/admin/message/detail?id=$message->id");
+        $response->assertOk();
+
+        $notice = DB::table('notices')->where(['del_flg' => 0])->first();
+
+        $response = $this->get("/admin/notice/index");
+        $response->assertOk();
+
+        $response = $this->get("/admin/notice/detail?id=$message->id");
+        $response->assertOk();
     }
 }
