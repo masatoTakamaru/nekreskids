@@ -9,98 +9,105 @@ use App\Http\Controllers\Controller;
 
 class NoticeController extends Controller
 {
+    private $dir = 'notice';
+    private $model = null;
+    private $fillableExt = [];
+
+    public function __construct()
+    {
+        $this->model = new Notice;
+        $this->fillableExt = array_merge($this->model->getFillable(), [
+            /*----------- 項目を追加する場合はここに記入 -----------*/
+            /*--------------------- ここまで ---------------------*/]);
+        $this->model->setAttrs(array_fill_keys($this->fillableExt, null));
+
+        /*---------- 初期値を与える場合はここに記入 ----------*/
+        /*-------------------- ここまで --------------------*/
+    }
+
     public function index(Request $request)
     {
-        $notice = new Notice;
+        if (!$request->isMethod('get')) abort(404);
 
-        if ($request->keyword) {
-            $entity = $notice->searchEntity($request->keyword);
-        } else {
-            $entity = $notice->getEntityList();
+        $objData = $this->model->getList($request->keyword);
+
+        foreach ($objData as $item) {
+            if (strlen($item->header) > 10) {
+                $item->header = mb_substr($item->header, 0, 10) . '…';
+            }
+            if (strlen($item->content) > 10) {
+                $item->content = mb_substr($item->content, 0, 10) . '…';
+            }
         }
 
-        return view('admin.notice.notice-index', [
-            'objData' => !empty($entity) ? $entity : null,
+        return view("admin.$this->dir.index", [
+            'objData' => $objData,
             'keyword' => $request->keyword,
         ]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('admin.notice.notice-create');
-    }
+        if (!$request->isMethod('get') && !$request->isMethod('post')) abort(404);
+        if ($request->isMethod('get') && empty(School::find($request->id))) abort(404);
 
-    public function store(NoticeRequest $request)
-    {
-        $result = Notice::create([
-            'header' => $request->header,
-            'content' => $request->content,
-            'publish_date' => $request->publish_date,
-            'status' => $request->status,
-
-        ]);
-
-        if (!empty($result)) {
-            return redirect()->route('admin.notice.notice-index');
-        } else {
-            return back()->withInput();
+        /*--------------- postの場合 ---------------*/
+        if ($request->isMethod('post')) {
+            $objData = $this->model;
+            $arrData = array_merge($objData->toArray(), $request->input());
+            $jsonData = json_encode($arrData);
+            $this->model->newEntry($jsonData);
+            return redirect("/admin/$this->dir/index");
         }
-    }
-
-    public function show($id)
-    {
-        $notice = new Notice;
-        $entity = $notice->getEntity($id);
-        if (empty($entity)) return back()->withInput();
-
-        return view('admin.notice.notice-show', [
-            'objData' => $entity,
-        ]);        
-    }
-
-    public function edit($id)
-    {
-        $notice = new Notice;
-        $entity = $notice->getEntity($id);
-
-        return view('admin.notice.notice-edit', [
-            'objData' => empty($entity) ? null : $entity,
+        /*--------------- getの場合 ---------------*/
+        return view("admin.$this->dir.create", [
+            'school_id' => $request->id,
+            'arrRecruitType' => RecruitConst::RECRUIT_TYPE,
+            'arrActivities' => RecruitConst::ACTIVITY,
+            'arrPaymentType' => RecruitConst::PAYMENT_TYPE,
+            'arrCommutationType' => RecruitConst::COMMUTATION_TYPE,
+            'arrStatus' => RecruitConst::STATUS,
         ]);
     }
 
-    public function update(NoticeRequest $request, $id)
+    public function detail(Request $request)
     {
-        $notice = new Notice;
-        if (empty($entity)) return back()->withInput();
+        if (!$request->isMethod('get') && !$request->isMethod('delete')) abort(404);
 
-        $entity = $notice->getEntity($id);
+        $objData = $this->model->getDetail($request->id);
+        if (empty($objData)) abort(404);
 
-        $result = $entity->update([
-            'header' => $request->header,
-            'content' => $request->content,
-            'publish_date' => $request->publish_date,
-            'status' => $request->status,
-
-        ]);
-        if ($result) {
-            return redirect()->route('admin.notice.notice-index');
-        } else {
-            return back()->withInput();
+        /*--------------- deleteの場合 ---------------*/
+        if ($request->isMethod('delete')) {
+            $objData->deleteData($request->id);
+            return redirect("admin/$this->dir/index");
         }
+
+        return view("admin.$this->dir.detail", [
+            'objData' => $objData,
+        ]);
     }
 
-    public function destroy($id)
+    public function edit(Request $request)
     {
-        $notice = new Notice;
-        $entity = $notice->getEntity($id);
-        if (empty($entity)) return back()->withInput();
-    
-        $result = $entity->destroy();
+        if (!$request->isMethod('get') && !$request->isMethod('patch')) abort(404);
 
-        if () {
-            return redirect()->route('admin.notice.notice-index');
-        } else {
-            return back()->withInput();
+        /*--------------- patchの場合 ---------------*/
+        if ($request->isMethod('patch')) {
+            $arrData = $request->input();
+            $arrData['id'] = $request->id;
+            $objData = $this->model;
+            $objData->updateSchoolUser($arrData);
+
+            return redirect("admin/$this->dir/index");
         }
+
+        /*--------------- getの場合 ---------------*/
+        $objData = $this->model->getSchoolUserDetail($request->id);
+        if (empty($objData)) abort(404);
+
+        return view("admin.$this->dir.edit", [
+            'objData' => $objData,
+        ]);
     }
 }

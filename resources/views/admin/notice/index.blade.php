@@ -11,6 +11,7 @@
             value="{{ $keyword }}">
           <button type="submit" class="search__submit">検索</button>
         </form>
+        <a href="/admin/notice/create">新規登録</a>
       </div>
       @if (!empty($objData))
         <table class="index__table">
