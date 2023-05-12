@@ -69,6 +69,7 @@ body {
 
     &__label {
         width: 150px;
+        white-space: nowrap;
     }
 
     &__checkboxItem {
@@ -124,6 +125,9 @@ body {
 }
 
 .detail {
+    &__header {
+        white-space: nowrap;
+    }
     &__item {
         display: grid;
         grid-template-columns: 1fr 2fr;

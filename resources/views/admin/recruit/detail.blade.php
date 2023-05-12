@@ -19,59 +19,59 @@
           <table>
             <tbody>
               <tr>
-                <th>学校名</th>
+                <th class="detail__header">学校名</th>
                 <td>{{ $objData->school_name }}</td>
               </tr>
               <tr>
-                <th>件名</th>
+                <th class="detail__header">件名</th>
                 <td>{{ $objData->header }}</td>
               </tr>
               <tr>
-                <th>紹介文</th>
+                <th class="detail__header">紹介文</th>
                 <td>{{ $objData->pr }}</td>
               </tr>
               <tr>
-                <th>募集種別</th>
+                <th class="detail__header">募集種別</th>
                 <td>{{ $objData->recruit_type }}</td>
               </tr>
               <tr>
-                <th>募集する活動</th>
+                <th class="detail__header">募集する活動</th>
                 <td>{{ $objData->activities }}</td>
               </tr>
               <tr>
-                <th>募集する活動<br>（その他）</th>
+                <th class="detail__header">募集する活動<br>（その他）</th>
                 <td>{{ $objData->other_activities }}</td>
               </tr>
               <tr>
-                <th>募集する日時</th>
+                <th class="detail__header">募集する日時</th>
                 <td>{{ $objData->ontime }}</td>
               </tr>
               <tr>
-                <th>支払い種別</th>
+                <th class="detail__header">支払い種別</th>
                 <td>{{ $objData->payment_type }}</td>
               </tr>
               <tr>
-                <th>給与額（円）</th>
+                <th class="detail__header">給与額（円）</th>
                 <td>{{ $objData->payment }}</td>
               </tr>
               <tr>
-                <th>交通費の支給</th>
+                <th class="detail__header">交通費の支給</th>
                 <td>{{ $objData->commutation_type }}</td>
               </tr>
               <tr>
-                <th>交通費（円）</th>
+                <th class="detail__header">交通費（円）</th>
                 <td>{{ $objData->commutation }}</td>
               </tr>
               <tr>
-                <th>募集人数（人）</th>
+                <th class="detail__header">募集人数（人）</th>
                 <td>{{ $objData->number }}</td>
               </tr>
               <tr>
-                <th>公開状況</th>
+                <th class="detail__header">公開状況</th>
                 <td>{{ $objData->status }}</td>
               </tr>
               <tr>
-                <th>募集期限日</th>
+                <th class="detail__header">募集期限日</th>
                 <td>{{ $objData->end_date }}</td>
               </tr>
           </table>

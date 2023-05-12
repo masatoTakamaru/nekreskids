@@ -37,13 +37,14 @@ class Application extends Model
     public function getList($keyword, $end_date): object
     {
         $query = $this->select(
-            'applications.*',
-            'recruits.header as recruit_header',
-            'recruits.end_date',
-            'instructors.name as instructor_name'
+            'a.*',
+            'r.header as recruit_header',
+            'r.end_date',
+            'i.name as instructor_name'
         )
-            ->leftJoin('recruits', 'applications.recruit_id', '=', 'recruits.id')
-            ->leftJoin('instructors', 'applications.instructor_id', '=', 'instructors.id');
+            ->from('applications as a')
+            ->leftJoin('recruits as r', 'a.recruit_id', '=', 'r.id')
+            ->leftJoin('instructors as i', 'a.instructor_id', '=', 'i.id');
 
         /*
         if (!empty($keyword)) {
@@ -83,13 +84,13 @@ class Application extends Model
 
         if ($end_date === 'before') {
             $today = Carbon::today();
-            $query->whereDate('recruits.end_date', '>=', $today);
+            $query->whereDate('r.end_date', '>=', $today);
         }
 
         $condition = [
-            'applications.del_flg' => 0,
-            'recruits.del_flg' => 0,
-            'instructors.del_flg' => 0,
+            'a.del_flg' => 0,
+            'r.del_flg' => 0,
+            'i.del_flg' => 0,
         ];
         //dd(preg_replace_array('/\?/', $query->getBindings(), $query->toSql()));
 

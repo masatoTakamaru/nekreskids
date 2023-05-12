@@ -153,13 +153,14 @@ class User extends Authenticatable
         $prefCities = AddressConst::CITIES;
 
         $query = $this->select(
-            'users.id',
-            'users.email',
-            'instructors.name',
-            'instructors.pref',
-            'instructors.city',
+            'u.id',
+            'u.email',
+            'i.name',
+            'i.pref',
+            'i.city',
         )
-            ->leftJoin('instructors', 'users.id', '=', 'instructors.user_id');
+            ->from('users as u')
+            ->leftJoin('instructors as i', 'users.id', '=', 'instructors.user_id');
 
         if (!empty($keyword)) {
 
@@ -170,15 +171,15 @@ class User extends Authenticatable
                 $query->where(function ($query) use ($search, $prefs, $prefCities) {
 
                     //名前とメールアドレスで検索
-                    $query->where('instructors.name', 'LIKE', "%$search%")
-                        ->orWhere('users.email', 'LIKE', "%$search%");
+                    $query->where('is.name', 'LIKE', "%$search%")
+                        ->orWhere('u.email', 'LIKE', "%$search%");
 
                     //都道府県で検索
                     $prefTemp = preg_grep('/' . preg_quote($search, '/') . '/u', $prefs);
                     $prefMatches = array_keys($prefTemp);
 
                     foreach ($prefMatches as $pref) {
-                        $query->orWhere('instructors.pref', 'LIKE', "%$pref%");
+                        $query->orWhere('i.pref', 'LIKE', "%$pref%");
                     }
 
                     //市区町村で検索
@@ -189,13 +190,13 @@ class User extends Authenticatable
                     }
 
                     foreach ($cityMatches as $city) {
-                        $query->orWhere('instructors.city', 'LIKE', "%$city%");
+                        $query->orWhere('i.city', 'LIKE', "%$city%");
                     }
                 });
             }
         }
 
-        $condition = ['users.del_flg' => 0, 'instructors.del_flg' => 0];
+        $condition = ['u.del_flg' => 0, 'i.del_flg' => 0];
         //dd(preg_replace_array('/\?/', $query->getBindings(), $query->toSql()));
 
         $objData = $query->where($condition)->paginate(10);
@@ -212,13 +213,14 @@ class User extends Authenticatable
         $objData = null;
 
         $query = $this->select(
-            'instructors.*',
-            'users.email',
-            'users.status',
+            'i.*',
+            'u.email',
+            'u.status',
         )
-            ->leftJoin('instructors', 'users.id', '=', 'instructors.user_id');
+            ->from('users as u')
+            ->leftJoin('instructors as i', 'u.id', '=', 'i.user_id');
 
-        $condition = ['users.id' => $id];
+        $condition = ['u.id' => $id];
         $objData = $query->where($condition)->first();
 
         return !empty($objData) ? $objData : null;
@@ -265,15 +267,16 @@ class User extends Authenticatable
     public function getSchoolUserList($keyword): object
     {
         $query = $this->select(
-            'users.id',
-            'users.email',
-            'schools.name',
-            'schools.pref',
-            'schools.city',
+            'u.id',
+            'u.email',
+            's.name',
+            's.pref',
+            's.city',
         )
-            ->leftJoin('schools', 'users.id', '=', 'schools.user_id');
+            ->from('users as u')
+            ->leftJoin('schools as s', 'u.id', '=', 's.user_id');
 
-        $condition = ['users.del_flg' => 0, 'schools.del_flg' => 0];
+        $condition = ['u.del_flg' => 0, 's.del_flg' => 0];
         $objData = $query->where($condition)->paginate(10);
 
         return $objData;
@@ -286,19 +289,20 @@ class User extends Authenticatable
     public function getSchoolUserDetail($id): object
     {
         $query = $this->select(
-            'users.id',
-            'users.email',
-            'schools.id as school_id',
-            'schools.name',
-            'schools.zip',
-            'schools.pref',
-            'schools.city',
-            'schools.address',
-            'schools.tel1',
-            'schools.tel2',
-            'schools.charge',
+            'u.id',
+            'u.email',
+            's.id as school_id',
+            's.name',
+            's.zip',
+            's.pref',
+            's.city',
+            's.address',
+            's.tel1',
+            's.tel2',
+            's.charge',
         )
-            ->leftJoin('schools', 'users.id', '=', 'schools.user_id');
+            ->from('users as u')
+            ->leftJoin('schools as s', 'u.id', '=', 's.user_id');
 
         $condition = ['users.id' => $id];
         $objData = $query->where($condition)->first();

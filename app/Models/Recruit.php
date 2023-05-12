@@ -108,10 +108,11 @@ class Recruit extends Model
         $activity = RecruitConst::ACTIVITY;
 
         $query = $this->select(
-            'recruits.*',
-            'schools.name as school_name',
+            'r.*',
+            's.name as school_name',
         )
-            ->leftJoin('schools', 'recruits.school_id', '=', 'schools.id');
+            ->from('recruits as r')
+            ->leftJoin('schools as s', 'r.school_id', '=', 's.id');
 
         if (!empty($keyword)) {
 
@@ -123,15 +124,15 @@ class Recruit extends Model
                 use ($search, $pref, $prefCity, $activity) {
 
                     // 件名・学校名で検索
-                    $query->where('recruits.header', 'LIKE', "%$search%")
-                        ->orWhere('schools.name', 'LIKE', "%$search%");
+                    $query->where('r.header', 'LIKE', "%$search%")
+                        ->orWhere('s.name', 'LIKE', "%$search%");
 
                     // 都道府県で検索
                     $prefTemp = preg_grep('/' . preg_quote($search, '/') . '/u', $pref);
                     $prefMatch = array_keys($prefTemp);
 
                     foreach ($prefMatch as $value) {
-                        $query->orWhere('schools.pref', 'LIKE', "%$value%");
+                        $query->orWhere('s.pref', 'LIKE', "%$value%");
                     }
 
                     // 市区町村で検索
@@ -142,7 +143,7 @@ class Recruit extends Model
                     }
 
                     foreach ($cityMatch as $value) {
-                        $query->orWhere('schools.city', 'LIKE', "%$value%");
+                        $query->orWhere('s.city', 'LIKE', "%$value%");
                     }
 
                     // 活動名で検索
@@ -150,14 +151,14 @@ class Recruit extends Model
                     $actMatch = array_keys($actTemp);
 
                     foreach ($actMatch as $value) {
-                        $query->orWhere('recruits.activities', 'LIKE', "%$value%");
+                        $query->orWhere('r.activities', 'LIKE', "%$value%");
                     }
 
                 });
             }
         }
 
-        $condition = ['recruits.del_flg' => 0, 'schools.del_flg' => 0];
+        $condition = ['r.del_flg' => 0, 's.del_flg' => 0];
 
         $objData = $query->where($condition)->paginate(10);
 
@@ -171,12 +172,13 @@ class Recruit extends Model
     public function getDetail($id): object
     {
         $query = $this->select(
-            'recruits.*',
-            'schools.name as school_name',
+            'r.*',
+            's.name as school_name',
         )
-            ->leftJoin('schools', 'recruits.school_id', '=', 'schools.id');
+            ->from('recruits as r')
+            ->leftJoin('schools as s', 'r.school_id', '=', 's.id');
 
-        $condition = ['recruits.id' => $id];
+        $condition = ['r.id' => $id];
         $objData = $query->where($condition)->first();
 
         return $objData;

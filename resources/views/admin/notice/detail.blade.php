@@ -18,19 +18,19 @@
           <table>
             <tbody>
               <tr>
-                <th>見出し</th>
+                <th class="detail__header">見出し</th>
                 <td>{{ $objData->header }}</td>
               </tr>
               <tr>
-                <th>本文</th>
+                <th class="detail__header">本文</th>
                 <td>{{ $objData->content }}</td>
               </tr>
               <tr>
-                <th>告知日</th>
+                <th class="detail__header">告知日</th>
                 <td>{{ $objData->publish_date }}</td>
               </tr>
               <tr>
-                <th>公開状況</th>
+                <th class="detail__header">公開状況</th>
                 <td>{{ $objData->status }}</td>
               </tr>
             </tbody>

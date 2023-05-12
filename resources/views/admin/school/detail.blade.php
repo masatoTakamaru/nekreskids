@@ -20,43 +20,43 @@
         <table>
           <tbody>
             <tr>
-              <th>メールアドレス</th>
+              <th class="detail__header">メールアドレス</th>
               <td>{{ $objData->email }}</td>
             </tr>
             <tr>
-              <th>パスワード</th>
+              <th class="detail__header">パスワード</th>
               <td>セキュリティのため非表示</td>
             </tr>
             <tr>
-              <th>学校名</th>
+              <th class="detail__header">学校名</th>
               <td>{{ $objData->name }}</td>
             </tr>
             <tr>
-              <th>郵便番号</th>
+              <th class="detail__header">郵便番号</th>
               <td>{{ $objData->zip }}</td>
             </tr>
             <tr>
-              <th>都道府県</th>
+              <th class="detail__header">都道府県</th>
               <td>{{ $objData->pref }}</td>
             </tr>
             <tr>
-              <th>市区町村</th>
+              <th class="detail__header">市区町村</th>
               <td>{{ $objData->city }}</td>
             </tr>
             <tr>
-              <th>町域・番地・建物名など</th>
+              <th class="detail__header">町域・番地・建物名など</th>
               <td>{{ $objData->address }}</td>
             </tr>
             <tr>
-              <th>電話番号１</th>
+              <th class="detail__header">電話番号１</th>
               <td>{{ $objData->tel1 }}</td>
             </tr>
             <tr>
-              <th>電話番号２</th>
+              <th class="detail__header">電話番号２</th>
               <td>{{ $objData->tel2 }}</td>
             </tr>
             <tr>
-              <th>担当者名</th>
+              <th class="detail__header">担当者名</th>
               <td>{{ $objData->charge }}</td>
             </tr>
           </tbody>

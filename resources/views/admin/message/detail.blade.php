@@ -18,19 +18,19 @@
           <table>
             <tbody>
               <tr>
-                <th>送信者</th>
+                <th class="detail__header">送信者</th>
                 <td>{{ $objData->sender_name }}</td>
               </tr>
               <tr>
-                <th>受信者</th>
+                <th class="detail__header">受信者</th>
                 <td>{{ $objData->recipient_name }}</td>
               </tr>
               <tr>
-                <th>メッセージ</th>
+                <th class="detail__header">メッセージ</th>
                 <td>{{ $objData->message }}</td>
               </tr>
               <tr>
-                <th>既読</th>
+                <th class="detail__header">既読</th>
                 <td>{{ $objData->read_flg }}</td>
               </tr>
             </tbody>
