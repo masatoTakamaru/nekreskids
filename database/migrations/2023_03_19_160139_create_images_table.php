@@ -13,12 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('searches', function (Blueprint $table) {
+        Schema::create('images', function (Blueprint $table) {
             $table->id()->nullable(false);
-            $table->integer('instructor_id')->nullable(false)->comment('指導員ID');
-            $table->integer('recruit_id')->nullable(false)->comment('募集ID');
-            $table->integer('del_flg')->nullable(false);
-      
+            $table->string('url')->nullable(false)->comment('画像URL');
+            $table->json('tag')->nullable()->comment('タグ');
 
             $table->softDeletes();
             $table->timestamps();
@@ -32,7 +30,7 @@ return new class extends Migration
     */
     public function down()
     {
-        Schema::table('searches', function (Blueprint $table) {
+        Schema::table('applications', function (Blueprint $table) {
             $table->dropSoftDeletes();
         });
     }

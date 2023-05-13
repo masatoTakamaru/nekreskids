@@ -16,24 +16,21 @@
 <body>
   <header class="app_header">
     <div>
-      <a href="/">ネクレスキッズ</a>
+      <a href="/">ChillhopJKI</a>
     </div>
     <div>
       @auth
-      <div>
-        <form action="logout" method="post">
-          @csrf
-          <input type="submit" value="ログアウト">
-        </form>
-      </div>
+        <div>
+          <form action="logout" method="post">
+            @csrf
+            <input type="submit" value="Log out">
+          </form>
+        </div>
       @endauth
       @guest
-      <div>
-        <a href="/login">ログイン</a>
-      </div>
-      <div>
-        <a href="/select">新規ユーザー登録</a>
-      </div>
+        <div>
+          <a href="/login">Log in</a>
+        </div>
       @endguest
     </div>
   </header>
@@ -43,7 +40,9 @@
     </main>
   </main>
   <script src="/asset/bootstrap-5.0.2-dist/js/bootstrap.bundle.min.js"></script>
-  <script type="text/javascript" src="//jpostal-1006.appspot.com/jquery.jpostal.js"></script>
+  <script type="text/javascript" src="//jpostal-1006.appspot.com/jquery.jpostal.js">
+  </script>
   <script src="/asset/js/guest.js"></script>
 </body>
+
 </html>
