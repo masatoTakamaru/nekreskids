@@ -1,7 +1,8 @@
 @charset "UTF-8";
 body {
   font-family: "Avenir", "Helvetica Neue", "Helvetica", "Arial", "Hiragino Sans", "ヒラギノ角ゴシック", YuGothic, "Yu Gothic", "メイリオ", Meiryo, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif;
-  background-color: hsl(81, 62%, 75%);
+  background-color: rgb(50, 50, 50);
+  color: lightgray;
 }
 
 * {
@@ -21,8 +22,8 @@ body {
   display: flex;
   justify-content: space-between;
   padding: 20px;
-  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2);
-  background-color: hsl(160, 62%, 90%);
+  background-color: rgb(50, 50, 50);
+  border-bottom: 1px solid gray;
 }
 
 .index_notice .index_notice_inner {

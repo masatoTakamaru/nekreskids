@@ -26,7 +26,7 @@ class ImageFactory extends Factory
 
         //画像
         $sourceDir = base_path('/assets/avatar_seed');
-        $targetDir = 'public/avatars';
+        $targetDir = 'public/image';
 
         // 画像ファイルのパスのリストを取得する
         $files = File::allFiles($sourceDir);

@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
         Image::truncate();
         User::truncate();
 
-        Storage::deleteDirectory('public/avatars');
+        Storage::deleteDirectory('public/image');
 
         $amount = 10;
 

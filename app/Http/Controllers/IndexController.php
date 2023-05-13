@@ -12,6 +12,15 @@ class IndexController extends Controller
 {
     public function index()
     {
-        return view('index');
+        $objData = DB::table('images')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+        $objData->each(function($item) {
+            $item->url = asset("storage/image/$item->url");
+        });
+
+        return view('index', [
+            'objData' => $objData,
+        ]);
     }
 }
