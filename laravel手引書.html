@@ -1,0 +1,3556 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>コード入力の方針forLaravel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- boostrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <!-- prism -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
+  <!-- jquery -->
+  <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+</head>
+<style>
+main{margin:15px;}nav{position:fixed;width:300px;top:0;bottom:0;left:0;overflow-y:auto;}article{margin-left:300px;line-height: 1.75rem;}ul>ul{margin-left:-1rem;}h2{font-size:24px;margin:35px 0;}h3{font-size:20px;margin: 35px 0;}:target::before{content:"";display:block;height:4rem;margin:-4rem 0 0;}code{font-size:14px !important;}.token.operator{background-color:inherit!important;}
+</style>
+<body>
+<main class="container-fluid w-100">
+<nav id="sidebar" class="bg-light p-3"></nav>
+<article class="p-3">
+<!----------------------------- セクション開始 ----------------------------->
+<section>
+<h2>変数・配列・オブジェクト</h2>
+<!----------------------------- 見出し ----------------------------->
+<h3>連想配列を用いる</h3>
+原則として、配列は連想配列の形で用い、何らかのキーを持つこととする。キーに名前を付けない場合、連番の数字を与える。
+<pre><code class="language-php">
+//この形は使わない
+$arrSome = ['value1', 'value2', 'value3'];
+
+//連想配列にして、キーに名前を付ける
+$arrSome = [
+    'key1' => 'value1',
+    'key2' => 'value2',
+    'key3' => 'value3',
+];
+
+//キー名が無い場合は、番号を振る
+$arrSome = [
+    1 => 'value1',
+    2 => 'value2',
+    3 => 'value3',
+];
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>変数名のルール</h3>
+連想配列 <code>$arrData</code><br>
+オブジェクト型 <code>$objData</code><br>
+json文字列 <code>$jsonData</code><br>
+<br>
+SQLで抽出したデータはオブジェクト型だから<code>$objData</code>に格納する。<br>複数のモデルを扱う場合は，<code>$objUser</code>や<code>$objCompany</code>など、<code>$~Data</code>の部分をモデル名に変える。<br>
+<!----------------------------- 見出し ----------------------------->
+<h3>単数形で統一</h3>
+格納するデータが単数・複数に関係なく、変数名は単数形にして保守性を高めるようにしておく。処理の過程で単数形と複数形を分けた方が良い場合に限り複数形を用いる。
+<!----------------------------- 見出し ----------------------------->
+<h3>ループ内の変数は$key,$valueで</h3>
+<code>foreach</code>内でループする変数は<code>$key =&gt; $value</code>で統一する。<br>
+ただし、ループが入れ子になっている場合は変数名が重複するので、複数形と単数形でそれぞれ命名する。
+<!----------------------------- 見出し ----------------------------->
+<h3>定数</h3>
+定数は<code>app\Consts</code>配下に<code>StatusConst.php</code>のように命名したファイルを置く。
+<pre><code class="language-php">
+&lt;?php
+
+namespace App\Consts;
+
+class StatusConst
+{
+    const STATUS = [
+        'public' => '公開',
+        'unpublic' => '非公開',
+    ];
+}
+</code></pre>
+定数を参照する場合は以下。
+<pre><code class="language-php">
+use App\Consts\StatusConst;
+
+$status_type = StatusConst::STATUS;
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>比較演算子は===を使う</h3>
+コード内に<code>==</code>と<code>===</code>が混在すると分かりにくいので<code>===</code>で統一する。
+<br>
+型一致はphpの内部で処理を行う上でそれほど重要ではないが、SQLに対するデータの送受信で役に立つときがある。例えば、本来カラムをint型にすべきところを、誤ってvarchar型で作成してしまった場合など、人為的ミスを発見することができる。
+<br>
+比較演算子についてはphpの<a href="https://www.php.net/manual/ja/language.operators.comparison.php" target="_blank">公式</a>を参照。
+
+<!----------------------------- 見出し ----------------------------->
+<h3>関数の型宣言</h3>
+関数は型宣言を必須とする。以下に具体例を示す。<br>
+型宣言は関数の機能を明確化する上で役に立つ。反対に言えば、型宣言が書けないのは<code>return</code>で何を返すのかをプログラマー自身が理解していない、ということを意味する。したがって、型宣言を必須とすることで曖昧なコードを排除することが重要である。
+<pre><code class="language-php">
+// 返り値無し
+
+public function someFunc(): void
+
+// 配列
+
+public function someFunc(): array
+
+// オブジェクト（SQLで取得したデータは基本これで良い）
+
+public function someFunc(): object
+
+// trueかfalseを返す
+
+public function someFunc(): bool
+
+// Viewを返す場合
+
+use Illuminate\View\View;
+
+public function index(Request $request): View
+{
+  return view("index");
+}
+
+// リダイレクトする場合
+use Illuminate\Http\RedirectResponse;
+
+public function patch(): RedirectResponse
+{
+  return redirect("index");
+}
+</code></pre>
+</section>
+<!--------------------------- セクションここまで --------------------------->
+
+<!----------------------------- セクション開始 ----------------------------->
+<section>
+<h2>ルーティング</h2>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>ルーティングについて</h3>
+<code>name()</code>は使用しない。<br>
+ビューの側でもヘルパーの<code>route()</code>は使用しない。ルート相対パスで直接指定する。
+
+<h3>グループ化</h3>
+ルーティングは<code>Route::prefix()</code>を用いてグループ化する。ビューの階層構造と一致するように配置すると分かりやすい。
+<pre><code class="language-php">
+  &lt;?php
+  
+  use Illuminate\Support\Facades\Route;
+  use Illuminate\Support\Str;
+
+  Route::prefix('admin/')->group(function () {
+
+    Route::prefix('company/')->group(function () {
+      $dir = 'App\Http\Controllers\Admin\Company';
+      Route::get('index', ["$dir\IndexController", 'index']);
+      Route::get('create', ["$dir\CreateController", 'index']);
+      Route::post('create', ["$dir\CreateController", 'post']);
+      Route::get('detail', ["$dir\DetailController", 'index']);
+      Route::delete('detail', ["$dir\DetailController", 'delete']);
+      Route::get('edit', ["$dir\EditController", 'index']);
+      Route::patch('edit', ["$dir\EditController", 'patch']);
+    });
+  }
+</code></pre>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>ルーティングを省略する場合のコード例</h3>
+
+最大3階層構成の場合における、ルーティングを省略した<code>web.php</code>の例を以下に示す。XAMPP環境下において<code>php artisan serve</code>で動作し，phpUnitテストやduskも動作する。<br>
+<pre><code class="language-php">
+&lt;?php
+
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
+
+/**
+  *  -------------------- ルーティングの説明 --------------------
+  *  ＊対応は3階層まで
+  *  ＊ルーティングにアンダーバーは使わない。ハイフンかつ英数小文字で
+  *  0階層   /
+  *      コントローラー：IndexController
+  *      メソッド：index
+  *  1階層   例  /about-us
+  *      コントローラー：AboutUsController
+  *      メソッド：index
+  *  2階層   例  /user/create
+  *      コントローラー：UserController
+  *      メソッド：create
+  *  3階層   例  /dir/company/user-delete
+  *      コントローラー：Dir/CompanyController
+  *      メソッド：user_delete
+  *      3階層構成の場合は第1階層がディレクトリ名となる
+  * 
+  * 認証が必要なページについて
+  * 
+  * 例えば認証が必要なページをadminディレクトリ配下に置く場合、admin
+  * の1つ下の階層を1階層とする。
+  * 
+  *  ----------------------------------------------------------
+  */
+
+$authDir = 'admin';     //認証が必要なディレクトリ
+
+$branchTunnel = function () use ($authDir) {
+
+    $arrUrl = explode('?', request()-&gt;getRequestUri());
+    $arrUrl = explode('/', $arrUrl[0]);
+    $action = 'index';
+    $path = 'App\Http\Controllers\\';
+
+    if (!empty($arrUrl[1]) &amp;&amp; $arrUrl[1] === $authDir) {
+        array_shift($arrUrl);
+        $path = 'App\Http\Controllers\\' . Str::studly($authDir) . '\\';
+    }
+
+    switch (true) {
+        case empty($arrUrl[1]):
+            //0階層構成
+            $path .= 'IndexController';
+            break;
+        case !empty($arrUrl[1]) &amp;&amp; empty($arrUrl[2]):
+            //1階層構成
+            $path .= Str::studly($arrUrl[1]) . 'Controller';
+            break;
+        case !empty($arrUrl[2]) &amp;&amp; empty($arrUrl[3]):
+            //2階層構成
+            $path .= Str::studly($arrUrl[1]) . 'Controller';
+            $action = Str::replace('-', '_', $arrUrl[2]);
+            break;
+        case !empty($arrUrl[3]) &amp;&amp; empty($arrUrl[4]):
+            //3階層構成
+            $path .= Str::studly($arrUrl[1]) . '\\' . Str::studly($arrUrl[2]) . 'Controller';
+            $action = Str::replace('-', '_', $arrUrl[3]);
+            break;
+        default:
+            abort(404);
+            break;
+    }
+
+    return app()-&gt;call(&quot;$path@$action&quot;);
+};
+
+require __DIR__ . '/auth.php';
+
+Route::prefix($authDir)-&gt;middleware('auth')
+    -&gt;group(function () use ($branchTunnel) {
+
+        Route::any('/{url}', $branchTunnel)-&gt;where('url', '.*');
+
+        return;
+    });
+
+Route::any('/{url}', $branchTunnel)-&gt;where('url', '.*');
+</code></pre>
+
+注意が必要なのは
+<pre><code class="language-php">
+Route::any('/{url}', function () {
+</code></pre>
+の部分で、コントローラーの一つのメソッドに対し、GET、POST、PATCH、DELETEなどいずれでもアクセスできるようになっている。コントローラーを記述するときに、不要なものはメソッドの最上部で棄却し、以降の処理に進まないようにする。
+<pre><code class="language-php">
+public function confirm(Request $request)
+{
+    if ($request->isMethod('get') &&
+        !$request->session()->has('jsonData')) abort(404);
+    if (!$request->isMethod('get')
+        && !$request->isMethod('post')) abort(404);
+
+    /*  以降の処理  */
+}
+</code></pre>
+上の例ではGETとPOSTを受け入れ、GETの場合セッション値を必須としている。条件を満たさない場合は<code>abort(404)</code>で404エラーページを表示する。<br>
+<!----------------------------- 見出し ----------------------------->
+<h3>ログイン後の遷移先を変更する</h3>
+ログイン処理が成功した後に遷移するページの指定は以下。<br>
+<code>app\Providers\RouteServiceProvider.php</code>
+<pre><code class="language-php">
+public const HOME = '/dashboard';
+
+// ログイン後にadmin/dashboardに移動したいなら
+
+public const HOME = '/admin/dashboard';
+</code></pre>
+laravel11の場合
+<code>app/Http/Controllers/AuthenticatedSessionController.php</code>
+<pre><code class="language-php">
+public function store(LoginRequest $request): RedirectResponse
+{
+    $request->authenticate();
+
+    $request->session()->regenerate();
+
+    return redirect()->intended('/admin/dashboard');
+}
+</code></pre>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>GETでパラーメータを送る</h3>
+ビューにおいて、GETメソッドでページ遷移するときにパラーメータが必要な場合は以下。
+<pre><code class="language-html">
+&lt;a href=&quot;/admin/user/detail?id={{ $objData-&gt;id }}&quot;&gt;
+  {{$objData-&gt;name}}
+&lt;/a&gt;
+</code></pre>
+パラーメータが複数ある場合は&で繋ぐ。
+<pre><code class="language-html">
+&lt;a href=&quot;/admin/user/detail?id={{ $objData-&gt;id }}&amp;param={{ $objData->param }}&quot;&gt;
+  {{$objData-&gt;name}}
+&lt;/a&gt;
+</code></pre>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>ミドルウェアの作成</h3>
+セッション値としてjsonDataがない場合に403エラーを表示するミドルウェアを作成する例を示す。一般的にセッションの有無によってページアクセスを制御する場合はミドルウェアを作成する。
+<br>
+web.php
+<pre><code class="language-php">
+
+Route::prefix('user/')->group(function () {
+
+    Route::get('confirm', ["$dir\ConfirmController", 'index'])
+        ->middleware('check.session.existence');
+}
+</code></pre>
+
+app\Middleware\CheckSessionExistence.php
+<pre><code class="language-php">
+&lt;?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+
+class CheckSessionExistence
+{
+    public function handle($request, Closure $next)
+    {
+        if (!$request-&gt;session()-&gt;exists('jsonData')) {
+            return abort(403); //セッション値jsonDataがない場合403エラー
+        }
+
+        return $next($request);
+    }
+}
+</code></pre>
+app\Http\Kernel.php
+<pre><code class="language-php">
+protected $middlewareAliases = [
+
+    //追加
+    'check.session.existence' => \App\Http\Middleware\CheckSessionExistence::class,
+
+];
+</code></pre>
+
+</section>
+<!--------------------------- セクションここまで --------------------------->
+
+<!----------------------------- セクション開始 ----------------------------->
+
+<section>
+<h2>コントローラー</h2>
+<!----------------------------- 見出し ----------------------------->
+<h3>1画面1コントローラの原則</h3>
+ビューとコントローラーは1対1の関係とする。例えば<br>
+company/index.blade.php<br>
+company/detail.blade.php<br>
+company/create.blade.php<br>
+company/edit.blade.php<br>
+の4画面が存在する場合、<code>company</code>フォルダを設置した上で<br>
+company/IndexController.php<br>
+company/DetailController.php<br>
+company/CreateController.php<br>
+company/EditController.php<br>
+の4つのコントローラーを設置する。<br>
+複数人で作業する場合、画面単位で作業することになるので、衝突を避けることができる。
+
+<!----------------------------- 見出し ----------------------------->
+<h3>登録処理：同じページにPOSTする</h3>
+例えばcreate→confirm→completeの登録処理では<br>
+<br>
+create(GET)<br>
+create(POST)<br>
+↓ 遷移<br>
+confirm(GET)<br>
+confirm(POST)<br>
+↓ 遷移<br>
+complete(GET)<br>
+<br>
+という流れで進行させる。<br>
+POSTからGETに遷移するときは<strong><code>view()</code>ではなく必ず<code>redirect()</code>を使う</strong>。セキュリティ上の要になるので十分注意する。同時に<code>with()</code>を用いてセッション値を渡しておく。<br>
+画面の表示と画面の遷移は明確に区別し、表示は<code>view()</code>、遷移は<code>redirect()</code>とする。
+
+<!----------------------------- 見出し ----------------------------->
+<h3>登録処理のサンプル</h3>
+
+入力画面が3つに分かれている場合のユーザー登録の例を記載する。下書き保存機能を含む。入力画面が1つの場合はstep2/3の部分を削るだけで動く。<br>
+また、以下の部分について補足する。<code>button</code>要素に<code>name</code>と<code>value</code>を設置することで、種々の指令を送る。
+<pre><code class="language-html">
+&lt;button type=&quot;submit&quot; name=&quot;action&quot; class=&quot;&quot; value=&quot;draft&quot;&gt;下書き保存&lt;/button&gt;
+&lt;button type=&quot;submit&quot; name=&quot;transit&quot; class=&quot;edit__submit&quot; value=&quot;step2&quot;&gt;次に進む&lt;/button&gt;
+
+&lt;input type=&quot;hidden&quot; name=&quot;jsonData&quot; value=&quot;{{ old(&#039;jsonData&#039;, $jsonData) }}&quot;&gt;
+</code></pre>
+<br>
+何らかの処理を要求する場合は<code>name</code>を<code>action</code>として<code>value</code>に指示内容を記述する。下書き保存の場合、コントローラー側には<code>$request->action='draft'</code>として送られるので、<code>if</code>文で判定して処理を書く。同様に<code>value</code>に異なる値を設定した<code>button</code>要素を追加すれば、様々な指令を送ることができるようになる。
+<br>
+画面遷移の指令は<code>name</code>を<code>transit</code>として<code>value</code>に遷移先のURLを指定する。こちらも<code>button</code>を追加して複数の遷移先を設置することができる。
+<br>
+また、フォームの最下部に隠しフィールドを設置して暗号化したjson文字列を入れる。jsonはセッションでやりとりするデータを格納する。submitをクリックするとjson文字列もコントローラーに送られるので、フォームで入力されたデータとマージした上で次の画面にセッションで送る。
+<br>
+step1
+<pre><code class="language-html">
+&lt;x-guest-layout&gt;
+  &lt;article class=&quot;contents&quot;&gt;
+    &lt;div class=&quot;contentsInner&quot;&gt;
+      &lt;header&gt;
+        &lt;h2&gt;ユーザー登録&lt;/h2&gt;
+        &lt;h3&gt;ステップ1&lt;/h3&gt;
+      &lt;/header&gt;
+      &lt;div&gt;
+        &lt;form action=&quot;/userEntry/step1&quot; method=&quot;post&quot;&gt;
+          @csrf
+          &lt;div&gt;
+            &lt;label for=&quot;email&quot; class=&quot;edit__label&quot;&gt;メールアドレス&lt;/label&gt;
+            &lt;input type=&quot;text&quot; name=&quot;email&quot; id=&quot;email&quot; class=&quot;edit__input&quot; value=&quot;{{ old(&#039;email&#039;, $objData-&gt;email) }}&quot;&gt;
+            @error(&#039;email&#039;) &lt;p class=&quot;alert&quot;&gt;{{ $message }}&lt;/p&gt; @enderror
+          &lt;/div&gt;
+          &lt;div&gt;
+            &lt;button type=&quot;submit&quot; name=&quot;action&quot; class=&quot;&quot; value=&quot;draft&quot;&gt;下書き保存&lt;/button&gt;
+            &lt;button type=&quot;submit&quot; name=&quot;transit&quot; class=&quot;editSubmit&quot; value=&quot;step2&quot;&gt;次に進む&lt;/button&gt;
+          &lt;/div&gt;
+          &lt;input type=&quot;hidden&quot; name=&quot;jsonData&quot; value=&quot;{{ old(&#039;jsonData&#039;, $jsonData) }}&quot;&gt;
+        &lt;/form&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/article&gt;
+&lt;/x-guest-layout&gt;
+</code></pre>
+step2
+<pre><code class="language-html">
+&lt;x-guest-layout&gt;
+  &lt;article class=&quot;&quot;&gt;
+    &lt;div class=&quot;&quot;&gt;
+      &lt;header&gt;
+        &lt;h2&gt;ユーザー登録&lt;/h2&gt;
+        &lt;h3&gt;ステップ2&lt;/h3&gt;
+      &lt;/header&gt;
+      &lt;div&gt;
+        &lt;form action=&quot;/userEntry/step2&quot; method=&quot;post&quot;&gt;
+          @csrf
+          &lt;div&gt;
+            &lt;label for=&quot;name&quot; class=&quot;edit__label&quot;&gt;氏名&lt;/label&gt;
+            &lt;input type=&quot;text&quot; name=&quot;name&quot; class=&quot;edit__input&quot; value=&quot;{{ old(&#039;name&#039;, $objData-&gt;name) }}&quot;&gt;
+            @error(&#039;name&#039;) &lt;p class=&quot;alert&quot;&gt;{{ $message }}&lt;/p&gt; @enderror
+          &lt;/div&gt;
+          &lt;div&gt;
+            &lt;button type=&quot;submit&quot; name=&quot;action&quot; class=&quot;&quot; value=&quot;draft&quot;&gt;下書き保存&lt;/button&gt;
+            &lt;button type=&quot;submit&quot; name=&quot;transit&quot; class=&quot;&quot; value=&quot;step1&quot;&gt;前に戻る&lt;/button&gt;
+            &lt;button type=&quot;submit&quot; name=&quot;transit&quot; class=&quot;&quot; value=&quot;step3&quot;&gt;次に進む&lt;/button&gt;
+          &lt;/div&gt;
+          &lt;input type=&quot;hidden&quot; name=&quot;jsonData&quot; value=&quot;{{ old(&#039;jsonData&#039;, $jsonData) }}&quot;&gt;
+        &lt;/form&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/article&gt;
+&lt;/x-guest-layout&gt;
+</code></pre>
+step3
+<pre><code class="language-html">
+&lt;x-guest-layout&gt;
+  &lt;article class=&quot;&quot;&gt;
+    &lt;div class=&quot;&quot;&gt;
+      &lt;header&gt;
+        &lt;h2&gt;ユーザー登録&lt;/h2&gt;
+        &lt;h3&gt;ステップ3&lt;/h3&gt;
+      &lt;/header&gt;
+      &lt;div&gt;
+        &lt;form action=&quot;/userEntry/step3&quot; method=&quot;post&quot;&gt;
+          @csrf
+          &lt;div&gt;
+            &lt;label for=&quot;address&quot; class=&quot;edit__label&quot;&gt;住所&lt;/label&gt;
+            &lt;input type=&quot;text&quot; name=&quot;address&quot; id=&quot;address&quot; class=&quot;edit__input&quot; placeholder=&quot;東京都新宿区西新宿２－８－１&quot;
+              value=&quot;{{ old(&#039;address&#039;, $objData-&gt;address)}}&quot;&gt;
+            @error(&#039;address&#039;) &lt;p class=&quot;alert&quot;&gt;{{ $message }}&lt;/p&gt; @enderror
+          &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div&gt;
+        &lt;button type=&quot;submit&quot; name=&quot;action&quot; class=&quot;&quot; value=&quot;draft&quot;&gt;下書き保存&lt;/button&gt;
+        &lt;button type=&quot;submit&quot; name=&quot;transit&quot; class=&quot;&quot; value=&quot;step2&quot;&gt;前に戻る&lt;/button&gt;
+        &lt;button type=&quot;submit&quot; name=&quot;transit&quot; class=&quot;&quot; value=&quot;confirm&quot;&gt;確認画面へ&lt;/button&gt;
+      &lt;/div&gt;
+      &lt;input type=&quot;hidden&quot; name=&quot;jsonData&quot; value=&quot;{{ old(&#039;jsonData&#039;, $jsonData) }}&quot;&gt;
+      &lt;/form&gt;
+    &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/article&gt;
+&lt;/x-guest-layout&gt;  
+</code></pre>
+confirm
+<pre><code class="language-html">
+&lt;x-guest-layout&gt;
+  &lt;article class=&quot;&quot;&gt;
+    &lt;div class=&quot;&quot;&gt;
+      &lt;header&gt;
+        &lt;h2&gt;ユーザー登録情報の確認&lt;/h2&gt;
+      &lt;/header&gt;
+      &lt;div&gt;
+        &lt;div class=&quot;detail__item&quot;&gt;
+          &lt;span class=&quot;&quot;&gt;メールアドレス&lt;/span&gt;
+          &lt;span class=&quot;&quot;&gt;{{ $objData-&gt;email }}&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;detail__item&quot;&gt;
+          &lt;span class=&quot;&quot;&gt;氏名&lt;/span&gt;
+          &lt;span class=&quot;&quot;&gt;{{ $objData-&gt;name }}&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;detail__item&quot;&gt;
+          &lt;span class=&quot;&quot;&gt;住所&lt;/span&gt;
+          &lt;span class=&quot;&quot;&gt;{{ $objData-&gt;address }}&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;form action=&quot;/userEntry/confirm&quot; method=&quot;post&quot;&gt;
+          @csrf
+          &lt;div&gt;
+            &lt;button type=&quot;submit&quot; name=&quot;action&quot; class=&quot;&quot; value=&quot;draft&quot;&gt;下書き保存&lt;/button&gt;
+            &lt;button type=&quot;submit&quot; name=&quot;transit&quot; class=&quot;&quot; value=&quot;step3&quot;&gt;前に戻る&lt;/button&gt;
+            &lt;button type=&quot;submit&quot; name=&quot;transit&quot; class=&quot;&quot; value=&quot;complete&quot;&gt;登録する&lt;/button&gt;
+          &lt;/div&gt;   
+          &lt;input type=&quot;hidden&quot; name=&quot;jsonData&quot; value=&quot;{{ old(&#039;jsonData&#039;, $jsonData) }}&quot;&gt;
+        &lt;/form&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/article&gt;
+&lt;/x-guest-layout&gt;
+</code></pre>
+complete
+<pre><code class="language-html">
+&lt;x-guest-layout&gt;
+  &lt;article class=&quot;&quot;&gt;
+    &lt;div class=&quot;&quot;&gt;
+      &lt;header&gt;
+        &lt;h2&gt;ユーザー登録が完了しました&lt;/h2&gt;
+      &lt;/header&gt;
+      &lt;div&gt;
+        &lt;a href=&quot;/&quot;&gt;トップページ&lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/article&gt;
+&lt;/x-guest-layout&gt;
+</code></pre>
+draft-complete
+<pre><code class="language-html">
+&lt;x-guest-layout&gt;
+  &lt;article class=&quot;&quot;&gt;
+    &lt;div class=&quot;&quot;&gt;
+      &lt;header&gt;
+        &lt;h2&gt;下書き保存しました&lt;/h2&gt;
+      &lt;/header&gt;
+      &lt;div&gt;
+        &lt;a href=&quot;/&quot;&gt;トップページ&lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/article&gt;
+&lt;/x-guest-layout&gt;
+</code></pre>
+コントローラー。実際には各コントローラーどうしで共通する部分は<code>trait</code>を利用する。<br>方針として、<code>index</code>や<code>post</code>の中に細かい処理をなるべく入れないようにする。関数として分離し、共通化できるものは<code>trait</code>にまとめていく。
+<pre><code class="language-php">
+use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Str;
+use Illuminate\View\View;
+use Carbon\Carbon;
+use App\Models\User;  
+
+class UserEntryController extends Controller
+{
+  public function index(Request $request): View
+    {
+      $objData = new User();
+      $jsonData = json_encode($objData);
+
+      /*------------------- クッキーが存在する場合 --------------------*/
+      $draftData = $request->cookie('cookieForApp');
+
+      /*---------- セッションが存在する場合セッション値を反映 ----------*/
+      if ($request-&gt;session()-&gt;has('jsonData')) {
+          $jsonData = $request-&gt;session()-&gt;pull('jsonData');
+          $objData = $this-&gt;setAttr($objData, $jsonData);
+      }
+
+      return view(&quot;company.step1&quot;, [
+            'objData' =&gt; $objData,
+            'jsonData' =&gt; $jsonData,
+        ]);
+    }
+
+    public function post(UserRequest $request): RedirectResponse
+    {
+        // jsonデータと入力値を統合する
+        $jsonData = $this-&gt;jsonInputMerge($request);
+
+        /*---------- 下書き保存 ----------*/
+        if ($request-&gt;has('action') &amp;&amp; $request-&gt;action === 'draft') {
+            return redirect(&quot;/$this-&gt;dir/draft-complete&quot;)-&gt;with('jsonData', $jsonData);
+        }
+
+        /*---------- ページ遷移 ----------*/
+        if ($request-&gt;has('transit')) {
+            return redirect(&quot;/$this-&gt;dir/$request-&gt;transit&quot;)-&gt;with('jsonData', $jsonData);
+        }
+    }
+
+    // 以下のfunctionは実際にはtraitに記述する
+
+    /**
+      * モデルとjsonデータを統合
+      * @param obj $objData ユーザーモデル
+      *        arr $jsonData jsonデータ
+      */
+    private function setAttr($objData, $jsonData): object
+    {
+        $arrData = json_decode($jsonData, true);
+
+        foreach ($this-&gt;attr as $value) {
+            $objData-&gt;$value = $arrData[$value];
+        }
+
+        return $objData;
+    }
+
+    /**
+      * 入力値を統合する
+      * @param $request
+      */
+    private function jsonInputMerge($request): string
+    {
+        $arrData = json_decode($request-&gt;jsonData, true);
+
+        /*---------- 入力値を加工する場合はここに記入 ----------*/
+
+        foreach ($this-&gt;attr as $value) {
+            if($request-&gt;has($value)) $arrData[$value] = $request-&gt;$value;
+        }
+
+        return json_encode($arrData);
+    }
+}
+</code></pre>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>処理の関数化</h3>
+メソッド内で処理が長大化した場合、処理をブロックごとに関数にして切り分けるように努める。明確な基準は無いが、一つのメソッドは50行を超えないことが望ましい。
+<br>
+設置する関数は<code>private</code>で宣言し、関数が同一コントローラーのメソッドでのみ用いられることを明示する。
+<br>
+もし、関数が複数のコントローラーから呼び出すものであるなら、<code>trait</code>に記述する。
+<pre><code class="language-php">
+public function index($request): View
+{
+    // 処理を関数として呼び出す
+    $data = $this-&gt;someFunction();
+
+    ・・・・・・
+}
+
+private function someFunction(): object
+{
+  ・・・・・・
+
+  return $objData;
+}
+</code></pre>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>アップロードしたファイルはstorageに保存</h3>
+アップロードされた画像などのファイルは<code>storage\app\public</code>配下に<code>image</code>などのディレクトリを作り，そこに保存する。ただし，storageは<code>public</code>ディレクトリにシンボリックリンクが貼られた状態でなければ機能しないので注意が必要。詳細は<a href="https://readouble.com/laravel/10.x/ja/filesystem.html" target="_blank">公式</a>を参照。
+<br>
+シンボリックリンクが機能している場合、エクスプローラーで<code>public\storage</code>配下にファイルが存在していることが確認できる。ファイルが見えない場合、ディレクトリの配置に誤りがあるので確認する。
+<br>
+<pre><code class="language-php">
+// 画像ファイルを保存する
+
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+
+$targetDir = 'public/image';
+$fileName = Str::ulid() . '.jpg';
+Storage::put($targetDir . '/' . $fileName, $imageFile);
+
+// ファイルを参照する
+
+$image_url = asset(&quot;storage/image/$objData-&gt;image_url&quot;);
+</code></pre>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>CRUD操作</h3>
+基本的に以下の4つのコントローラーで構成する。
+<ul>
+  <li><code>index</code></li>
+  <ul>
+    <li>GETのみ。検索リクエストもGET。</li>
+    <li>テーブルに保存されたレコードの一覧を表示する。</li>
+    <li>各レコードをクリックすると詳細画面に遷移する。</li>
+    <li>新規作成ボタンを設置する。</li>
+    <li>複数キーワード対応の絞り込み検索窓を設置する。GETメソッドで送信するので<code>@csrf</code>は不要。</li>
+    <li>
+      ビューにおいて、一覧を表示する<code>table</code>要素を<code>@if(!empty($objData))</code>～<code>@endif</code>でラップする。
+    </li>
+  </ul>
+  <li><code>create</code></li>
+  <ul>
+    <li>GETなら入力フォームの画面を表示し，POSTならレコードを新規保存する。</li>
+    <li>レコードの新規作成画面を表示する。</li>
+    <li><code>form</code>要素配下に<code>@csrf</code>が必要。</li>
+    <li>テーブルにレコードを新規作成する。</li>
+    <li>必要であれば下書きボタンを設置する。</li>
+  </ul>
+  <li><code>detail</code></li>
+  <ul>
+    <li>GETなら詳細画面を表示し，DELETEならレコードを削除する。</li>
+    <li>レコードの<code>id</code>に基づいて、詳細を表示する。</li>
+    <li>編集ボタンを設置し、クリックすると編集画面に遷移する。</li>
+    <li><code>form</code>要素を設置し、削除ボタンをクリックするとDELETEメソッドで送信する。送信前に確認ダイアログを表示させる。</li>
+    <li>レコードを削除したら、一覧画面に遷移する。</li>
+    <li><code>form</code>要素配下に<code>@csrf</code>が必要。</li>
+    <li>プレビュー表示が必要な場合はここに設置する。</li>
+  </ul>
+  <li><code>edit</code></li>
+  <ul>
+    <li>GETなら編集フォームの画面を表示し，PATCHならレコードを更新する。</li>
+    <li>レコードの<code>id</code>に基づいて，編集画面を表示する。</li>
+    <li><code>form</code>要素配下に<code>@csrf</code>が必要。</li>
+    <li>更新ボタンをクリックするとPATCHメソッドで送信し，レコードを更新する。</li>
+    <li>更新が完了したら、一覧画面に遷移する。</li>
+  </ul>
+</ul>
+更新，削除はPOSTではなく，それぞれ<code>PATCH</code>，<code>DELETE</code>メソッドを用いる。POSTで送信するとLaravelのセキュリティ機能が発揮されない。<br>
+更新には<code>PUT</code>と<code>PATCH</code>がある。<code>PUT</code>は全てのカラムのデータを指定する必要があり、<code>PATCH</code>は更新したいカラムのデータだけを送る。したがって、通常は<code>PATCH</code>を使う。
+<pre><code class="language-php">
+namespace App\Http\Controllers\Company;
+
+use App\Http\Controllers\Controller;
+use App\Models\Company;
+use App\Traits\CommonTrait;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+class IndexController extends Controller
+{
+    use CommonTrait;
+
+    public function index(Request $request): View
+    {
+        $objData = $this-&gt;getList($request-&gt;keyword);
+        $objData = $this-&gt;formatData($objData);
+
+        return view(&quot;company.index&quot;, [
+            'objData' =&gt; $objData,
+            'keyword' =&gt; $request-&gt;keyword,
+        ]);
+    }
+
+    private function getList($keyword): object
+    {
+        $keywords = $this-&gt;splitKeyword($keyword);
+        $query = Company()::query();
+
+        $query-&gt;select(
+            'companies.id',
+            'companies.email',
+            'companies.name',
+            'companies.pref',
+            'companies.city'
+        )
+            -&gt;where('companies.role', 1);
+
+        if ($keywords) {
+            foreach ($keywords as $keyword) {
+                $query-&gt;where(function ($query) use ($keyword) {
+                    $query-&gt;where('email', 'like', '%' . $keyword . '%')
+                        -&gt;orWhere('name', 'like', '%' . $keyword . '%');
+
+                    $query = $this-&gt;wherePrefCity($query, $keyword);
+                });
+            }
+        }
+
+        $objData = $query-&gt;paginate(10);
+
+        return $objData;
+    }
+
+    /**
+      * 表示用データ整形
+      * @param obj $objData
+      */
+    private function formatData($objData): object
+    {
+        $arrPref = AddressConst::PREFECTURE;
+        $arrCity = AddressConst::CITY;
+
+        foreach ($objData as $item) {
+            $prefKey = $item-&gt;pref;
+            $cityKey = $item-&gt;city;
+
+            $item-&gt;address = '未入力';
+
+            if(isset($arrPref[$prefKey]) && isset($arrCity[$prefKey][$cityKey])) {
+              $item-&gt;address = $arrPref[$prefKey] . $arrCity[$prefKey][$cityKey];
+            }
+        }
+
+        return $objData;
+    }
+}
+</code></pre>
+
+<pre><code class="language-php">
+namespace App\Http\Controllers\Company;
+
+use App\Http\Controllers\Controller;
+use App\Models\Company;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+
+class DetailController extends Controller
+{
+    public function index(Request $request): View
+    {
+        $objData = $this-&gt;getEntity($request-&gt;id);
+        if (empty($objData)) abort(404);
+
+        return view(&quot;company.detail&quot;, [
+            'objData' =&gt; $objData,
+        ]);
+    }
+
+    public function delete(Request $request): RedirectResponse
+    {
+        $objData = Company::find($request-&gt;id);
+
+        if ($objData) $objData-&gt;delete();
+
+        return redirect(&quot;company/index&quot;)
+            -&gt;with('flash', '削除しました');
+    }
+
+    private function getEntity($id): object|null
+    {
+        $objData = Company::select(
+            'companies.id',
+            'companies.email',
+            'companies.status'
+        )
+            -&gt;where('companies.id', $id)
+            -&gt;first();
+
+        return $objData;
+    }
+}
+</code></pre>
+
+<pre><code class="language-php">
+namespace App\Http\Controllers\Company;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+class EditController extends Controller
+{
+    public function index(Request $request): View
+    {
+        $objData = $this-&gt;getEntity($request-&gt;id);
+        if (empty($objData)) abort(404);
+
+        return view(&quot;company.edit&quot;, [
+            'objData' =&gt; $objData,
+        ]);
+    }
+
+    public function patch(Request $request): RedirectResponse
+    {
+        $this-&gt;update($request-&gt;id, $request-&gt;input());
+
+        return redirect(&quot;company/index&quot;)
+            -&gt;with('flash', '更新しました');
+    }
+
+    private function getEntity($id): object|null
+    {
+        $objData = Company::select(
+            'companies.id',
+            'companies.email',
+            'companies.password',
+            'companies.status'
+        )
+            -&gt;where('company.id', $id)
+            -&gt;first();
+
+        return $objData;
+    }
+
+    private function update($id, $input): void
+    {
+
+        $objData = $this-&gt;model-&gt;find($id);
+
+        if (!$objData) return abort(404);
+
+        if (!empty($input['password'])) {
+            $input['password'] = bcrypt($input['password']);
+        }
+
+        $objData-&gt;fill($input);
+        $objEmployee = Employee::where('user_id',$objData-&gt;id)
+            -&gt;first()
+            -&gt;fill($input);
+
+        DB::transaction(function () use ($objData, $objEmployee) {
+            $objData-&gt;save();
+            $objEmployee-&gt;save();
+        });
+    }
+}
+</code></pre>
+
+<pre><code class="language-php">
+namespace App\Http\Controllers\Company;
+
+use App\Http\Controllers\Controller;
+use App\Consts\AddressConst;
+use App\Consts\RecruitConst;
+use App\Consts\UserConst;
+use App\Models\User;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+class CreateController extends Controller
+{
+    public function index(): View
+    {
+        $arrPref = AddressConst::PREFECTURE;
+        $arrCity = AddressConst::CITY;
+
+        foreach ($arrCity as $key =&gt; $value) {
+            $arrCity[$key] = ['' =&gt; '未選択'] + $value;
+        }
+
+        return view(&quot;company.create&quot;, [
+            'arrPref' =&gt; ['' =&gt; '選択して下さい'] + $arrPref,
+            'jsonPref'=&gt; json_encode(['' =&gt; '選択して下さい'] + $arrPref),
+            'jsonCity' =&gt; json_encode($arrCity),
+        ]);
+    }
+
+    public function post(Request $request): RedirectResponse
+    {
+        $this-&gt;newEntry($request->input());
+
+        return redirect(&quot;/admin/instructor/index&quot;)
+            -&gt;with('flash', '新規作成されました');
+    }
+
+    /**
+      * ユーザー情報を保存する関数
+      * 
+      * @param array $arrData
+      */
+    public function newEntry($arrData): void
+    {
+        $arrData = array_replace($arrData, [
+            'password' =&gt; bcrypt($arrData['password']),
+            'role' =&gt; 2,
+            'score' =&gt; 0,
+        ]);
+
+        DB::transaction(function () use ($arrData) {
+            $objData = Company::create($arrData);
+            $objData-&gt;employee-&gt;create($arrData);
+        });
+    }
+}
+</code></pre>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>クッキーの保存・呼び出し</h3>
+下書き保存でクッキーを用いた例を示す。以下の例では、<code>$jsonData</code>に格納されたjson文字列が6000分間クッキーとして保存される。また、<code>encrypt()</code>と<code>decrypt()</code>を用いてデータの暗号化・復号化を行っている。<br>
+クッキーで保存できるデータは最大数kB（ブラウザによって異なる）しかないので、データ量が大きくなる場合はデータベースに保存するなど、他の手段が必要になる。ブラウザ側のクッキー保存の許容量を超えるとエラーが発生することを念頭に入れておく。<br>
+画像を保存したい場合は、クッキーに画像URLを含めるようにし、画像ファイルそのものはstorageに保存すると良い。<br>
+コード例にあるように、クッキー保存時には<code>response()</code>、呼び出し時には<code>$request</code>が必須である。<br>
+クッキー保存
+<pre><code class="language-php">
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+
+public function index(Request $request): Response
+{
+  $jsonData = $request-&gt;session()-&gt;pull('jsonData');
+  $encryptedData = encrypt($jsonData);
+
+  return response()-&gt;view(&quot;\company\draft-complete&quot;)
+      -&gt;cookie('sample_cookie', $encryptedData, 6000); // クッキーの保存
+}
+</code></pre>
+クッキー呼び出し
+<pre><code class="language-php">
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+
+public function index(Request $request): View
+{
+    $objData = new User();
+    $jsonData = json_encode($objData);
+
+    /*------------------- クッキーが存在する場合 --------------------*/
+    $draftData = $request-&gt;cookie('sample_cookie'); //クッキーの呼び出し
+
+    if ($draftData) {
+        $jsonData = decrypt($draftData);
+        $objData = $this-&gt;setAttr($objData, $jsonData);
+    }
+
+    /*---------- セッションが存在する場合セッション値を反映 ----------*/
+    if ($request-&gt;session()-&gt;has('jsonData')) {
+        $jsonData = $request-&gt;session()-&gt;pull('jsonData');
+        $objData = $this-&gt;setAttr($objData, $jsonData);
+    }
+
+    return view('userEntry.step1', [
+        'objData' =&gt; $objData,
+        'jsonData' =&gt; $jsonData,
+    ]);
+}
+</code></pre>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>クエリの引き継ぎ</h3>
+ペジネーションのリンクをクリックすると、検索キーワードなどが消えてしまう。クエリを引き継ぐことで回避できる。<br>
+コントローラー
+<pre><code class="language-php">
+$objData->appends($request->query());
+</code></pre>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>インポート文の順序</h3>
+インポート文は一般的には以下の順序で並べる。<br>
+・Laravel フレームワークに関連するクラス<br>
+・アプリケーション固有のクラス<br>
+・カスタム定数やトレイトなどの補助クラス<br>
+例
+<pre><code class="language-php">
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
+use App\Http\Controllers\Controller;
+use App\Models\Notice;
+use App\Consts\NoticeConst;
+use App\Traits\CommonTrait;
+</code></pre>
+→原則は以上だが、実際にはいちいち考えて配置するよりは、chatGPTに「順番を整理して」などと指示を出して書き直してもらうため、上の通りでなくても良い。アルファベット順でも良い。
+</section>
+
+<section>
+<h2>モデル</h2>
+<!----------------------------- 見出し ----------------------------->
+<h3>なるべくインスタンスしない</h3>
+phpにおいてクラスのインスタンスはメモリを消費するため、モデルはなるべくインスタンスしない。<br>
+後者の書き方を静的メソッドへのアクセスという。
+<pre><code class="language-php">
+// このような書き方はなるべくしない
+
+$user = new User();
+$objData = user->find($id);
+
+// こちらの書き方がメモリを消費しない
+
+$objData = User::find($id);
+</code></pre>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>なるべくリレーションを使わない</h3>
+<code>user->company->get()</code>など、リレーションを用いる方法は便利である反面、その度にSQLを発行することになりサーバーに負荷がかかる（N+1問題という）。<br>
+上のようなケースでは、もともと<code>user</code>テーブルからデータを取り出すときに、同時に<code>company</code>テーブルを<code>join</code>で連結して取り出しておくことを原則とする。<br>
+工夫すれば、データの新規作成・更新時以外ではリレーションは使わないでも対処できる。<br>
+なお、ソフトデリートを使用している場合、<code>select</code>文などで<code>'users as u'</code>のように<strong>エイリアスを使うとエラーになる</strong>点に注意する。
+
+<!----------------------------- 見出し ----------------------------->
+<h3>複数のテーブルに対する新規作成や更新処理</h3>
+複数のテーブルに対して新規作成や更新処理を行う場合はトランザクションを利用する。<br>
+<code>DB::transaction()</code>でラップしておけば，テーブル操作の処理に失敗した場合に自動的にロールバックして例外処理が発生する。<br>
+下記では<code>try</code>～<code>catch</code>を使用した場合の例を記述する。エラー時に例外処理ではなくエラーメッセージを表示するなどの処理を行いたい場合に使用するが、一般的には例外処理を投げれば十分であるため、<code>try</code>～<code>catch</code>の部分は書かなくて良い。<br>
+以下の例に示すように、<code>transaction</code>の中は保存処理のみを記述する。データの前処理は<code>transaction</code>の前で終わらせておく。
+<pre><code class="language-php">
+/**
+* ユーザー情報を保存する関数
+* 
+* @param array $arrData
+*/
+public function newEntry($arrData): bool
+{
+    /* データの前処理があればここに記述する */
+
+    try {
+        DB::transaction(function () use ($arrUser, $arrEmployee) {
+            $user = User::create($arrUser);
+            $user->employee-&gt;create($arrEmployee);
+        });
+    } catch (\Exception $e) {
+        return false;
+    }
+
+    return true;
+}
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>fillableの扱い</h3>
+モデルで定義される<code>$fillable</code>はテーブル操作時に書き込みを行うことを許可するカラムを記入する。
+<pre><code class="language-php">
+class Company extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'tel',
+    ];
+}
+</code></pre>
+基本的にはテーブルのカラムを全て記入するが，<code>id</code>は含めない。同様に<code>user_id</code>など参照元に紐付されたカラムも含めない。<br>
+こうすることで誤って id を上書きしてしまうミスを防ぐ。<br>
+また、<code>create()</code>や<code>fill()</code>の引数は連想配列なので誤ってオブジェクトを入れないように注意する。<br>
+オブジェクトのデータを使いたいなら<code>$arrData = $objData->toArray();</code>などとして，いったん連想配列に変換する。<br>
+fillableの便利な点は，<code>create</code>の際に引数として与える連想配列にテーブルに関係ない要素が含まれていても、それらを自動的に取り除いてくれるところにある。<br>
+連想配列は様々な処理のためにもともとテーブルのカラムに無い要素を追加していることも多いが，そういう場合でも気にせず引数としてそのまま放り込んでしまうことができる（動作検証は行うこと）。<br>
+ただし、<code>update()</code>の場合はまったく挙動が異なり、fillableに含まれないカラムのデータも更新できる。<br>
+従って<strong>レコードの更新処理において<code>update()</code>は用いず、<code>fill()</code>と<code>save()</code>の組み合わせで行う。</strong><code>fill()</code>はfillableを考慮するので、fillableにない項目を誤って上書きするミスを防げる。<br>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>ペジネーションが付加されたモデルの扱い</h3>
+データの一覧を表示するページではモデルに<code>paginate()</code>を付加することが多い。これによって取り出されたオブジェクトはSQLから取得した情報の他にペジネーション情報を持っている。<br>
+<pre><code class="language-php">
+/**
+ * ユーザー一覧
+ * @param array $keyword 絞込検索キーワード（複数）--&gt;ここでは省略
+ * @return obj
+ */
+public function getUserList($keyword)
+{
+    $query = $this-&gt;select(
+        'users.id',
+        'users.email',
+        'companies.name',
+    )
+        -&gt;join('companies', 'users.id', '=', 'companies.user_id');
+        -&gt;paginate(10);
+
+    return $objData;
+}
+</code></pre>
+bladeファイルでペジネーションを表示させる。
+<pre><code class="language-html">
+&lt;div&gt;
+@if($objData->count())
+  &lt;table&gt;
+    データの表示
+  &lt;/table&gt;
+  $objData-&gt;links('pagination.guest-pagination') }}
+@endif
+&lt;/div&gt;  
+</code></pre>
+コンポーネントを用意して<code>pagination</code>配下に設置する。
+<br>
+<code>resources\views\pagination\guest-pagination.blade.php</code>
+
+<pre><code class="language-html">
+@if ($paginator-&gt;hasPages())
+  @php
+    $pagerSide = 2; //現在のページ番号の左右に表示するページの数
+    $pagerCurrent = $paginator-&gt;currentPage();
+    $pagerLast = $paginator-&gt;lastPage();
+    $pagerPrev = 1;
+    $pagerPrev = max(1, $pagerCurrent - 1);
+    $pagerNext = min($pagerCurrent + 1, $pagerLast);
+    $pagerTotal = $paginator-&gt;total();
+    $pagerBegin = ($pagerCurrent - 1) * $paginator-&gt;perPage() + 1;
+    $pagerEnd = $pagerBegin + $paginator->count() - 1;
+    $pagerCountText = &quot;{$pagerTotal}件中{$pagerBegin}～{$pagerEnd}件表示&quot;;
+  @endphp
+  &lt;div class=&quot;pager&quot;&gt;
+    &lt;div class=&quot;pager__button-first&quot;&gt;
+      &lt;a class=&quot;pager__link&quot; href=&quot;{{ $paginator-&gt;url(1) }}&quot;&gt;最初&lt;/a&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;pager__button-prev&quot;&gt;
+      &lt;a class=&quot;pager__link&quot; href=&quot;{{ $paginator-&gt;url($pagerPrev) }}&quot;&gt;前へ&lt;/a&gt;
+    &lt;/div&gt;
+    @for ($i = 1; $i &lt;= $pagerLast; $i++)
+      @if ($i === $pagerCurrent)
+        &lt;div class=&quot;pager__button-current&quot;&gt;
+          &lt;span class=&quot;pager__link&quot;&gt;{{ $i }}&lt;/span&gt;
+        &lt;/div&gt;
+      @elseif (
+        ($i &gt;= $pagerCurrent - $pagerSide &amp;&amp; $i &lt;= $pagerCurrent + $pagerSide) ||
+        ($i &lt;= $pagerSide * 2 + 1 || $pagerLast - $i &lt; $pagerSide * 2 + 1))
+          &lt;div class=&quot;pager__button&quot;&gt;
+          &lt;a class=&quot;pager__link&quot;
+            href=&quot;{{ $paginator-&gt;url($i) }}&quot;&gt;{{ $i }}&lt;/a&gt;
+        &lt;/div&gt;
+      @endif
+    @endfor
+    &lt;div class=&quot;pager__button-next&quot;&gt;
+      &lt;a class=&quot;pager__link&quot; href=&quot;{{ $paginator-&gt;url($pagerNext) }}&quot;&gt;次へ&lt;/a&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;pager__button-last&quot;&gt;
+      &lt;a class=&quot;pager__link&quot; href=&quot;{{ $paginator-&gt;url($pagerLast) }}&quot;&gt;最後&lt;/a&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;pager__counter&quot;&gt;
+    &lt;span class=&quot;pager__counter-text&quot;&gt;{{ $pagerCountText }}&lt;/span&gt;
+  &lt;/div&gt;
+@endif
+</code></pre>
+<h3>ペジネーションが付加されたモデルのオーバーライド</h3>
+ペジネーションが付加されたモデルの個々のデータに対して、上書きや追加を行いたい場合は以下のように記述する。
+<pre><code class="language-php">
+$objData = $this->model->getUserList(); // ペジネーションが付与されたモデルの取得
+
+foreach ($objData as $item) {
+    $item->name = $item->name . "様";  // データの上書き
+    $item->someProp = 10;              // プロパティの追加
+}
+</code></pre>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>クラス同士で共通する処理―traitの活用</h3>
+コントローラーにおいても同様だが，様々なクラス同士で共通する処理が存在する場合，phpの機能であるtraitを活用する。<br><code>app\Traits</code>ディレクトリを作成し，モデル間の共通した処理ならファイル名を<code>CommonTraits.php</code>などとする。<br><br><code>app\Traits\CommonTraits.php</code>
+<pre><code class="language-php">
+&lt;?php
+
+namespace App\Traits;
+
+trait CommonTrait {
+    /**
+      * モデルのプロパティを連想配列でまとめて格納する
+      * @param $attrs array モデルのプロパティと値を格納した連想配列
+    */
+    public function setAttrs($attrs): void
+    {
+        foreach ($attrs as $key =&gt; $value) {
+            $this-&gt;$key = $value;
+        }
+    }
+}
+</code></pre>
+<code>User.php</code>
+<pre><code class="language-php">
+use App\Traits\CommonTrait;
+
+class User extends Model
+{
+    use CommonTrait;   // ←これでクラス内にsetAttrs()を書いた場合と同等になる
+
+}
+</code></pre>
+コントローラーから利用する例は以下。
+<pre><code class="language-php">
+$model = new User();
+$model->setAttrs($obj); //モデル内にメソッドを書いた場合と同様の書き方でよい
+</code></pre>
+ここではモデルにtraitを設置する例を挙げたが，コントローラーやその他のものでもクラスに対して同様にtraitを設置することができる。
+<!----------------------------- 見出し ----------------------------->
+<h3>パスワードの扱い</h3>
+Breezeの使用を前提とする。<br>
+テーブルに保存するパスワードは他のデータと扱いが異なる。まず、パスワードはモデル内において<code>$hidden</code>に記述する。こうするとで、SQL処理でパスワードを取り出すことができなくなる。<br>
+パスワードはログイン認証時のみ必要なデータであり、<strong>それ以外の場面でパスワードを取り出して利用してはいけない</strong>。
+Userテーブル等からレコードを取り出して編集する場合、パスワード入力欄は空のままで良いし、入力欄を非表示にしてボタンをクリックしたときにだけ入力できるようにすることが望ましい。
+<pre><code class="language-php">
+protected $fillable = [
+  'password',
+];
+
+protected $hidden = [
+  'password',
+];
+</code></pre>
+一方で、<code>$fillable</code>にもパスワードを記述し、新規登録と更新で用いる（取り出せないが書き込むことはできる）。パスワードを書き込む際には<code>bcrypt($request->password)</code>として、ハッシュ化した上で書き込む。ハッシュ化しないでテーブルに書き込むとログインできなくなるので注意する。
+<!----------------------------- 見出し ----------------------------->
+<h3>SQLクエリの確認</h3>
+クエリビルダを使用している場合、以下で発行されたクエリを確認できる。
+<pre><code class="language-php">
+dd(preg_replace_array('/\?/', $query->getBindings(), $query->toSql()));
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>joinとleftJoinの違い</h3>
+テーブルを結合する場合、<code>join</code>と<code>leftJoin</code>は結果が異なる場合がある。
+<br>
+<table class="table">
+  <tbody>
+    <tr>
+      <th></th>
+      <th>参照元レコード</th>
+      <th>参照先レコード</th>
+      <th>カウント</th>
+    </tr>
+    <tr>
+      <td>join</td>
+      <td>有り</td>
+      <td>有り</td>
+      <td>カウントされる</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>有り</td>
+      <td>無し</td>
+      <td>カウントされない</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>無し</td>
+      <td>有り</td>
+      <td>カウントされない</td>
+    </tr>
+    <tr>
+      <td>leftJoin</td>
+      <td>有り</td>
+      <td>有り</td>
+      <td>カウントされる</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>有り</td>
+      <td>無し</td>
+      <td>カウントされる</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>無し</td>
+      <td>有り</td>
+      <td>カウントされない</td>
+    </tr>
+  </tbody>
+</table>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>複数キーワードによる検索</h3>
+以下に複数キーワードによる検索の例を示す。カラムのデータが連想配列のキーの値で保存されている場合、検索で入力される文字列はvalueの値であるため、そのままではLIKE検索できない。そこで、<code>preg_grep</code>と<code>array_keys</code>を用いることで、valueの値から該当するキーの値を取り出している。
+<pre><code class="language-php">
+/**
+* ユーザー一覧
+* @param string $keyword 絞込検索キーワード（複数）
+*/
+public function getUserList($keyword): object
+{
+    // $prefs = ['hokkaido' => '北海道', ・・・, 'okinawa' => '沖縄県']
+    $prefs = AddressConst::PREFECTURE;
+
+    // 抽出するカラムの指定は必須。全カラムの指定はuser.*(u.*)などとする
+    $query = $this-&gt;select(
+        'users.id',
+        'users.email',
+        'infos.name',
+        'infos.pref',
+    )
+        -&gt;join('infos', 'users.id', '=', 'infos.user_id');
+
+    // 検索文字列が存在している場合、検索を行う
+    if (!empty($keyword)) {
+
+        // 検索文字列をスペース区切りで配列に分割
+        $arrKeyword = $this-&gt;splitKeyword($keyword);
+
+        // 配列の各要素を配列で回す、SQLクエリが
+        // WHERE (A OR B OR C) AND (A OR B OR C) AND ・・・
+        // のような形であれば正解
+        foreach ($arrKeyword as $search) {
+
+            // コールバック関数でラップすると、
+            // SQLクエリで WHERE ( ・・・ ) に変換される
+            $query-&gt;where(function ($query) use ($search, $prefs) {
+
+                // 名前とメールアドレスで検索
+                $query-&gt;where('infos.name', 'LIKE', &quot;%$search%&quot;)
+                    -&gt;orWhere('users.email', 'LIKE', &quot;%$search%&quot;);
+
+                // 都道府県で検索
+                //
+                // preg_grep()を用いることで
+                // $search = '埼玉'または'埼玉県'ならば
+                // $prefTemp = ['saitama' => '埼玉県']
+                // を取得できる
+                // $search = '崎' の場合
+                // $prefTemp = ['nagasaki' => '長崎県', 'miyazaki' => '宮崎県']
+                // となる。
+                $prefTemp = preg_grep('/' . preg_quote($search, '/') . '/u', $prefs);
+                // 連想配列からキーを配列として取り出す
+                $prefMatches = array_keys($prefTemp);
+
+                // 連想配列をループで回す
+                // $search = '崎' なら
+                // WHERE (名前 OR メール OR nagasaki OR miyazaki)
+                // の形になる
+                foreach ($prefMatches as $pref) {
+                    $query-&gt;orWhere('infos.pref', 'LIKE', &quot;%$pref%&quot;);
+                }
+            });
+        }
+    }
+
+    $objData = $query-&gt;paginate(10);
+
+    return $objData;
+}
+</code></pre>
+検索キーワードの分割は<code>trait</code>で設置すると良い。
+<pre><code class="language-php">
+/**
+  * 検索キーワードを分割して配列で返す
+  * @param $keyword string
+  */
+public function splitKeyword($keyword): array
+{
+    //半角スペースと全角スペースで分割
+    return preg_split('/[\s\xE3\x80\x80]/u', $keyword);
+}  
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+
+</section>
+
+<!--------------------------- セクションここまで --------------------------->
+
+<!----------------------------- セクション開始 ----------------------------->
+
+<section>
+<h2>バリデーション</h2>
+<!----------------------------- 見出し ----------------------------->
+<h3>フォームリクエストバリデーション</h3>
+バリデーションはフォームリクエストバリデーションを用いる。詳しくは<a href="https://readouble.com/laravel/10.x/ja/validation.html#form-request-validation">公式</a>を参照。
+<br>
+<code>authorize()</code>は<code>return true</code>としておかないとエラーになるので注意が必要。
+<br>
+リクエストのデータの前処理を行いたい場合は<code>prepareForValidation()</code>を設置する。加工したデータは<code>merge()</code>で他のデータと統合する。必要なければ関数自体設置しない。
+<br>
+<code>rules()</code>でバリデーションルールを書く。<br>
+<code>attribute()</code>はエラーメッセージを表示するときに必要。
+<br>
+<code>message()</code>は独自のエラーメッセージを設定したい場合に設置する。必要なければ関数自体設置しない。
+<br>
+<code>app\Http\Requests\UserRequest.php</code>
+<pre><code class="language-php">
+&lt;?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class UserRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $name = $this-&gt;request-&gt;name;
+        $this-&gt;merge([
+            'slug' =&gt; Str::slug($this-&gt;slug),
+        ]);
+    }
+
+    public function rules(): array
+    {
+        return [
+            'name' =&gt; 'required|string|max:80',
+            'someColumn' =&gt; 'exclude',
+        ];
+    }
+  
+    public function attributes(): array
+    {
+        return [
+            'name' =&gt; '名前',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' =&gt; ':attributeは必須です。',
+        ];
+    }
+}
+</code></pre>
+コントローラー
+<pre><code class="language-php">
+public function index(UserRequest $request)
+{
+  ・・・・・
+}
+</code></pre>
+
+</section>  
+
+<!--------------------------- セクションここまで --------------------------->
+
+<!----------------------------- セクション開始 ----------------------------->
+
+<section>
+<h2>ビュー</h2>
+<!----------------------------- 見出し ----------------------------->
+<h3>cssとJavaScriptの分離</h3>
+bladeの中にstyle要素やJavaScriptのコードが入ると保守性が下がるので、原則として別ファイルに記述して、layout側でファイルを読み込むように追記しておく。bootstrapやjQueryを使いたいときも同様。また，JavsScriptのコードは必ず関数でラップして、意図しないページでコードが動作しないようにしておく。<br>cssファイルは<code>public\asset\css</code>配下に置き，JavaScriptファイルは<code>public\asset\js</code>配下に置く。
+<br>JavaScript
+<pre><code class="language-php">
+function myFunc() {
+  /*  何らかの処理  */
+}
+</code></pre>
+blade　<code>script</code>要素は原則レイアウトの外側に書いておけば良い。内側と外側では挙動が異なる場合があるので注意が必要。
+<pre><code class="language-php">
+・・・・
+&lt;/x-guest-layout&gt;
+&lt;-- ↓↓↓ レイアウト要素の下に書く ↓↓↓  --&gt;
+&lt;script&gt;
+  myFunc();  //blade側から関数を呼び出す
+&lt;/script&gt;
+</code></pre>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>phpの変数をJavaScriptに渡す</h3>
+・変数が1つの場合<br>
+bladeファイル
+<pre><code class="language-html">
+&lt;script&gt;
+  myFunc(&lt;?php echo $varSome; ?&gt;);
+&lt;/script&gt;
+</code></pre>
+・変数が複数の場合<br>
+blade　変数が複数の場合はオブジェクトで渡す。
+<pre><code class="language-html">
+&lt;script&gt;
+myFunc({
+  &#039;key1&#039;: &lt;?php echo $arrSome; ?&gt;,
+  &#039;key2&#039;: &lt;?php echo $varSome; ?&gt;
+});
+&lt;/script&gt;
+</code></pre>
+JavaScript
+<pre><code class="language-javascript">
+function myFunc(obj) {
+  const var1 = obj.key1;
+  const var2 = obj.key2;
+
+  /*  何らかの処理  */
+}
+</code></pre>
+のように書いて値を取り出す。
+<br>
+JavaScriptに渡したいデータが連想配列やオブジェクトの場合、<code>json_encode()</code>でjson文字列化してbladeに送る。
+<pre><code class="language-php">
+return view(&#039;user.create&#039;, [
+  &#039;objData&#039; =&gt; $objData,
+  &#039;jsonSome&#039; =&gt; json_encode($arrSome),
+]);
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>bladeのバリデーションエラー表示</h3>
+<pre><code class="language-php">
+@error(&#039;email&#039;) &lt;p class=&quot;alert&quot;&gt;{{ $message }}&lt;/p&gt; @enderror
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>クラス名の扱い ― BEM記法</h3>
+検索すると色々出てくるが以下が分かりやすい。<br>
+<a href="https://laraweb.net/surrounding/8081/#:~:text=Block%20Element%20Modifier%20%E3%81%AE%E7%95%A5,%E3%81%AAClass%E5%91%BD%E5%90%8D%E8%A6%8F%E5%89%87%E3%81%A7%E3%81%99%E3%80%82">Laravel学習帳</a><br>
+
+ビューの修正等でクラスを追加する場合，<code>public\asset\css</code>配下に<code>bsys.css</code>を設置して記述するものとする。<br>システムメンバー側で設置するクラスはBEM記法の前に<code>bsys__</code>を加えることで判別できるようにする。したがって，<code>bsys.scss</code>はコード全体を<code>.bsys { }</code>でラップする形になり，その中に追加したいクラスを記述することになる。
+<pre><code class="language-css">
+.bsys {
+  &__someBlock {
+    /* ↓ クラス名は bsys__someBlock__someElem*/
+    &__someElem {
+      /* プロパティ */
+    }
+    /* ↓ クラス名は bsys__someBlock__anotherElem*/
+    &__anotherElem {  
+      /* プロパティ */
+      /* ↓ クラス名は bsys__someBlock__anotherElem-add */
+      &-add {
+        /* プロパティ */
+      }
+    }
+  }
+  &__anotherBlock {
+    /* ↓ クラス名は bsys__anotherBlock__someElem */
+    &__someElem {
+      /* プロパティ */
+    }
+  }
+}
+</code></pre>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>レイアウトファイル</h3>
+レイアウトのファイルは<code>resources\views\layouts</code>配下に置く。以下にレイアウトbladeのサンプルを示す。
+<pre><code class="language-html">
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;{{ str_replace(&#039;_&#039;, &#039;-&#039;, app()-&gt;getLocale()) }}&quot;&gt;
+
+&lt;head&gt;
+  &lt;meta charset=&quot;utf-8&quot;&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+  &lt;meta name=&quot;csrf-token&quot; content=&quot;{{ csrf_token() }}&quot;&gt;
+  &lt;title&gt;{{ config(&#039;app.name&#039;, &#039;Laravel&#039;) }}&lt;/title&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;/asset/bootstrap-5.0.2-dist/css/bootstrap.min.css&quot;&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;/asset/css/normalize.css&quot;&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;/asset/css/style.css&quot;&gt;
+  &lt;script src=&quot;/asset/js/jquery-3.6.4.min.js&quot;&gt;&lt;/script&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+  &lt;header class=&quot;app__header&quot;&gt;
+    &lt;div&gt;
+      &lt;a href=&quot;/&quot;&gt;アプリ名&lt;/a&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+      @guest
+      &lt;div&gt;
+        &lt;a href=&quot;/login&quot;&gt;ログイン&lt;/a&gt;
+      &lt;/div&gt;
+      &lt;div&gt;
+        &lt;a href=&quot;/userEntry&quot;&gt;新規ユーザー登録&lt;/a&gt;
+      &lt;/div&gt;
+      @endguest
+    &lt;/div&gt;
+  &lt;/header&gt;
+  &lt;main class=&quot;container&quot;&gt;
+    &lt;article&gt;
+      {{ $slot }}
+    &lt;/article&gt;
+  &lt;/main&gt;
+  &lt;footer&gt;
+    &lt;div&gt;
+      2023 Sample Corp.
+    &lt;/div&gt;
+  &lt;/footer&gt;
+  &lt;script src=&quot;/asset/bootstrap-5.0.2-dist/js/bootstrap.bundle.min.js&quot;&gt;&lt;/script&gt;
+  &lt;script type=&quot;text/javascript&quot; src=&quot;//jpostal-1006.appspot.com/jquery.jpostal.js&quot;&gt;&lt;/script&gt;
+  &lt;script src=&quot;/asset/js/guest.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+{{ $slot }}の部分にコンテンツが入る。<br><br>
+blade
+<pre><code class="language-html">
+&lt;x-admin-layout&gt;
+
+  &lt;!------- 何らかの内容 -------&gt;
+
+&lt;/x-admin-layout&gt;
+</code></pre>
+レイアウトファイル名が<code>admin.blade.php</code>なら，コンテンツ側のbladeファイルは内容全体を<code>&lt;x-admin-layout&gt;</code>～<code>&lt;/x-admin-layout&gt;</code>で囲む。
+
+<!----------------------------- 見出し ----------------------------->
+<h3>レイアウトの呼び出し</h3>
+レイアウトを追加した場合は，<code>app\View\Components</code>配下に<code>AdminLayout.php</code>のようなファイルを作り，レイアウトファイルを呼び出す。こうしておくと、bladeファイルで<code>&lt;x-admin-layout&gt;</code>～<code>&lt;/x-admin-layout&gt;</code>として使えるようになる。
+<pre><code class="language-php">
+&lt;?php
+
+namespace App\View\Components;
+
+use Illuminate\View\Component;
+use Illuminate\View\View;
+
+class AdminLayout extends Component
+{
+    /**
+      * Get the view / contents that represents the component.
+      */
+    public function render(): View
+    {
+        return view('layouts.admin');
+    }
+}  
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>セレクトボックスの設置</h3>
+セレクトボックスを設置する場合、項目を連想配列で用意し、<code>@foreach</code>を用いてループで回す。また、<code>@selected</code>を使うと、条件に一致する場合に選択肢があらかじめ選択された状態なる。以下に例を示す。<br>
+定数
+<pre><code class="language-php">
+&lt;?php
+
+namespace App\Consts;
+
+class AddressConst
+{
+    const PREFECTURE = [
+        'hokkaido' =&gt; '北海道',
+        'aomori' =&gt; '青森県',
+        'iwate' =&gt; '岩手県',
+        'miyagi' =&gt; '宮城県',
+        'akita' =&gt; '秋田県',
+        'yamagata' =&gt; '山形県',
+        'fukushima' =&gt; '福島県',
+        'ibaraki' =&gt; '茨城県',
+        'tochigi' =&gt; '栃木県',
+        'gunma' =&gt; '群馬県',
+        'saitama' =&gt; '埼玉県',
+        'chiba' =&gt; '千葉県',
+        'tokyo' =&gt; '東京都',
+        'kanagawa' =&gt; '神奈川県',
+        'niigata' =&gt; '新潟県',
+        'toyama' =&gt; '富山県',
+        'ishikawa' =&gt; '石川県',
+        'fukui' =&gt; '福井県',
+        'yamanashi' =&gt; '山梨県',
+        'nagano' =&gt; '長野県',
+        'gifu' =&gt; '岐阜県',
+        'shizuoka' =&gt; '静岡県',
+        'aichi' =&gt; '愛知県',
+        'mie' =&gt; '三重県',
+        'shiga' =&gt; '滋賀県',
+        'kyoto' =&gt; '京都府',
+        'osaka' =&gt; '大阪府',
+        'hyogo' =&gt; '兵庫県',
+        'nara' =&gt; '奈良県',
+        'wakayama' =&gt; '和歌山県',
+        'tottori' =&gt; '鳥取県',
+        'shimane' =&gt; '島根県',
+        'okayama' =&gt; '岡山県',
+        'hiroshima' =&gt; '広島県',
+        'yamaguchi' =&gt; '山口県',
+        'tokushima' =&gt; '徳島県',
+        'kagawa' =&gt; '香川県',
+        'ehime' =&gt; '愛媛県',
+        'kochi' =&gt; '高知県',
+        'fukuoka' =&gt; '福岡県',
+        'saga' =&gt; '佐賀県',
+        'nagasaki' =&gt; '長崎県',
+        'kumamoto' =&gt; '熊本県',
+        'oita' =&gt; '大分県',
+        'miyazaki' =&gt; '宮崎県',
+        'kagoshima' =&gt; '鹿児島県',
+        'okinawa' =&gt; '沖縄県',
+    ];
+}
+</code></pre>
+コントローラー
+<pre><code class="language-php">
+use App\Consts\AddressConst;
+
+return view('/someEdit', [
+  'arrPrefs' =&gt; ['' =&gt; '選択して下さい'] + AddressConst::PREFECTURE,
+]);
+</code></pre>
+ビュー
+<pre><code class="language-html">
+&lt;select name=&quot;pref&quot; class=&quot;edit__select&quot;&gt;
+@foreach($arrPrefs as $key =&gt; $value)
+  &lt;option class=&quot;edit__option&quot; value=&quot;{{ $key }}&quot;
+    @selected(old('pref', $objData-&gt;pref) === $key)&gt;
+    {{ $value }}
+  &lt;/option&gt;
+@endforeach
+&lt;/select&gt;
+</code></pre>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>チェックボックスの設置</h3>
+チェックボックスの設置もセレクトボックスの場合と同様。@checkedを使うと、条件に一致する場合に選択肢があらかじめ選択された状態なる。以下に例を示す。<br>
+<code>create</code>の場合
+<pre><code class="language-html">
+&lt;div class=&quot;row&quot;&gt;
+  @foreach($arrPrefs as $key =&gt; $value)
+  &lt;div class=&quot;col-4&quot;&gt;
+    &lt;input type=&quot;checkbox&quot; name=&quot;pref[]&quot; id=&quot;pref_{{ $key }}&quot;
+      class=&quot;edit__checkbox&quot; value=&quot;{{ $key }}&quot;
+      @checked(in_array($key, old('pref') ?? []))&gt;
+    &lt;label for=&quot;pref_{{ $key }}&quot; class=&quot;edit__label&quot;&gt;{{ $value }}&lt;/label&gt;
+  &lt;/div&gt;
+  @endforeach
+&lt;/div&gt;
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>@csrfの設置</h3>
+POST、PATCH、DELETEメソッドでフォームリクエストを送信する場合は、<code>@csrf</code>を設置する。GETの場合は設置しない。設置しても動作するが、パラメータが送信できなくなる。
+<pre><code class="language-html">
+&lt;!---------- POST、PATCH、DELETEの場合 ----------&gt;
+&lt;form action=&quot;/company/edit&quot; method=&quot;post&quot;&gt;
+  @method('patch')
+  @csrf
+
+  &lt;input name=&quot;name&quot;&gt;
+  &lt;button type=&quot;submit&quot;&gt;送信&lt;/button&gt;
+&lt;/form&gt;
+
+&lt;!------------------ getの場合 ------------------&gt;
+&lt;form action=&quot;/company/index&quot; method=&quot;get&quot;&gt;
+  &lt;input name=&quot;keyword&quot;&gt;
+  &lt;button type=&quot;submit&quot;&gt;検索&lt;/button&gt;
+&lt;/form&gt;
+</code></pre>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>input要素のtype一覧</h3>
+<table class="table">
+  <tbody>
+    <tr>
+      <td>text</td>
+      <td>1行のテキスト入力</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>number</td>
+      <td>半角数字のみ</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>tel</td>
+      <td>電話番号</td>
+      <td>pattern属性で形式を指定できる</td>
+    </tr>
+    <tr>
+      <td>password</td>
+      <td>パスワード</td>
+      <td>●●●●のように非表示になる</td>
+    </tr>
+    <tr>
+      <td>search</td>
+      <td>検索フォーム</td>
+      <td>テキストを入力するとフィールドの右側に「×」マークが表示</td>
+    </tr>
+    <tr>
+      <td>reset</td>
+      <td>リセットボタン</td>
+      <td>クリックすると<code>form</code>内に入力された内容が消去される</td>
+    </tr>
+    <tr>
+      <td>submit</td>
+      <td>送信ボタン</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>image</td>
+      <td>画像送信ボタン</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>date</td>
+      <td>カレンダーから年月日を入力</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>datetime-local</td>
+      <td>年月日と時間・分を入力</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>month</td>
+      <td>年と月を入力</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>week</td>
+      <td>年と第～週を入力</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>time</td>
+      <td>時間と分を入力</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>radio</td>
+      <td>ラジオボタン</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>checkbox</td>
+      <td>チェックボックス</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>hidden</td>
+      <td>表示しないデータ</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>button</td>
+      <td>ボタン</td>
+      <td>単体では機能ない。JavaScriptと組み合わせて用いる</td>
+    </tr>
+    <tr>
+      <td>file</td>
+      <td>ファイルのアップロード</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>range</td>
+      <td>範囲を選択できるバーを表示</td>
+      <td><code>min="0" max="100"</code>で最小・最大値を指定</td>
+    </tr>
+  </tbody>
+</table>
+<!----------------------------- 見出し ----------------------------->
+<h3>input要素の属性一覧</h3>
+<table class="table">
+  <tbody>
+    <tr>
+      <td>minlength</td>
+      <td>最小の入力文字数を指定</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>maxlength</td>
+      <td>最大の入力文字数を指定</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>placeholder</td>
+      <td>入力内容のサンプルを表示</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>list</td>
+      <td>入力候補を表示</td>
+      <td><code>datalist</code>タグと組み合わせて用いる</td>
+    </tr>
+    <tr>
+      <td>pattern</td>
+      <td>入力形式を正規表現で指定</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>step</td>
+      <td>数値の刻みを指定</td>
+      <td><code>number</code>または<code>range</code>で用いる</td>
+    </tr>
+    <tr>
+      <td>multiple</td>
+      <td>複数ファイルを指定</td>
+      <td><code>multiple="multiple"</code>で指定</td>
+    </tr>
+    <tr>
+      <td>accept</td>
+      <td>アップロードするファイル形式の指定</td>
+      <td><code>accept="image/png, image/jpeg"</code></td>
+    </tr>
+    <tr>
+      <td>readonly</td>
+      <td>表示のみ、入力不可</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>disable-local</td>
+      <td>表示のみ、入力不可。送信されない</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<!----------------------------- 見出し ----------------------------->
+<h3>フラッシュメッセージの表示</h3>
+データ更新時にメッセージを表示させたいときはフラッシュメッセージを使う。
+<pre><code class="language-php">
+return redirect("admin/index")
+    ->with('flash', '削除されました。');
+</code></pre>
+<pre><code class="language-php">
+@if (session('flash'))
+  &lt;div class=&quot;alert alert-success&quot;&gt;
+    {{ session('flash') }}
+  &lt;/div&gt;
+@endif
+</code></pre>
+</section>
+
+<!--------------------------- セクションここまで --------------------------->
+
+<!----------------------------- セクション開始 ----------------------------->
+<section>
+<h2>認証</h2>
+認証はBreezeをインストールしている前提でコードを記載する。
+<!----------------------------- 見出し ----------------------------->
+<h3>ログイン画面へのリンク</h3>
+<code>@guest</code>～<code>@endguest</code>で囲まれた部分は未ログイン状態のときのみ表示される。
+<pre><code class="language-php">
+@guest
+&lt;a href=&quot;/login&quot;&gt;ログイン&lt;/a&gt;
+@endguest  
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>ログアウト処理</h3>
+<code>@auth</code>～<code>@endauth</code>で囲まれた部分はログイン状態の時のみ表示される。ログアウト処理は以下のようにPOSTで送る必要がある。
+<pre><code class="language-php">
+@auth
+&lt;form action=&quot;/logout&quot; method=&quot;post&quot;&gt;
+  @csrf
+  &lt;input type=&quot;submit&quot; value=&quot;ログアウト&quot;&gt;
+&lt;/form&gt;
+@endauth
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>メール認証</h3>
+ユーザー登録時のメール認証は以下。Mailtrapのサービスを利用してメールが実際に送信されたかどうか確認すると良い。<br>
+コントローラー
+<pre><code class="language-php">
+$user = $this->model->create($arrData);
+event(new Registered($user));  //確認メールの送信
+</code></pre>
+Model/User.php
+<pre><code class="language-php">
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+
+class User extends Authenticatable implements MustVerifyEmail
+{
+    use Notifiable;
+
+    // ユーザーモデルのその他のコード...
+}
+</code></pre>
+web.php
+<pre><code class="language-php">
+Route::middleware(['auth', 'verified'])->group(function () {
+    // ユーザーがメール認証されている場合のルート
+});
+</code></pre>
+config/auth.php
+<pre><code class="language-php">
+'guards' => [
+  'web' => [
+      'driver' => 'session',
+      'provider' => 'users',
+      'middleware' => ['web', 'verified'],
+  ],
+],
+</code></pre>
+  
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+</section>
+
+<!--------------------------- セクションここまで --------------------------->
+
+<!----------------------------- セクション開始 ----------------------------->
+<section>
+<h2>認可</h2>
+<!----------------------------- 見出し ----------------------------->
+<h3>Policyによる認可</h3>
+ユーザーロールによってビューの表示・非表示をコントロールしたい場合、認可（Policy）を使う。<code>app</code>フォルダ配下に<code>Policies</code>フォルダを作り、<code>UserPolicy.php</code>を設置する（モデル名+Policy.php）。<br>
+また、コントローラーにはコンストラクタを設置し、<code>authorizeResource()</code>でポリシーを呼び出す。<br>
+以下の例ではログイン済みかつユーザーroleが3のときにページにアクセスできる。それ以外の場合は403エラーとなる。<br>
+app/Policies/UserPolicy.php
+<pre><code class="language-php">
+&lt;?php
+
+namespace App\Policies;
+
+use Illuminate\Support\Facades\Log;
+
+use Illuminate\Auth\Access\HandlesAuthorization;
+use App\Models\User;
+
+class UserPolicy
+{
+    use HandlesAuthorization;
+
+    public function viewAny(User $user) {
+
+        return $user-&gt;role === 3;
+    }
+}
+</code></pre>
+IndexController.php<br>
+モデルがフルパス指定なのは、コピペする時に<code>use</code>が不要なため、楽だから。
+<pre><code class="language-php">
+class IndexController extends Controller
+{
+    public function __construct()
+    {
+        $this-&gt;authorizeResource(\app\Models\User::class, 'user');
+    }
+
+    public function index(Request $request): View
+    {
+      ・・・・・・
+</code></pre>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+</section>
+
+<!--------------------------- セクションここまで --------------------------->
+
+<!----------------------------- セクション開始 ----------------------------->
+
+<section>
+<h2>ファクトリ</h2>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>ファクトリのサンプル</h3>
+Fakerの詳細は<a href="https://fwhy.github.io/faker-docs/formatters/" target="_blank">FakerPHP非公式リファレンス</a>を参照。
+<pre><code class="language-php">
+&lt;?php
+
+namespace Database\Factories;
+
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+/**
+  * @extends \Illuminate\Database\Eloquent\Factories\Factory&lt;\App\Models\Model&gt;
+  */
+class sampleFactory extends Factory
+{
+    /**
+      * Define the model's default state.
+      *
+      * @return array&lt;string, mixed&gt;
+      */
+    public function definition(): array
+    {
+        return [
+            // ここにkeyとvalueを書く
+        ];
+    }
+}  
+</code></pre>
+fakerの例
+<table class="table">
+<tbody>
+<tr>
+  <td>名前</td>
+  <td>フルネーム<br><code class="language-php">'name' =&gt; fake()-&gt;name(),</code></td>
+</tr>
+<tr>
+  <td>フリガナ</td>
+  <td>フルネーム<br><code class="language-php">'last_name' =&gt; fake()-&gt;firstName(),</code></td>
+</tr>
+<tr>
+  <td>姓</td>
+  <td><code class="language-php">'name' =&gt; fake()-&gt;name(),</code></td>
+</tr>
+<tr>
+  <td>名</td>
+  <td><code class="language-php">'first_name' =&gt; fake()-&gt;firstName(),</code></td>
+</tr>
+<tr>
+  <td>姓フリガナ</td>
+  <td><code class="language-php">'last_name_kana' =&gt; fake()-&gt;lastKanaName(),</code></td>
+</tr>
+<tr>
+  <td>名フリガナ</td>
+  <td><code class="language-php">'first_name_kana' =&gt; fake()-&gt;firstKanaName(),</code></td>
+</tr>
+<tr>
+  <td>会社名</td>
+  <td><code class="language-php">'company_name' =&gt; fake()-&gt;company(),</code></td>
+</tr>
+<tr>
+  <td>メールアドレス</td>
+  <td><code class="language-php">'email' =&gt; fake()-&gt;unique()-&gt;safeEmail(),</code></td>
+</tr>
+<tr>
+  <td>パスワード</td>
+  <td> &quot;password&quot;を<br>ハッシュ化したもの<br><code class="language-php">'password' =&gt; '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+  </code></td>
+</tr>
+<tr>
+  <td>10文字以上の文章</td>
+  <td>10未満を指定するとnullになる<br><code class="language-php">'message' =&gt; 'サンプル本文' . fake()-&gt;realText(100),</code></td>
+</tr>
+<tr>
+  <td>年月日</td>
+  <td><code class="language-php">'birth' =&gt; fake()-&gt;date(),</code></td>
+</tr>
+<tr>
+  <td>年月日（範囲指定）</td>
+  <td>３か月前から１週間後まで<br><code class="language-php">'date' =&gt; fake()-&gt;dateTimeBetween('-3 months', '+1 week'),</code><br>１年前から今日まで<br><code class="language-php">'date' =&gt; fake()-&gt;dateTimeBetween('-1 year', new DateTime()),</code></td>
+</tr>
+<tr>
+  <td>連想配列のキーを<br>ランダムに１つ選択</td>
+  <td>$arrSome = ['male' =&gt; '男性', 'female' =&gt; '女性'];<br>結果例 'male';<br><code class="language-php">'status' =&gt; fake()-&gt;randomKey($arrSome),</code></td>
+</tr>
+<tr>
+  <td>郵便番号</td>
+  <td>（ハイフンなし７桁）<br><code class="language-php">'zip' =&gt; fake()-&gt;postcode(),</code></td>
+</tr>
+<tr>
+  <td>都道府県</td>
+  <td><code class="language-php">'pref' =&gt; fake()-&gt;prefecture(),</code></td>
+</tr>
+<tr>
+  <td>市町村</td>
+  <td><code class="language-php">'city' =&gt; fake()-&gt;city(),</code></td>
+</tr>
+<tr>
+  <td>町名以降の住所</td>
+  <td><code class="language-php">'address' =&gt; fake()-&gt;streetAddress();</code></td>
+</tr>
+<tr>
+  <td>電話番号</td>
+  <td>ハイフン無し<br><code class="language-php">'tel' =&gt; str_replace('-', '', fake()->phoneNumber())</code></td>
+</tr>
+<tr>
+  <td>連想配列のキーを<br>ランダムに5個選択
+  </td>
+  <td><code class="language-php">'prefs' =&gt; fake()->randomElements(array_keys($arrPrefs), 5, true),</code></td>
+</tr>
+<tr>
+  <td>確率による振り分け</td>
+  <td>3分の2の確率で0、3分の1の確率で1<br><code class="language-php">'flg' =&gt; mt_rand(0, 2) ? 0 : 1,</code></td>
+</tr>
+<tr>
+  <td>一意の文字列</td>
+  <td><code class="language-php">'file_name' =&gt; fake()->md5() . '.jpg';</code></td>
+</tr>
+<tr>
+  <td></td>
+  <td><code class="language-php"></code></td>
+</tr>
+</tbody>
+</table>
+連番を設定する
+<pre><code class="language-php">
+class sampleFactory extends Factory
+{
+    protected $count = 0;
+
+    public function definition(): array
+    {
+        $this->count++;
+
+        return [
+
+          //フィールドがnull可の場合、一定の確率でデータをnullする
+
+          'message' =&gt; mt_rand(0, 4) ? 'サンプル' . $this-&gt;count : null,
+        ];
+    }
+}  
+</code></pre>
+参照元のレコードをランダムに１個選択し、参照先のレコードを作成
+<pre><code class="language-php">
+use App\Models\User;
+
+class sampleFactory extends Factory
+{
+    public function definition(): array
+    {
+        $model = new User;
+        $objData = $model-&gt;inRandomOrder()-&gt;first();
+
+        return [
+          'user_id' =&gt; $objData-=&gt;id,
+          'message' =&gt; 'サンプル本文',
+        ];
+    }
+}  
+</code></pre>
+名前を男女で分ける
+<pre><code class="language-php">
+class sampleFactory extends Factory
+{
+    public function definition(): array
+    {
+      $gender = mt_rand(0, 1) ? 'male' : 'female';
+
+      if ($gender === 'male') {
+          $name = fake()-&gt;lastName() . '　' . fake()-&gt;firstName('male');
+          $kanaName = fake()-&gt;lastKanaName() . '　' . fake()-&gt;firstKanaName('male');
+      }
+
+      if ($gender === 'female') {
+        $name = fake()-&gt;firstName() . '　' . fake()-&gt;firstName('female');
+        $kanaName = fake()-&gt;lastKanaName() . '　' .  fake()-&gt;firstKanaName('female');
+      }
+
+      return [
+        'name' =&gt; $name,
+        'name_kana' =&gt; $kanaName,
+        'gender' =&gt; $gender,
+      ];
+    }
+}  
+</code></pre>
+
+画像をランダムに選択してstorageに配置する
+<pre><code class="language-php">
+use Illuminate\Support\Facades\Storage;
+
+// アバター画像（avatar_seed配下に元になる画像ファイルを複数置く）
+$sourceDir = base_path('/assets/avatar_seed');
+$targetDir = 'avatars';
+
+// 画像ファイルのパスのリストを取得する
+$files = File::allFiles($sourceDir);
+$imagePaths = array_map(function ($file) {
+    return $file->getPathname();
+}, $files);
+
+// 画像ファイルをランダムに選択する
+$randomImagePath = $imagePaths[array_rand($imagePaths)];
+
+// 画像ファイルを読み込む
+$image = file_get_contents($randomImagePath);
+
+// 画像ファイルをStorageに保存する
+$fileName = Str::ulid() . '.jpg';
+Storage::put($targetDir . '/' . $fileName, $image);
+</code></pre>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+
+</section>
+<!--------------------------- セクションここまで --------------------------->
+
+<!----------------------------- セクション開始 ----------------------------->
+
+<section>
+<h2>シーダー</h2>
+<!----------------------------- 見出し ----------------------------->
+<h3>シーダーのサンプル</h3>
+<code>database\seeders\DatabaseSeeder.php</code>
+<pre><code class="language-php">
+&lt;?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+
+class sampleseed extends Seeder
+{
+    /**
+      * Run the database seeds.
+      */
+    public function run(): void
+    {
+        //
+    }
+}  
+</code></pre>
+<pre><code class="language-php">
+use App\Models\User;
+use App\Models\Company;
+use Illuminate\Support\Facades\Storage;
+  
+// テーブルのデータを全消去
+
+User::truncate();
+
+// Storageのフォルダを全消去
+
+Storage::deleteDirectory('avatars');
+
+// 管理者ユーザーの生成（パスワード：'password'）
+
+User::factory()-&gt;create([
+    'email' =&gt; 'admin@example.com',
+    'password' =&gt; '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    'role' =&gt; 3,
+]);
+
+// レコードを１０件生成
+
+$amount = 10;
+
+User::factory($amount)-&gt;create();
+
+// リレーション先のレコードも同時に1件生成
+
+User::factory($amount)-&gt;hasCompany(1)-&gt;create(['role' =&gt; 1]);
+
+// リレーション先のレコードをランダムに1～10件生成
+
+User::factory($amount)-&gt;hasCompany(mt_rand(1, 10))-&gt;create(['status' =&gt; 'private']);
+
+// リレーション先のレコードをランダムに1～5個、1/3の確率で生成しない
+
+$users = User::factory($amount)-&gt;create(['role' =&gt; 1]);
+
+foreach($users as $user) {
+  Company::factory(mt_rand(1, 5))-&gt;create(['user_id' =&gt; $user-&gt;id]);
+}
+
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+</section>
+<!--------------------------- セクションここまで --------------------------->
+
+<!----------------------------- セクション開始 ----------------------------->
+
+<section>
+<h2>テスト</h2>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>テストの実行</h3>
+テストの実行ファイルは<code>tests\Feature</code>配下に作成する。ファイル名を指定しない場合、フォルダ内のすべてのテストが実行される。<br>
+テストは画面単位で行う。そのため、テストのディレクトリ構造はビューと同一とする。したがって、プロジェクトはコントローラー、ビュー、テストが同一の構造を持つことになり、画面単位で独立して開発できるようにする。
+<pre><code class="language-powershell">
+php artisan test
+
+// ファイル名を指定して実行
+
+php artisan test tests/Feature/UserTest.php
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>テストを実行するとデータが全て消える場合</h3>
+テスト用のデータベースを指定し忘れると、テスト実行時にデータベースのデータがすべて消えてしまうので注意が必要。laravelはマイグレーション実行時に<code>test</code>という名前のデータベースを作成しているはずなので、それを指定する。<br>
+phpunit.xml
+<pre><code class="language-php">
+&lt;php&gt;
+    &lt;env name=&quot;APP_ENV&quot; value=&quot;testing&quot;/&gt;
+    &lt;env name=&quot;BCRYPT_ROUNDS&quot; value=&quot;4&quot;/&gt;
+    &lt;env name=&quot;CACHE_DRIVER&quot; value=&quot;array&quot;/&gt;
+
+    &lt;!-- テスト用のデータベースを指定 --&gt;
+
+    &lt;env name=&quot;DB_DATABASE&quot; value=&quot;test&quot;/&gt;
+
+    &lt;!---------- ここまで ----------&gt;
+
+    &lt;env name=&quot;MAIL_MAILER&quot; value=&quot;array&quot;/&gt;
+    &lt;env name=&quot;QUEUE_CONNECTION&quot; value=&quot;sync&quot;/&gt;
+    &lt;env name=&quot;SESSION_DRIVER&quot; value=&quot;array&quot;/&gt;
+    &lt;env name=&quot;TELESCOPE_ENABLED&quot; value=&quot;false&quot;/&gt;
+&lt;/php&gt;
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>CRUDテスト例</h3>
+以下に管理画面におけるCRUD処理のテスト例を示す。<br>
+テストコードを書く際には<code>foreach</code>などのループ処理を入れないようにする。ループするとテストが失敗したときにどの部分でテストが失敗したのか分からない。<br>
+IndexTest.php<br>
+indexテストでは検索機能のテストを行う。画面に検索窓がない場合は不要。<br>
+検索テストでは、検索結果として表示される正規データと、検索結果に表示されないことを確認するためのテストデータの2つのデータを生成する。検索キーワードが2語以上の場合は、正規データの一部を入れ替えたものをテストデータとし、検索結果に表示されないことを確認する。
+<pre><code class="language-php">
+&lt;?php
+
+namespace Tests\Feature\Admin\User;
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+use App\Models\User;
+
+class IndexTest extends TestCase
+{
+    /************************* 設定項目 *************************/
+
+    // テストする画面のルート相対パス
+    private $path = '/admin/user/index';
+
+    // レコード件数をテストするモデルの変数名
+    private $objData = 'objData';
+
+    // 検索パラメータのキー名
+    private $paramForKeyword = 'keyword';
+
+    // 検索結果に表示されるデータ
+
+    private $arrValid = [
+        'name' =&gt; '田中',
+        'pref' =&gt; 'okinawa',
+        'city' =&gt; 'nahashi',
+    ];
+
+    // 検索結果に表示されないデータ
+
+    private $arrInValid = [
+        'name' =&gt; '佐藤',
+        'pref' =&gt; 'yamanashi',
+        'city' =&gt; 'kofushi',
+    ];
+
+    // 検索キーワード
+
+    private $keyword = [
+        0 =&gt; '田中',
+        1 =&gt; '田中+沖縄',
+        2 =&gt; '田中+沖縄+那覇市',
+    ];
+
+    /********************* 設定項目ここまで *********************/
+
+    private $model = null;
+
+    private $objValid = null;   // 正規データ
+    private $objTest = null;    // テストデータ
+
+    use RefreshDatabase;
+
+    /**
+      * 事前処理
+      */
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this-&gt;model = new User();
+
+        // 管理者ユーザーでログイン
+
+        $user = $this-&gt;model-&gt;factory()-&gt;create(['role' =&gt; 3]);
+        $this-&gt;actingAs($user);
+    }
+
+    /** @test */
+    public function 管理者ユーザー以外表示できない(): void
+    {
+        $user = $this-&gt;model-&gt;factory()-&gt;create(['role' =&gt; 1]);
+        $this-&gt;actingAs($user);
+
+        $response = $this-&gt;get($this-&gt;path);
+        $response-&gt;assertStatus(403);
+    }
+
+    /** @test */
+    public function レコード取得(): void
+    {
+        $this-&gt;model-&gt;factory(3)-&gt;create(['role' =&gt; 1]);
+
+        $response = $this-&gt;get($this-&gt;path);
+        $response-&gt;assertOK();
+        $records = $response-&gt;viewData($this-&gt;objData);
+        $this-&gt;assertCount(3, $records);
+    }
+
+    /** @test */
+    public function 削除されたレコードが表示されない(): void
+    {
+        $this-&gt;model-&gt;factory()-&gt;create(['role' =&gt; 1]);
+        $this-&gt;model-&gt;factory()-&gt;softDeleted()-&gt;create(['role' =&gt; 1]);
+        $response = $this-&gt;get($this-&gt;path);
+        $response-&gt;assertOK();
+        $records = $response-&gt;viewData($this-&gt;objData);
+        $this-&gt;assertCount(1, $records);
+    }
+
+    /** @test */
+    public function ペジネーションが表示される(): void
+    {
+        $this-&gt;model-&gt;factory(30)-&gt;create(['role' =&gt; 1]);
+        $response = $this-&gt;get($this-&gt;path);
+        $response-&gt;assertSee('次へ');
+    }
+
+    /** @test */
+    public function 検索テスト(): void
+    {
+        $records = null;
+        $arrTest = array();
+        $arrKey = array_keys($this-&gt;arrValid);
+        $arrValidValue = array_values($this-&gt;arrValid);
+        $arrInValidValue = array_values($this-&gt;arrInValid);
+
+        $arrValidInvalidFlag = [
+            [0 =&gt; 1],
+            [0 =&gt; 0],
+            [0 =&gt; 1, 1 =&gt; 1],
+            [0 =&gt; 1, 1 =&gt; 0],
+            [0 =&gt; 0, 1 =&gt; 1],
+            [0 =&gt; 0, 1 =&gt; 0],
+            [0 =&gt; 1, 1 =&gt; 1, 2 =&gt; 1],
+            [0 =&gt; 1, 1 =&gt; 1, 2 =&gt; 0],
+            [0 =&gt; 1, 1 =&gt; 0, 2 =&gt; 1],
+            [0 =&gt; 1, 1 =&gt; 0, 2 =&gt; 0],
+            [0 =&gt; 0, 1 =&gt; 1, 2 =&gt; 1],
+            [0 =&gt; 0, 1 =&gt; 1, 2 =&gt; 0],
+            [0 =&gt; 0, 1 =&gt; 0, 2 =&gt; 1],
+            [0 =&gt; 0, 1 =&gt; 0, 2 =&gt; 0],
+        ];
+
+        foreach ($arrValidInvalidFlag as $case) {
+            $arrCase = array();
+
+            foreach ($case as $key =&gt; $value) {
+                $arrCase[$arrKey[$key]] = $value ? $arrValidValue[$key] : $arrInValidValue[$key];
+            }
+
+            $arrTest[] = $arrCase;
+        }
+
+        $this-&gt;objValid = $this-&gt;model-&gt;factory()-&gt;create(['role' =&gt; 1]);
+        $this-&gt;objTest = $this-&gt;model-&gt;factory()-&gt;create(['role' =&gt; 1]);
+
+        /************************* 検索1語 *************************/
+
+
+        // 1語case正
+
+        $records = $this-&gt;getRecord($arrTest[0], $this-&gt;keyword[0]);
+        $this-&gt;assertCount(2, $records);
+
+        // 1語case誤
+
+        $records = $this-&gt;getRecord($arrTest[1], $this-&gt;keyword[0]);
+        $this-&gt;assertCount(1, $records);
+
+        /************************* 検索2語 *************************/
+
+        // 2語case正正
+
+        $records = $this-&gt;getRecord($arrTest[2], $this-&gt;keyword[1]);
+        $this-&gt;assertCount(2, $records);
+
+        // 2語case正誤
+
+        $records = $this-&gt;getRecord($arrTest[3], $this-&gt;keyword[1]);
+        $this-&gt;assertCount(1, $records);
+
+        // 2語case誤正
+
+        $records = $this-&gt;getRecord($arrTest[4], $this-&gt;keyword[1]);
+        $this-&gt;assertCount(1, $records);
+
+        // 2語case誤誤
+
+        $records = $this-&gt;getRecord($arrTest[5], $this-&gt;keyword[1]);
+        $this-&gt;assertCount(1, $records);
+
+        /************************* 検索3語 *************************/
+
+        // 3語case正正正
+
+        $records = $this-&gt;getRecord($arrTest[6], $this-&gt;keyword[2]);
+        $this-&gt;assertCount(2, $records);
+
+        // 3語case正正誤
+
+        $records = $this-&gt;getRecord($arrTest[7], $this-&gt;keyword[2]);
+        $this-&gt;assertCount(1, $records);
+
+        // 3語case正誤正
+
+        $records = $this-&gt;getRecord($arrTest[8], $this-&gt;keyword[2]);
+        $this-&gt;assertCount(1, $records);
+
+        // 3語case正誤誤
+
+        $records = $this-&gt;getRecord($arrTest[9], $this-&gt;keyword[2]);
+        $this-&gt;assertCount(1, $records);
+
+        // 3語case誤正正
+
+        $records = $this-&gt;getRecord($arrTest[10], $this-&gt;keyword[2]);
+        $this-&gt;assertCount(1, $records);
+
+        // 3語case誤正誤
+
+        $records = $this-&gt;getRecord($arrTest[11], $this-&gt;keyword[2]);
+        $this-&gt;assertCount(1, $records);
+
+        // 3語case誤誤正
+
+        $records = $this-&gt;getRecord($arrTest[12], $this-&gt;keyword[2]);
+        $this-&gt;assertCount(1, $records);
+
+        // 3語case誤誤誤
+
+        $records = $this-&gt;getRecord($arrTest[13], $this-&gt;keyword[2]);
+        $this-&gt;assertCount(1, $records);
+    }
+
+    /**
+      * 検索テストのレコード取得
+      * @param array $arrData
+      */
+    private function getRecord($arrTest, $keyword): object
+    {
+        $this-&gt;objTest-&gt;fill($arrTest)-&gt;save();
+
+        $path = $this-&gt;path . '?' . $this-&gt;paramForKeyword . '=' . $keyword;
+
+        $response = $this-&gt;get($path);
+        $records = $response-&gt;viewData($this-&gt;objData);
+
+        return $records;
+    }
+}
+</code></pre>
+
+DetailTest.php
+<pre><code class="language-php">
+&lt;?php
+
+namespace Tests\Feature\Admin\User;
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+use App\Models\User;
+
+class DetailTest extends TestCase
+{
+  /************************* 設定項目 *************************/
+
+  // テストする画面のルート相対パス
+  private $path = '/admin/user/detail';
+  private $redirectPath = '/admin/user/index';
+
+  // レコード件数をテストするモデルの変数名
+  private $objData = 'objData';
+
+  /********************* 設定項目ここまで *********************/
+
+  private $model = null;
+
+  use RefreshDatabase;
+
+  /**
+    * 事前処理
+    */
+  public function setUp(): void
+  {
+      parent::setUp();
+
+      $this-&gt;model = new User();
+
+      // 管理者ユーザーでログイン
+
+      $user = $this-&gt;model-&gt;factory()-&gt;create(['role' =&gt; 3]);
+      $this-&gt;actingAs($user);
+  }
+
+  /** @test */
+  public function 表示テスト(): void
+  {
+      $objData = $this-&gt;model-&gt;factory()-&gt;create(['role' =&gt; 1]);
+
+      $response = $this-&gt;get($this-&gt;path . '?id=' . $user-&gt;id);
+
+      $response = $this-&gt;get($path);
+      $response-&gt;assertOK();
+  }
+
+  /** @test */
+  public function 管理者ユーザー以外表示できない(): void
+  {
+      $user = $this-&gt;model-&gt;factory()-&gt;create(['role' =&gt; 1]);
+      $this-&gt;actingAs($user);
+
+      $response = $this-&gt;get($this-&gt;path. '?id=' . $user-&gt;id);
+      $response-&gt;assertStatus(403);
+  }
+
+  /** @test */
+  public function IDが存在しない場合404エラーが表示される(): void
+  {
+      $this-&gt;model-&gt;factory()-&gt;create(['role' =&gt; 1]);
+
+      $response = $this-&gt;get($this-&gt;path . '?id=10000');
+      $response-&gt;assertStatus(404);
+  }
+
+
+  /** @test */
+  public function 削除テスト(): void
+  {
+      $objData = $this-&gt;model-&gt;factory()-&gt;create(['role' =&gt; 1]);
+
+      $path = $this-&gt;path . '?id=' . $objData-&gt;id;
+
+      $response = $this-&gt;delete($path);
+      $this-&gt;assertSoftDeleted('users', ['id' =&gt; $objData-&gt;id]);
+  }
+}
+</code></pre>
+
+CreateTest.php
+
+<pre><code class="language-php">
+&lt;?php
+
+namespace Tests\Feature\Admin\User;
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+use App\Models\User;
+
+class CreateTest extends TestCase
+{
+    /************************* 設定項目 *************************/
+
+    // テストする画面のルート相対パス
+    private $path = '/admin/user/create';
+    private $redirectPath = '/admin/user/index';
+
+    // レコード件数をテストするモデルの変数名
+    private $objData = 'objData';
+
+    // レコードが生成されたことを確認するカラム名
+    private $column = 'email';
+
+    /********************* 設定項目ここまで *********************/
+
+    private $model = null;
+
+    use RefreshDatabase;
+
+    /**
+      * 事前処理
+      */
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this-&gt;model = new User();
+
+        // 管理者ユーザーでログイン
+
+        $user = $this-&gt;model-&gt;factory()-&gt;create(['role' =&gt; 3]);
+        $this-&gt;actingAs($user);
+    }
+
+    /** @test */
+    public function 表示テスト(): void
+    {
+        $response = $this-&gt;get($this-&gt;path);
+        $response-&gt;assertOK();
+    }
+
+    /** @test */
+    public function 管理者ユーザー以外表示できない(): void
+    {
+        $user = $this-&gt;model-&gt;factory()-&gt;create(['role' =&gt; 1]);
+        $this-&gt;actingAs($user);
+
+        $response = $this-&gt;get($this-&gt;path. '?id=' . $user-&gt;id));
+        $response-&gt;assertStatus(403);
+    }
+
+    /** @test */
+    public function 登録テスト(): void
+    {
+        // 入力データ生成
+
+        $objData = $this-&gt;model-&gt;factory()-&gt;create(['role' =&gt; 1]);
+
+        // 入力データ整形
+
+        $arrData = $objData-&gt;toArray();
+        $arrData['password'] = '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'; // password
+
+        // postしたらリダイレクトされる
+
+        $response = $this-&gt;post($this-&gt;path, $arrData);
+        $response-&gt;assertRedirect($this-&gt;redirectPath);
+
+        // データベースに登録したレコードが存在する
+
+        $this-&gt;assertDatabaseHas('users', [
+            $this-&gt;column =&gt; $arrData[$this-&gt;column],
+        ]);
+    }
+}
+</code></pre>
+EditTest.php
+<pre><code class="language-php">
+&lt;?php
+
+namespace Tests\Feature\Admin\User;
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+use App\Models\User;
+
+class EditTest extends TestCase
+{
+    /************************* 設定項目 *************************/
+
+    // テストする画面のルート相対パス
+    private $path = '/admin/user/edit';
+    private $redirectPath = '/admin/user/index';
+
+    // レコード件数をテストするモデルの変数名
+    private $objData = 'objData';
+
+    // レコード更新を確認するカラム名
+    private $column = 'email';
+
+    // カラムに入力するデータ
+    private $data = 'testData@example.com';
+
+    /********************* 設定項目ここまで *********************/
+
+    private $model = null;
+
+    use RefreshDatabase;
+
+    /**
+      * 事前処理
+      */
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this-&gt;model = new User();
+
+        // 管理者ユーザーでログイン
+
+        $user = $this-&gt;model-&gt;factory()-&gt;create(['role' =&gt; 3]);
+        $this-&gt;actingAs($user);
+    }
+
+    /** @test */
+    public function 表示テスト(): void
+    {
+        $objData = $this-&gt;model-&gt;factory()-&gt;create(['role' =&gt; 1]);
+
+        $path = $this-&gt;path . '?id=' . $objData-&gt;id;
+
+        $response = $this-&gt;get($path);
+        $response-&gt;assertOK();
+    }
+
+    /** @test */
+    public function 管理者ユーザー以外表示できない(): void
+    {
+        $user = $this-&gt;model-&gt;factory()-&gt;create(['role' =&gt; 1]);
+        $this-&gt;actingAs($user);
+
+        $response = $this-&gt;get($this-&gt;path);
+        $response-&gt;assertStatus(403);
+    }
+
+    /** @test */
+    public function 更新テスト(): void
+    {
+        // 入力データ生成
+
+        $objData = $this-&gt;model-&gt;factory()-&gt;create(['role' =&gt; 1]);
+
+        // postしたらリダイレクトされる
+
+        $path = $this-&gt;path . '?id=' . $objData-&gt;id;
+
+        $response = $this-&gt;patch($path, [
+            $this-&gt;column =&gt; $this-&gt;data,
+        ]);
+        $response-&gt;assertRedirect($this-&gt;redirectPath);
+
+        // データベースに登録したレコードが存在する
+
+        $this-&gt;assertDatabaseHas('users', [
+            $this-&gt;column =&gt; $this-&gt;data,
+        ]);
+    }
+}
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>フロント画面のテスト</h3>
+フロント画面は画面が表示されることをテストする。
+<pre><code class="language-php">
+&lt;?php
+
+namespace Tests\Feature;
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class IndexTest extends TestCase
+{
+    /************************* 設定項目 *************************/
+
+    // テストする画面のルート相対パス
+    private $path = '/';
+
+    /********************* 設定項目ここまで *********************/
+
+    use RefreshDatabase;
+
+    /** @test */
+    public function 表示テスト(): void
+    {
+        $response = $this-&gt;get($this-&gt;path);
+        $response-&gt;assertOK();
+    }
+}
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>テストでメモリ不足エラーが出る場合</h3>
+<code>phpunit.xml</code>に以下のコードを追加する。テスト時にメモリ制限を設けないという設定を行う。<br>
+phpunit.xml
+<pre><code class="language-xml">
+&lt;phpunit.../&gt;
+  &lt;php&gt;
+    &lt;ini name=&quot;memory_limit&quot; value=&quot;-1&quot;/&gt;
+  &lt;/php&gt;
+&lt;/phpunit&gt;
+</code></pre>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+</section>
+
+<!--------------------------- セクションここまで --------------------------->
+
+<!----------------------------- セクション開始 ----------------------------->
+
+<section>
+<h2>パーツ集</h2>
+<!----------------------------- 見出し ----------------------------->
+<h3>検索キーワード分割</h3>
+<code>trait</code>で設置するのが望ましい。
+<pre><code class="language-html">
+/**
+* 検索キーワードを分割して配列で返す
+* @param $keyword string
+*/
+public function splitKeyword($keyword): array
+{
+    //半角スペースと全角スペースで分割
+    return preg_split('/[\s\xE3\x80\x80]/u', $keyword);
+}
+</code></pre>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>パスワード表示・非表示アイコン</h3>
+HTML
+<pre><code class="language-html">
+&lt;input type=&quot;password&quot; name=&quot;password&quot; id=&quot;password&quot; value=&quot;&quot;&gt;
+&lt;script&gt;
+  togglePassIcon(&#039;password&#039;);
+&lt;/script&gt;
+</code></pre>
+SCSS<br>アイコンはfont awesomeから拾ってくる。アイコンを背景画像として配置するとクラスを指定するだけで表示できる。背景画像はcssファイルが置かれているディレクトリに配置。基本的に<code>public/asset/css/</code>にcssファイルを置いて、<code>public/asset/css/image</code>に画像ファイルを置く。
+<pre><code class="language-css">
+.password {
+  &__icon {
+      height: 18px;
+      width: 18px;
+      margin-top: 3px;
+      margin-left: -24px;
+      cursor: pointer;
+      z-index: 100;
+      background-repeat: no-repeat;
+  }
+
+  &__eye {
+      background-image: url(image/eye-solid.svg);
+  }
+
+  &__eye-slash {
+      background-image: url(image/eye-slash-solid.svg);
+  }
+}
+</code></pre>
+JavaScript
+<pre><code class="language-javascript">
+/**
+ * パスワード入力用アイコン切り替え
+ * @param string id パスワード入力欄の要素ID
+ */
+function togglePassIcon(id) {
+  const passElem = $(`#${id}`);
+  const iconElem = $('&lt;span&gt;')
+      .attr('id', 'password__icon')
+      .addClass('password__icon')
+      .addClass('password__eye')
+      .insertAfter(passElem);
+
+  iconElem.on('click', function () {
+      const isPassword = passElem.attr('type') === 'password';
+      passElem.attr('type', isPassword ? 'text' : 'password');
+      iconElem.toggleClass('password__eye', isPassword);
+      iconElem.toggleClass('password__eye-slash', !isPassword);
+  });
+}
+</code></pre>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>編集画面でパスワード入力欄を表示させる</h3>
+編集画面ではパスワードは非表示にして、ボタンをクリックすると入力欄が表示されるようにする。
+blade
+<pre><code class="language-html">
+&lt;input type=&quot;password&quot; name=&quot;password&quot; id=&quot;password&quot; class=&quot;&quot; value=&quot;&quot disabled&gt;
+</code></pre>
+JavaScript
+<br>
+<code>togglePassIcon()</code>を必要とする
+<pre><code class="language-javascript">
+/**
+* パスワード入力欄を表示する
+* @param id string パスワード入力欄の要素Id
+*/
+function editPassword(id) {
+    const passElem = $(`#${id}`);
+    const noticeElem = $('&lt;span&gt;セキュリティのため非表示&lt;/span&gt;&lt;button type=&quot;button&quot; id=&quot;password__editButton&quot; class=&quot;&quot;&gt;パスワードを入力&lt;/button&gt;')
+
+    $(window).on('load', function () {
+        passElem.after(noticeElem).hide();
+        const buttonElem = $('#password__editButton');
+        buttonElem.on('click', function () {
+            noticeElem.hide();
+            passElem.prop('disabled', false).show();
+            togglePassIcon(id);
+        });
+    });
+} 
+</code></pre>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>郵便番号から住所を自動入力(jPostal)</h3>
+blade
+<pre><code class="language-html">
+&lt;input id=&quot;zip&quot;&gt;
+&lt;input id=&quot;pref&quot;&gt;
+&lt;input id=&quot;city&quot;&gt;
+&lt;input id=&quot;address&quot;&gt;
+&lt;script&gt;
+  setJpostal({
+    zip: 'zip',
+    pref: 'pref',
+    city: 'city',
+    address: 'address',
+  });
+&lt;/script&gt;  
+</code></pre>
+JavaScript
+<pre><code class="language-javascript">
+/**
+* jPostal呼び出し
+* @param obj obj{
+*      zip: string,
+*      pref: string,
+*      city: string,
+*      address: string,
+* }    郵便番号，都道府県，市区町村，それ以外の要素ID
+*/
+function setJpostal(obj) {
+    $(window).on('load', function () {
+        $(`#${obj.zip}`).jpostal({
+            postcode: [`#${obj.zip}`],
+            address: { [`#${obj.pref}`]: '%3', [`#${obj.city}`]: '%4', [`#${obj.address}`]: '%5' }
+        });
+    });
+}
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>年月日をセレクトボックスで入力する</h3>
+blade
+<pre><code class="language-php">
+&lt;div&gt;
+  &lt;select id=&quot;date1&quot;&gt;&lt;/select&gt;
+  &lt;select id=&quot;date2&quot;&gt;&lt;/select&gt;
+  &lt;select id=&quot;date3&quot;&gt;&lt;/select&gt;
+  &lt;input type=&quot;hidden&quot; name=&quot;date&quot; id=&quot;date&quot; value=&quot;&quot;&gt;
+&lt;/div&gt;
+&lt;script&gt;
+setDate({
+  yearId: &quot;date1&quot;,
+  monthId: &quot;date2&quot;,
+  dayId: &quot;date3&quot;,
+  dateId: &quot;date&quot;
+});
+&lt;/script&gt;
+</code></pre>
+JavaScript
+<pre><code class="language-javascript">
+/**
+  * セレクトボックスで日付を選択
+  * 連結された日付を入力するinput要素をhiddenで設置する
+  * @param obj object {
+  *      yearId: string
+  *      monthId: string
+  *      dayId: string
+  *      dateId: string }　年月日と日付のid
+  */
+function setDate(obj) {
+    const yearElem = $('#' + obj.yearId);
+    const monthElem = $('#' + obj.monthId);
+    const dayElem = $('#' + obj.dayId);
+    const inputElem = $('#' + obj.dateId);
+    let currentYear = new Date().getFullYear();
+    let currentMonth = (new Date()).getMonth() + 1;
+    let currentDay = (new Date()).getDate();
+
+    const updateYearOptions = () =&gt; {
+        for (let year = currentYear; year &gt;= 1940; year--) {
+            const option = $('&lt;option&gt;', { value: year, text: year });
+            if (year === currentYear) option.prop(&quot;selected&quot;, true);
+            yearElem.append(option);
+        }
+    };
+
+    const updateMonthOptions = () =&gt; {
+        for (let month = 1; month &lt;= 12; month++) {
+            const option = $('&lt;option&gt;', { value: month, text: month });
+            if (month === currentMonth) option.prop(&quot;selected&quot;, true);
+            monthElem.append(option);
+        }
+    };
+
+    const updateDayOptions = () =&gt; {
+        const selectedYear = parseInt(yearElem.val());
+        const selectedMonth = parseInt(monthElem.val());
+        const daysInMonth = new Date(selectedYear, selectedMonth, 0).getDate();
+
+        dayElem.empty();
+        for (let day = 1; day &lt;= daysInMonth; day++) {
+            const option = $('&lt;option&gt;', { value: day, text: day });
+            if (day === currentDay) option.prop(&quot;selected&quot;, true);
+            dayElem.append(option);
+        }
+    };
+
+    const updateInputValue = () =&gt; {
+        const year = yearElem.val();
+        const month = monthElem.val().padStart(2, '0');
+        const day = dayElem.val().padStart(2, '0');
+        inputElem.val(`${year}-${month}-${day}`);
+    };
+
+    $(window).on('load', function () {
+        if (inputElem.val()) {
+            const date = new Date(inputElem.val());
+            currentYear = date.getFullYear();
+            currentMonth = date.getMonth() + 1;
+            currentDay = date.getDate();
+        }
+
+        updateYearOptions();
+        updateMonthOptions();
+        updateDayOptions();
+        updateInputValue();
+    });
+
+    yearElem.add(monthElem).on('change', function () {
+        updateDayOptions();
+        updateInputValue();
+    });
+
+    dayElem.on('change', function () {
+        updateInputValue();
+    });
+}
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>残り文字数カウンター</h3>
+inputやtextareaに「あと〇〇文字」を表示させ，制限文字数に達するとBackSpaceと矢印キー以外の入力を受け付けなくなる。改行文字はカウントしない。<br>
+blade
+<pre><code class="language-html">
+&lt;div&gt;
+  &lt;textarea name=&quot;content&quot; id=&quot;content&quot; cols=&quot;50&quot; rows=&quot;10&quot;&gt;&lt;/textarea&gt;
+  &lt;p id=&quot;count&quot;&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;script&gt;
+  setCounter({
+    textArea: &#039;content&#039;,
+    count: &#039;count&#039;,
+    limit: 200,
+  });
+&lt;/script&gt;
+</code></pre>
+JavaScript
+<pre><code class="language-javascript">
+/**
+* 残り文字数カウンター
+* @param obj {
+*      textArea: textareaの要素ID,
+*      count: カウンタのP要素ID
+*      limit: 最大文字数,
+* }
+*/
+function setCounter(obj) {
+    const textElem = $(`#${obj.textArea}`);
+    const countElem = $(`#${obj.count}`);
+    const limit = obj.limit;
+    const regex = /(\r\n|\n|\r)/gm;
+    const keys = [
+        'Backspace',
+        'ArrowUp',
+        'ArrowDown',
+        'ArrowLeft',
+        'ArrowRight',
+    ];
+
+    function toggleReadOnly() {
+        const text = textElem.val();
+        const arrBreak = text.match(regex);
+        const countBreak = Array.isArray(arrBreak) ? arrBreak.length : 0;
+        if (text.length &gt; limit + countBreak) {
+            textElem.val(text.slice(0, limit + countBreak))
+                .attr('readonly', true);
+            countElem.addClass('edit__alert')
+                .text('最大文字数を超えています。これ以上入力できません。');
+        } else {
+            textElem.removeAttr('readonly');
+            const len = limit - text.replace(regex, '').length;
+            countElem.removeClass('edit__alert')
+                .text(`あと${len}文字`);
+        }
+    }
+
+    $(window).on('load', toggleReadOnly);
+    textElem.on('input', toggleReadOnly)
+        .on('keydown', function (e) {
+            if (textElem.attr('readonly') &amp;&amp; keys.includes(e.key)) {
+                toggleReadOnly();
+            }
+        });
+}
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>セレクトボックスの選択によってinput要素を入力不可にする</h3>
+blade
+<pre><code class="language-html">
+&lt;div class=&quot;edit__item&quot;&gt;
+  &lt;label for=&quot;commutation_type&quot; class=&quot;edit__label&quot;&gt;交通費の支給&lt;/label&gt;
+  &lt;select name=&quot;commutation_type&quot; id=&quot;commutation_type&quot; class=&quot;edit__select&quot;&gt;
+    @foreach($arrCommutationType as $key =&gt; $value)
+    &lt;option class=&quot;edit__option&quot; value=&quot;{{ $key }}&quot; 
+      @selected(old('commutation_type') === $key)&gt;{{ $value }}&lt;/option&gt;
+    @endforeach
+  &lt;/select&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;edit__item&quot;&gt;
+  &lt;label for=&quot;commutation&quot; class=&quot;edit__label&quot;&gt;交通費（円）&lt;/label&gt;
+  &lt;input type=&quot;number&quot; name=&quot;commutation&quot; id=&quot;commutation&quot;
+    class=&quot;edit__input&quot; value=&quot;{{ old('commutation') }}&quot;&gt;
+  @error('commutation') &lt;p class=&quot;alert&quot;&gt;{{ $message }}&lt;/p&gt; @enderror
+&lt;/div&gt;
+
+&lt;script&gt;
+  toggleDisabled({
+    select: 'commutation_type',
+    condition: ['free', 'some'],
+    target: 'payment',
+  });
+&lt;/script&gt;
+</code></pre>
+JavaScript
+<pre><code class="language-javascript">
+/**
+* セレクトボックスの選択によってinput要素を入力不可にする
+* @param obj {
+*      select: セレクトボックスの要素ID,
+*      condition: 入力不可にするvalue値（配列で指定）,
+*      target: 入力不可にする要素ID,
+* }
+*/
+function toggleDisabled(obj) {
+    const selectElem = $(`#${obj.select}`);
+    const condition = obj.condition;
+    const targetElem = $(`#${obj.target}`);
+
+    function toggleAttr() {
+        if (condition.includes(selectElem.val())) {
+            targetElem.val('').attr('disabled', true);
+        } else {
+            targetElem.removeAttr('disabled');
+        }
+    }
+
+    $(window).on('load', toggleAttr);
+    selectElem.on('change', toggleAttr);
+} 
+</code></pre>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>ボタンクリックで確認ダイアログを表示する</h3>
+blade
+<pre><code class="language-html">
+  &lt;input type=&quot;submit&quot; id=&quot;form__delbutton&quot; value=&quot;削除&quot;&gt;
+  &lt;script&gt;
+    deleteConfirm(&#039;form__delbutton&#039;);
+  &lt;/script&gt;
+</code></pre>
+JavaScript
+<pre><code class="language-javascript">
+/**
+* 削除ボタンをクリックしたときに確認ダイアログを表示する
+* @param id string 削除ボタンの要素Id
+*/
+function deleteConfirm(id) {
+  $(`#${id}`).on('click', (event) =&gt; {
+      if (!confirm(&quot;削除してもよろしいですか？&quot;)) return event.preventDefault();
+  });
+}</code></pre>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>セレクトボックスを選択するとsubmitを実行</h3>
+blade
+<pre><code class="language-html">
+&lt;form action=&quot;/user/index&quot; method=&quot;get&quot;&gt;
+  &lt;select name=&quot;status&quot; id=&quot;select__status&quot; class=&quot;edit__select&quot;&gt;
+    &lt;option class=&quot;edit__option&quot; value=&quot;all&quot;
+      @selected($status === 'all')&gt;全て&lt;/option&gt;
+    &lt;option class=&quot;edit__option&quot; value=&quot;valid&quot;
+      @selected($status === 'valid')&gt;承認済みのみ&lt;/option&gt;
+  &lt;/select&gt;
+&lt;/form&gt;
+&lt;script&gt;
+  onchangeSubmit('select__status');
+&lt;/script&gt;
+</code></pre>
+JavaScript
+<pre><code class="language-javascript">
+/**
+* セレクトボックスを選択するとsubmitを実行
+* @param string id セレクトボックスの要素ID
+*/
+function onchangeSubmit(id) {
+    $(`#${id}`).on('change', function () {
+        this.form.submit();
+    });
+}
+</code></pre>
+
+</section>
+
+<!--------------------------- セクションここまで --------------------------->
+
+<!----------------------------- セクション開始 ----------------------------->
+<section>
+<h2>Laravelのインストール</h2>
+<!----------------------------- 見出し ----------------------------->
+<h3>インストール</h3>
+以下，PowerShellより操作。
+<pre><code class="language-powershell">
+composer global require laravel/installer
+laravel new example-app
+</code></pre>
+<code>.env</code>を以下に修正。
+<pre><code class="language-php">
+APP_LOCALE=jp
+APP_FALLBACK_LOCALE=jp
+APP_FAKER_LOCALE=ja_JP
+</code></pre>
+XAMPP環境で動かす場合は以下でサーバーを起動する。
+<pre><code class="language-powershell">
+php artisan serve
+</code></pre>    
+日本語化については<a href="https://readouble.com/laravel/11.x/ja/localization.html" target="_blank">公式</a>を参照。
+<pre><code class="language-powershell">
+composer require laravel-lang/common --dev
+php artisan lang:add ja
+php artisan lang:update
+</code></pre>    
+<pre><code class="language-powershell">
+// Storageのシンボリックリンク
+
+php artisan storage:link
+
+// Breezeのインストール
+
+composer require laravel/breeze --dev
+
+// fakerのインストール
+
+composer require fakerphp/faker
+</code></pre>
+</section>  
+<!--------------------------- セクションここまで --------------------------->
+
+<!----------------------------- セクション開始 ----------------------------->
+<section>
+<h2>VS Codeの拡張機能</h2>
+<!----------------------------- 見出し ----------------------------->
+<h3>入れておくと便利なもの</h3>
+<ul>
+  <li>PHP Intelephense ― PHPのコードの視認性を改善</li>
+  <li>Laravel Snippets ― Laravel関係のコードの視認性を改善</li>
+  <li>Laravel Blade Snippets ― bladeのコードの視認性を改善</li>
+  <li>Laravel Blade formatter ― bladeのコードを整形する</li>
+  <li>Live Sass Compiler ― SCSSファイルをコンパイルする</li>
+</ul>
+その他、以下を参考に色々入れておくと特にフロント側の編集で役に立つ。<br>
+<a href="https://pengi-n.co.jp/blog/vscode-extensions/" target="_blank">Web制作で使えるVSCodeオススメ拡張機能17選！</a>
+
+<!----------------------------- 見出し ----------------------------->
+<h3>Laravel Blade formatterの設定</h3>
+<ul>
+  <li><code>ctrl</code>+<code>,</code>で設定を開く。</li>  
+  <li><code>Blade Formatter: format Indent Size</code>を入力してインデントを2に設定。</li>
+  <li><code>Blade Formatter: format Wrap Line Length</code>を入力して折り返し文字数を80に設定。</li>
+</ul>
+
+<pre><code class="language-php">
+</code></pre>
+<!----------------------------- 見出し ----------------------------->
+<h3>項目タイトル</h3>
+<pre><code class="language-php">
+</code></pre>
+</section>  
+<!--------------------------- セクションここまで --------------------------->
+  
+</article>
+</main>
+<!-----------------  サイドメニュー生成 ----------------->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script>
+  $(document).ready(function () {
+    const sectionElems = $('section');
+    const navbar = $('#sidebar');
+    const contentElem = $('<ul></ul>').appendTo(navbar);
+    let count = 1;
+    sectionElems.each(function () {
+      const h2Elem = $(this).find('h2').first();
+      $(`<li>${h2Elem.text()}</li>`).appendTo(contentElem);
+      const chapterElem = $('<ul></ul>').appendTo(contentElem);
+      const h3Elems = $(this).find('h3');
+      h3Elems.each(function () {
+        $(this).attr('id', `item${count}`);
+        const elem = $(`<li><a class="text-decoration-none" href="#item${count}">${$(this).text()}</a></li=>`).appendTo(chapterElem);
+        count++;
+      });
+    });
+  });
+</script>
+<!-----------------  サイドメニュー生成ここまで ----------------->
+<!----------------------  Prism Toolbar ---------------------->
+<script>
+Prism.plugins.toolbar.registerButton( 'copy-code-button', () => {
+	const template = document.querySelector( '#copy-button-template' );
+	if ( ! template ) return;
+	const button = document.createElement( 'button' );
+	button.classList.add( 'highlight-toolbar-button' );
+	button.appendChild( template.content.cloneNode( true ) );
+	return button;
+} );
+</script>
+<!------------------  Prism Toolbar ここまで ------------------>
+
+</body>
+</html>

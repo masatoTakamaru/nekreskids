@@ -1,0 +1,26 @@
+h2 {
+  color: black;
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.pager {
+  display: flex;
+  gap: 1rem;
+}
+
+.detail__header {
+  white-space: nowrap;
+}
+
+.index__label {
+  color: black;
+  font-weight: 700;
+}
+.index__value {
+  padding: 0.25em 0.5em;
+  color: black;
+}
+.index__value__nowrap {
+  white-space: nowrap;
+}
