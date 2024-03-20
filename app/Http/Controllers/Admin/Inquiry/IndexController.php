@@ -7,7 +7,7 @@ use App\Models\Inquiry;
 use App\Http\Controllers\Controller;
 use App\Traits\CommonTrait;
 use Illuminate\View\View;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Gate;
 
 class IndexController extends Controller
 {
@@ -15,6 +15,8 @@ class IndexController extends Controller
 
     public function index(Request $request): View
     {
+        if (Gate::denies('isAdmin')) abort(403);
+
         $objData = $this->getList($request->keyword);
         $objData = $this->formatData($objData);
         $objData->appends($request->query());

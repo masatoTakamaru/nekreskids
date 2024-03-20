@@ -30,4 +30,13 @@ class ApplicationFactory extends Factory
             'message' => $this->randomNull('サンプル' . $this->count . fake()->realText(mt_rand(10,500))),
         ];
     }
+
+    public function softDeleted()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'deleted_at' => now(), // deleted_at カラムを設定する
+            ];
+        });
+    }
 }

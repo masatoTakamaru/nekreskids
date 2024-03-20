@@ -10,7 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Traits\CommonTrait;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Gate;
 
 class DetailController extends Controller
 {
@@ -18,6 +18,8 @@ class DetailController extends Controller
 
     public function index(Request $request)
     {
+        if (Gate::denies('isAdmin')) abort(403);
+
         $objData = $this->getEntity($request->id);
         if (empty($objData)) abort(404);
 

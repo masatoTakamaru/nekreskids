@@ -27,7 +27,7 @@ class UserFactory extends Factory
         return [
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+            'password' => Hash::make('password'),
             'remember_token' => Str::random(10),
             'status' => fake()->randomKey(UserConst::STATUS),
              ];
@@ -41,5 +41,14 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    public function softDeleted()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'deleted_at' => now(), // deleted_at カラムを設定する
+            ];
+        });
     }
 }

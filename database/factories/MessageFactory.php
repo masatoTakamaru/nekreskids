@@ -34,4 +34,13 @@ class MessageFactory extends Factory
             'read_flg' => mt_rand(0,1),
         ];
     }
+
+    public function softDeleted()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'deleted_at' => now(), // deleted_at カラムを設定する
+            ];
+        });
+    }
 }

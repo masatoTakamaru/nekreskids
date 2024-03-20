@@ -8,12 +8,14 @@ use App\Models\Inquiry;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Gate;
 
 class EditController extends Controller
 {
     public function index(Request $request): View
     {
+        if (Gate::denies('isAdmin')) abort(403);
+
         $objData = $this->getEntity($request->id);
         if (empty($objData)) abort(404);
 

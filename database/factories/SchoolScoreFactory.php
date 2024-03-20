@@ -20,4 +20,13 @@ class SchoolScoreFactory extends Factory
             'score' => $this->randomNull(mt_rand(1, 5)),
         ];
     }
+
+    public function softDeleted()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'deleted_at' => now(), // deleted_at カラムを設定する
+            ];
+        });
+    }
 }

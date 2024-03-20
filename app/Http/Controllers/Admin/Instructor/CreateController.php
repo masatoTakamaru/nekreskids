@@ -10,8 +10,7 @@ use App\Http\Requests\Admin\Instructor\CreateRequest;
 use App\Traits\InstructorTrait;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use App\Models\User;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Gate;
 
 class CreateController extends Controller
 {
@@ -19,6 +18,8 @@ class CreateController extends Controller
 
     public function index(): View
     {
+        if (Gate::denies('isAdmin')) abort(403);
+
         $arrPref = AddressConst::PREFECTURE;
         $arrCity = AddressConst::CITY;
 

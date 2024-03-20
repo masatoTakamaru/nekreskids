@@ -2366,6 +2366,7 @@ class sampleseed extends Seeder
 use App\Models\User;
 use App\Models\Company;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
   
 // テーブルのデータを全消去
 
@@ -2379,7 +2380,7 @@ Storage::deleteDirectory('avatars');
 
 User::factory()-&gt;create([
     'email' =&gt; 'admin@example.com',
-    'password' =&gt; '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    'password' =&gt; Hash::make('password'),
     'role' =&gt; 3,
 ]);
 
@@ -2803,6 +2804,7 @@ namespace Tests\Feature\Admin\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class CreateTest extends TestCase
 {
@@ -2866,7 +2868,7 @@ class CreateTest extends TestCase
         // 入力データ整形
 
         $arrData = $objData-&gt;toArray();
-        $arrData['password'] = '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'; // password
+        $arrData['password'] = Hash::make('password');
 
         // postしたらリダイレクトされる
 

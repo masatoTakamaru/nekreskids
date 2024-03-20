@@ -25,6 +25,7 @@
           <div>
             {{ auth()->user()->email }}
           </div>
+          <a href="/admin/dashboard">ダッシュボード</a>
           <form action="/logout" method="post">
             @csrf
             <input type="submit" value="ログアウト">

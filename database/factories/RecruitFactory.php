@@ -39,4 +39,13 @@ class RecruitFactory extends Factory
             'keep' => 0,
         ];
     }
+
+    public function softDeleted()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'deleted_at' => now(), // deleted_at カラムを設定する
+            ];
+        });
+    }
 }

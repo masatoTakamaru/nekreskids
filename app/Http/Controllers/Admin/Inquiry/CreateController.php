@@ -7,12 +7,14 @@ use App\Models\Inquiry;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Gate;
 
 class CreateController extends Controller
 {
     public function index(): View
     {
+        if (Gate::denies('isAdmin')) abort(403);
+
         return view("admin.inquiry.create");
     }
 

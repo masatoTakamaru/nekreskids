@@ -21,4 +21,13 @@ class InquiryFactory extends Factory
             'message' => 'サンプル内容' . fake()->realText(mt_rand(10,500)),
         ];
     }
+    
+    public function softDeleted()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'deleted_at' => now(), // deleted_at カラムを設定する
+            ];
+        });
+    }
 }

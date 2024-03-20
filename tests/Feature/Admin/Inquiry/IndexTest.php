@@ -5,6 +5,7 @@ namespace Tests\Feature\Admin\Inquiry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\User;
+use App\Models\Inquiry;
 
 class IndexTest extends TestCase
 {
@@ -59,11 +60,11 @@ class IndexTest extends TestCase
     {
         parent::setUp();
 
-        $this->model = new User();
+        $this->model = new Inquiry();
 
         // 管理者ユーザーでログイン
 
-        $admin = $this->model->factory()->create(['role' => 3]);
+        $admin = User::factory()->create(['role' => 3]);
         $this->actingAs($admin);
     }
 
@@ -78,7 +79,7 @@ class IndexTest extends TestCase
     /** @test */
     public function 管理者ユーザー以外表示できない(): void
     {
-        $user = $this->model->factory()->create(['role' => 1]);
+        $user = User::factory()->hasInstructor()->create(['role' => 1]);
         $this->actingAs($user);
 
         $response = $this->get($this->path);
@@ -89,7 +90,7 @@ class IndexTest extends TestCase
 
     public function レコードが正しく表示される(): void
     {
-        $this->model->factory(3)->hasInstructor()->create(['role' => 1]);
+        $this->model->factory(3)->create();
 
         $response = $this->get($this->path);
         $response->assertOK();
@@ -101,8 +102,8 @@ class IndexTest extends TestCase
 
     public function 削除されたレコードが表示されない(): void
     {
-        $this->model->factory()->hasInstructor()->create(['role' => 1]);
-        $this->model->factory()->hasInstructor()->softDeleted()->create(['role' => 1]);
+        $this->model->factory()->create();
+        $this->model->factory()->softDeleted()->create();
         $response = $this->get($this->path);
         $response->assertOK();
         $records = $response->viewData($this->objData);
@@ -113,7 +114,7 @@ class IndexTest extends TestCase
     /** @test */
     public function ペジネーションが表示される(): void
     {
-        $this->model->factory(15)->hasInstructor()->create(['role' => 1]);
+        $this->model->factory(15)->create(['role' => 1]);
         $response = $this->get($this->path);
         $response->assertSee('次へ');
     }
@@ -154,10 +155,8 @@ class IndexTest extends TestCase
             $arrTest[] = $arrCase;
         }
 
-        $this->objValid = $this->model->factory()
-            ->hasInstructor($this->arrValid)->create(['role' => 1]);
-        $this->objTest = $this->model->factory()
-            ->hasInstructor()->create(['role' => 1]);
+        $this->objValid = $this->model->factory()->create();
+        $this->objTest = $this->model->factory()->create();
 
         // 検索1語
 
