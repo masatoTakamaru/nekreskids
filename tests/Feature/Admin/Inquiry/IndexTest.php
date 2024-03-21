@@ -23,25 +23,25 @@ class IndexTest extends TestCase
     // 検索結果に表示されるデータ
 
     private $arrValid = [
-        'name' => '田中',
-        'pref' => 'okinawa',
-        'city' => 'nahashi',
+        'email' => 'test@example.com',
+        'message' => 'テストメッセージ',
+        //'city' => 'nahashi',
     ];
 
     // 検索結果に表示されないデータ
 
     private $arrInValid = [
-        'name' => '佐藤',
-        'pref' => 'yamanashi',
-        'city' => 'kofushi',
+        'email' => 'invalid@example.com',
+        'message' => '不正なメッセージ',
+        //'city' => 'kofushi',
     ];
 
     // 検索キーワード
 
     private $keyword = [
-        0 => '田中',
-        1 => '田中+沖縄',
-        2 => '田中+沖縄+那覇市',
+        0 => 'test@example.com',
+        1 => 'test+テストメッセージ',
+        //2 => '田中+沖縄+那覇市',
     ];
 
     /********************* 設定項目ここまで *********************/
@@ -68,6 +68,22 @@ class IndexTest extends TestCase
         $this->actingAs($admin);
     }
 
+    /**
+     * 検索テストのレコード取得
+     * @param array $arrData
+     */
+    private function getRecord($arrTest, $keyword): object
+    {
+        $this->objTest->fill($arrTest)->save();
+
+        $path = $this->path . '?' . $this->paramForKeyword . '=' . $keyword;
+
+        $response = $this->get($path);
+        $records = $response->viewData($this->objData);
+
+        return $records;
+    }
+
     /** @test  */
     public function 未ログインユーザーは表示できない(): void
     {
@@ -79,7 +95,7 @@ class IndexTest extends TestCase
     /** @test */
     public function 管理者ユーザー以外表示できない(): void
     {
-        $user = User::factory()->hasInstructor()->create(['role' => 1]);
+        $user = User::factory()->create(['role' => 1]);
         $this->actingAs($user);
 
         $response = $this->get($this->path);
@@ -114,7 +130,7 @@ class IndexTest extends TestCase
     /** @test */
     public function ペジネーションが表示される(): void
     {
-        $this->model->factory(15)->create(['role' => 1]);
+        $this->model->factory(15)->create();
         $response = $this->get($this->path);
         $response->assertSee('次へ');
     }
@@ -127,23 +143,34 @@ class IndexTest extends TestCase
         $arrKey = array_keys($this->arrValid);
         $arrValidValue = array_values($this->arrValid);
         $arrInValidValue = array_values($this->arrInValid);
+        $amount = count($this->arrValid);
 
         $arrValidInvalidFlag = [
             [0 => 1],
             [0 => 0],
-            [0 => 1, 1 => 1],
-            [0 => 1, 1 => 0],
-            [0 => 0, 1 => 1],
-            [0 => 0, 1 => 0],
-            [0 => 1, 1 => 1, 2 => 1],
-            [0 => 1, 1 => 1, 2 => 0],
-            [0 => 1, 1 => 0, 2 => 1],
-            [0 => 1, 1 => 0, 2 => 0],
-            [0 => 0, 1 => 1, 2 => 1],
-            [0 => 0, 1 => 1, 2 => 0],
-            [0 => 0, 1 => 0, 2 => 1],
-            [0 => 0, 1 => 0, 2 => 0],
         ];
+
+        if ($amount >= 2) {
+            $arrValidInvalidFlag = array_merge($arrValidInvalidFlag, [
+                [0 => 1, 1 => 1],
+                [0 => 1, 1 => 0],
+                [0 => 0, 1 => 1],
+                [0 => 0, 1 => 0],
+            ]);
+        }
+
+        if ($amount === 3) {
+            $arrValidInvalidFlag = array_merge($arrValidInvalidFlag, [
+                [0 => 1, 1 => 1, 2 => 1],
+                [0 => 1, 1 => 1, 2 => 0],
+                [0 => 1, 1 => 0, 2 => 1],
+                [0 => 1, 1 => 0, 2 => 0],
+                [0 => 0, 1 => 1, 2 => 1],
+                [0 => 0, 1 => 1, 2 => 0],
+                [0 => 0, 1 => 0, 2 => 1],
+                [0 => 0, 1 => 0, 2 => 0],
+            ]);
+        }
 
         foreach ($arrValidInvalidFlag as $case) {
             $arrCase = array();
@@ -155,11 +182,10 @@ class IndexTest extends TestCase
             $arrTest[] = $arrCase;
         }
 
-        $this->objValid = $this->model->factory()->create();
+        $this->objValid = $this->model->factory($this->arrValid)->create();
         $this->objTest = $this->model->factory()->create();
 
         // 検索1語
-
 
         // 1語case正
 
@@ -172,6 +198,8 @@ class IndexTest extends TestCase
         $this->assertCount(1, $records);
 
         // 検索2語
+
+        if ($amount < 2) return;
 
         // 2語case正正
 
@@ -194,6 +222,8 @@ class IndexTest extends TestCase
         $this->assertCount(1, $records);
 
         // 検索3語
+
+        if ($amount < 3) return;
 
         // 3語case正正正
 
@@ -234,21 +264,5 @@ class IndexTest extends TestCase
 
         $records = $this->getRecord($arrTest[13], $this->keyword[2]);
         $this->assertCount(1, $records);
-    }
-
-    /**
-     * 検索テストのレコード取得
-     * @param array $arrData
-     */
-    private function getRecord($arrTest, $keyword): object
-    {
-        $this->objTest->instructor->fill($arrTest)->save();
-
-        $path = $this->path . '?' . $this->paramForKeyword . '=' . $keyword;
-
-        $response = $this->get($path);
-        $records = $response->viewData($this->objData);
-
-        return $records;
     }
 }

@@ -38,6 +38,14 @@ class DetailTest extends TestCase
         $this->actingAs($user);
     }
 
+    /** @test  */
+    public function 未ログインユーザーは表示できない(): void
+    {
+        auth()->logout();
+        $response = $this->get($this->path);
+        $response->assertRedirect('/login');
+    }
+
     /** @test */
     public function 表示テスト(): void
     {

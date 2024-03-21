@@ -48,6 +48,14 @@ class CreateTest extends TestCase
         $response->assertOK();
     }
 
+    /** @test  */
+    public function 未ログインユーザーは表示できない(): void
+    {
+        auth()->logout();
+        $response = $this->get($this->path);
+        $response->assertRedirect('/login');
+    }
+
     /** @test */
     public function 管理者ユーザー以外表示できない(): void
     {

@@ -56,13 +56,21 @@ class EditTest extends TestCase
         $response->assertOK();
     }
 
+    /** @test  */
+    public function 未ログインユーザーは表示できない(): void
+    {
+        auth()->logout();
+        $response = $this->get($this->path);
+        $response->assertRedirect('/login');
+    }
+
     /** @test */
     public function 管理者ユーザー以外表示できない(): void
     {
         $user = $this->model->factory()->create(['role' => 1]);
         $this->actingAs($user);
 
-        $response = $this->get($this->path. '?id=' . $user->id);
+        $response = $this->get($this->path . '?id=' . $user->id);
         $response->assertStatus(403);
     }
 
