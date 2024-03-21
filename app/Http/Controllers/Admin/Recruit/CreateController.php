@@ -19,7 +19,7 @@ class CreateController extends Controller
 
     use InstructorTrait;
 
-    public function index(Request $request): View
+    public function create(Request $request): View
     {
         $objData = $this->getEntity($request->school_id);
 
@@ -36,7 +36,7 @@ class CreateController extends Controller
         ]);
     }
 
-    public function post(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
         $this->newEntry($request);
 

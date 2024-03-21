@@ -21,7 +21,7 @@ class EditController extends Controller
         $this->model = new Recruit();
     }
 
-    public function index(Request $request): View
+    public function edit(Request $request): View
     {
         $arrCity = AddressConst::CITY;
 
@@ -50,9 +50,9 @@ class EditController extends Controller
         ]);
     }
 
-    public function patch(Request $request): RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
-        $this->update($request->id, $request);
+        $this->updateEntity($request->id, $request);
 
         return redirect("admin/recruit/index")
             ->with('flash', '更新しました');
@@ -97,7 +97,7 @@ class EditController extends Controller
         return $objData;
     }
 
-    private function update($id, $request): bool
+    private function updateEntity($id, $request): bool
     {
         //入力データの整形
 

@@ -19,7 +19,7 @@ class EditController extends Controller
 {
     use InstructorTrait;
 
-    public function index(Request $request): View
+    public function edit(Request $request): View
     {
         if (Gate::denies('isAdmin')) abort(403);
 
@@ -46,9 +46,9 @@ class EditController extends Controller
         ]);
     }
 
-    public function patch(Request $request): RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
-        $this->update($request->id, $request);
+        $this->updateEntity($request->id, $request);
 
         return redirect("admin/instructor/index")
             ->with('flash', '更新しました');
@@ -113,7 +113,7 @@ class EditController extends Controller
         return $objData;
     }
 
-    private function update($id, $request): void
+    private function updateEntity($id, $request): void
     {
         //入力データの整形
 

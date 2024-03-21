@@ -11,14 +11,14 @@ use Illuminate\Support\Facades\Gate;
 
 class CreateController extends Controller
 {
-    public function index(): View
+    public function create(): View
     {
         if (Gate::denies('isAdmin')) abort(403);
 
         return view("admin.inquiry.create");
     }
 
-    public function post(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
         $this->newEntry($request->input());
 

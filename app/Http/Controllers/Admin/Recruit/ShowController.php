@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
-class DetailController extends Controller
+class ShowController extends Controller
 {
     use CommonTrait;
 
@@ -20,19 +20,19 @@ class DetailController extends Controller
         $this->model = new Recruit();
     }
 
-    public function index(Request $request)
+    public function show(Request $request)
     {
         $objData = $this->getEntity($request->id);
         if (empty($objData)) abort(404);
 
         $objData = $this->formatData($objData);
 
-        return view("admin.recruit.detail", [
+        return view("admin.recruit.show", [
             'objData' => $objData,
         ]);
     }
 
-    public function delete(Request $request): RedirectResponse
+    public function destroy(Request $request): RedirectResponse
     {
         $objData = $this->model->find($request->id);
 

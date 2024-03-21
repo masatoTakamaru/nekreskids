@@ -4,16 +4,14 @@ namespace App\Http\Controllers\Admin\Notice;
 
 use App\Consts\NoticeConst;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Models\Notice;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class EditController extends Controller
 {
-    public function index(Request $request): View
+    public function edit(Request $request): View
     {
         $objData = $this->getEntity($request->id);
         if (empty($objData)) abort(404);
@@ -24,9 +22,9 @@ class EditController extends Controller
         ]);
     }
 
-    public function patch(Request $request): RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
-        $result = $this->update($request->id, $request->input());
+        $result = $this->updateEntity($request->id, $request->input());
 
         return redirect("admin/notice/index")
             ->with('flash', $result ? '更新しました' : '更新に失敗しました');
@@ -39,7 +37,7 @@ class EditController extends Controller
         return $objData;
     }
 
-    private function update($id, $input): bool
+    private function updateEntity($id, $input): bool
     {
 
         $objData = Notice::find($id);

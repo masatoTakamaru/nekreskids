@@ -12,11 +12,11 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 
-class DetailController extends Controller
+class ShowController extends Controller
 {
     use CommonTrait;
 
-    public function index(Request $request)
+    public function show(Request $request)
     {
         if (Gate::denies('isAdmin')) abort(403);
 
@@ -25,12 +25,12 @@ class DetailController extends Controller
 
         $objData = $this->formatData($objData);
 
-        return view("admin.instructor.detail", [
+        return view("admin.instructor.show", [
             'objData' => $objData,
         ]);
     }
 
-    public function delete(Request $request): RedirectResponse
+    public function destroy(Request $request): RedirectResponse
     {
         $objData = User::find($request->id);
 

@@ -16,7 +16,7 @@ class CreateController extends Controller
 {
     use InstructorTrait;
 
-    public function index(): View
+    public function create(): View
     {
         if (Gate::denies('isAdmin')) abort(403);
 
@@ -37,7 +37,7 @@ class CreateController extends Controller
         ]);
     }
 
-    public function post(CreateRequest $request): RedirectResponse
+    public function store(CreateRequest $request): RedirectResponse
     {
         $jsonData = json_encode($request->input());
         $this->newEntry($jsonData, $request->status);

@@ -12,14 +12,14 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class CreateController extends Controller
 {
-    public function index(): View
+    public function create(): View
     {
         return view("admin.notice.create", [
             'arrStatus' => NoticeConst::STATUS,
         ]);
     }
 
-    public function post(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
         $objData = $this->newEntry($request->input());
 

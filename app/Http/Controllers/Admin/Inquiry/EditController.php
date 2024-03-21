@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Gate;
 
 class EditController extends Controller
 {
-    public function index(Request $request): View
+    public function edit(Request $request): View
     {
         if (Gate::denies('isAdmin')) abort(403);
 
@@ -24,9 +24,9 @@ class EditController extends Controller
         ]);
     }
 
-    public function patch(Request $request): RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
-        $this->update($request->id, $request->input());
+        $this->updateEntity($request->id, $request->input());
 
         return redirect("admin/inquiry/index")
             ->with('flash', '更新しました');
@@ -39,7 +39,7 @@ class EditController extends Controller
         return $objData;
     }
 
-    private function update($id, $input): void
+    private function updateEntity($id, $input): void
     {
 
         $objData = Inquiry::find($id);

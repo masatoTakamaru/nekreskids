@@ -11,23 +11,23 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
-class DetailController extends Controller
+class ShowController extends Controller
 {
     use CommonTrait;
 
-    public function index(Request $request): View
+    public function show(Request $request): View
     {
         $objData = $this->getEntity($request->id);
         if (empty($objData)) abort(404);
 
         $objData = $this->formatData($objData);
 
-        return view("admin.notice.detail", [
+        return view("admin.notice.show", [
             'objData' => $objData,
         ]);
     }
 
-    public function delete(Request $request): RedirectResponse
+    public function destroy(Request $request): RedirectResponse
     {
         $objData = Notice::find($request->id);
 

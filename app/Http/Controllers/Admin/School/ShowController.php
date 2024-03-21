@@ -7,9 +7,8 @@ use App\Models\User;
 use App\Http\Controllers\Controller;
 use App\Consts\AddressConst;
 use App\Traits\CommonTrait;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
-class DetailController extends Controller
+class ShowController extends Controller
 {
     use CommonTrait;
 
@@ -18,7 +17,7 @@ class DetailController extends Controller
         $this->model = new User();
     }
 
-    public function index(Request $request)
+    public function show(Request $request)
     {
         $objData = $this->getEntity($request->id);
         if (empty($objData)) abort(404);
@@ -30,7 +29,7 @@ class DetailController extends Controller
         ]);
     }
 
-    public function delete(Request $request)
+    public function destroy(Request $request)
     {
         $objData = $this->model->find($request->id);
 

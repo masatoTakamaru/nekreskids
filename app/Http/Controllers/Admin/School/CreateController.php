@@ -22,7 +22,7 @@ class CreateController extends Controller
         $this->model = new User();
     }
 
-    public function index(): View
+    public function create(): View
     {
         $arrPref = AddressConst::PREFECTURE;
         $arrCity = AddressConst::CITY;
@@ -38,7 +38,7 @@ class CreateController extends Controller
         ]);
     }
 
-    public function post(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
         $arrData = array_merge($this->model->toArray(), $request->input());
         $jsonData = json_encode($arrData);
