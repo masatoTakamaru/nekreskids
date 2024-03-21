@@ -6,12 +6,12 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\User;
 
-class DetailTest extends TestCase
+class ShowTest extends TestCase
 {
     /************************* 設定項目 *************************/
 
     // テストする画面のルート相対パス
-    private $path = '/admin/instructor/detail';
+    private $path = '/admin/instructor/show';
     private $redirectPath = '/admin/instructor/index';
 
     // レコード件数をテストするモデルの変数名
