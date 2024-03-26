@@ -2059,39 +2059,27 @@ config/auth.php
 <section>
 <h2>認可</h2>
 <!----------------------------- 見出し ----------------------------->
-<h3>Policyによる認可</h3>
-ユーザーロールによってビューの表示・非表示をコントロールしたい場合、認可（Policy）を使う。<code>app</code>フォルダ配下に<code>Policies</code>フォルダを作り、<code>UserPolicy.php</code>を設置する（モデル名+Policy.php）。<br>
-また、コントローラーにはコンストラクタを設置し、<code>authorizeResource()</code>でポリシーを呼び出す。<br>
-以下の例ではログイン済みかつユーザーroleが3のときにページにアクセスできる。それ以外の場合は403エラーとなる。<br>
-app/Policies/UserPolicy.php
+<h3>Gateによる認可</h3>
+ユーザーロールによってビューの表示・非表示をコントロールしたい場合、認可を使う。<br>
+laravel11とlaravel10では設置場所が異なる。以下はlaravel11の例。<br>
+app/Providers/AppserviceProvider.php
 <pre><code class="language-php">
-&lt;?php
-
-namespace App\Policies;
-
-use Illuminate\Support\Facades\Log;
-
-use Illuminate\Auth\Access\HandlesAuthorization;
-use App\Models\User;
-
-class UserPolicy
+public function boot(): void
 {
-    use HandlesAuthorization;
-
-    public function viewAny(User $user) {
-
+    Gate::define('isAdmin', function (User $user) {
         return $user-&gt;role === 3;
-    }
+    });
 }
 </code></pre>
 IndexController.php<br>
-モデルがフルパス指定なのは、コピペする時に<code>use</code>が不要なため、楽だから。
 <pre><code class="language-php">
+use Illuminate\Support\Facades\Gate;
+
 class IndexController extends Controller
 {
     public function __construct()
     {
-        $this-&gt;authorizeResource(\app\Models\User::class, 'user');
+      Gate::authorize('isAdmin');   
     }
 
     public function index(Request $request): View

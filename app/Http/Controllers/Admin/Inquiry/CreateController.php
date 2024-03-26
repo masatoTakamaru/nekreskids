@@ -11,10 +11,13 @@ use Illuminate\Support\Facades\Gate;
 
 class CreateController extends Controller
 {
+    public function __construct()
+    {
+        Gate::authorize('isAdmin');   
+    }
+
     public function create(): View
     {
-        if (Gate::denies('isAdmin')) abort(403);
-
         return view("admin.inquiry.create");
     }
 

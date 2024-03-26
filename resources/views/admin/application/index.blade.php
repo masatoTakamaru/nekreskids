@@ -6,10 +6,14 @@
       </header>
       <div class="search__wrapper">
         <form action="/admin/application/index" method="get">
-          <span>絞り込み検索：</span>
-          <input type="search" name="keyword" class="search__input"
-            value="{{ $keyword }}">
-          <button type="submit" class="search__submit">検索</button>
+          <div class="d-flex mb-3">
+            <div class="input-group">
+              <input type="search" class="form-control col-4" id="search"
+                name="keyword" value="{{ $keyword }}">
+              <button type="submit" class="btn btn-primary col-2">検索</button>
+            </div>
+            <div class="col-6"></div>
+          </div>
         </form>
         <form action="/admin/application/index" method="get">
           <select name="end_date" id="select__end_date" class="edit__select">
@@ -38,7 +42,7 @@
                 <td class="index__value">{{ $item->id }}</td>
 
                 <td class="index__value">
-                  <a href="/admin/recruit/detail?id={{ $item->recruit_id }}">
+                  <a href="/admin/recruit/show?id={{ $item->recruit_id }}">
                     {{ $item->header }}
                   </a>
                 </td>
@@ -48,7 +52,7 @@
 
                 <td class="index__value">
                   <a
-                    href="/admin/instructor/detail?id={{ $item->user_id }}">
+                    href="/admin/instructor/show?id={{ $item->user_id }}">
                     {{ $item->instructor_name }}
                   </a>
                 </td>

@@ -6,17 +6,20 @@ use Illuminate\Http\Request;
 use App\Models\Inquiry;
 use App\Http\Controllers\Controller;
 use App\Traits\CommonTrait;
-use Illuminate\View\View;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\View\View;
 
 class IndexController extends Controller
 {
     use CommonTrait;
 
+    public function __construct()
+    {
+        Gate::authorize('isAdmin');   
+    }
+
     public function index(Request $request): View
     {
-        if (Gate::denies('isAdmin')) abort(403);
-
         $objData = $this->getList($request->keyword);
         $objData = $this->formatData($objData);
         $objData->appends($request->query());

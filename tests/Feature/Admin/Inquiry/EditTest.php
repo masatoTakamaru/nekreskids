@@ -5,14 +5,15 @@ namespace Tests\Feature\Admin\Inquiry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\User;
+use App\Models\Inquiry;
 
 class EditTest extends TestCase
 {
     /************************* 設定項目 *************************/
 
     // テストする画面のルート相対パス
-    private $path = '/admin/instructor/edit';
-    private $redirectPath = '/admin/instructor/index';
+    private $path = '/admin/inquiry/edit';
+    private $redirectPath = '/admin/inquiry/index';
 
     // レコード件数をテストするモデルの変数名
     private $objData = 'objData';
@@ -36,19 +37,18 @@ class EditTest extends TestCase
     {
         parent::setUp();
 
-        $this->model = new User();
+        $this->model = new Inquiry();
 
         // 管理者ユーザーでログイン
 
-        $user = $this->model->factory()->create(['role' => 3]);
+        $user = User::factory()->create(['role' => 3]);
         $this->actingAs($user);
     }
 
     /** @test */
-    public function 表示テスト(): void
+    public function 管理者は表示できる(): void
     {
-        $objData = $this->model->factory()
-            ->hasInstructor()->create(['role' => 1]);
+        $objData = $this->model->factory()->create();
 
         $path = $this->path . '?id=' . $objData->id;
 
@@ -65,9 +65,9 @@ class EditTest extends TestCase
     }
 
     /** @test */
-    public function 管理者ユーザー以外表示できない(): void
+    public function 管理者以外のログインユーザーは表示できない(): void
     {
-        $user = $this->model->factory()->create(['role' => 1]);
+        $user = User::factory()->create(['role' => 1]);
         $this->actingAs($user);
 
         $response = $this->get($this->path . '?id=' . $user->id);
@@ -77,38 +77,73 @@ class EditTest extends TestCase
     /** @test */
     public function IDが存在しない場合404エラーが表示される(): void
     {
-        $this->model->factory()->hasInstructor()->create(['role' => 1]);
+        $this->model->factory()->create();
 
         $response = $this->get($this->path . '?id=10000');
         $response->assertStatus(404);
     }
 
     /** @test */
-    public function 更新テスト(): void
+    public function 管理者は更新できる(): void
     {
         // 入力データ生成
 
-        $objData = $this->model->factory()
-            ->hasInstructor()->create(['role' => 1]);
+        $objData = $this->model->factory()->create();
 
         // postしたらリダイレクトされる
 
         $path = $this->path . '?id=' . $objData->id;
 
-        $response = $this->patch($path, [
-            $this->column => $this->data,
-            'name' => 'testName'
-        ]);
+        $response = $this->patch($path, [$this->column => $this->data]);
         $response->assertRedirect($this->redirectPath);
 
         // データベースに登録したレコードが存在する
 
-        $this->assertDatabaseHas('users', [
+        $this->assertDatabaseHas('inquiries', [
             $this->column => $this->data,
         ]);
+    }
 
-        $this->assertDatabaseHas('instructors', [
-            'name' => 'testName',
+    /** @test */
+    public function 未ログインユーザーは更新できない(): void
+    {
+        auth()->logout();
+
+        // 入力データ生成
+
+        $objData = $this->model->factory()->create();
+
+        // postしたらリダイレクトされる
+
+        $path = $this->path . '?id=' . $objData->id;
+
+        $response = $this->patch($path, [$this->column => $this->data]);
+        $response->assertRedirect('/login');
+
+        $this->assertDatabaseMissing('inquiries', [
+            $this->column => $this->data,
+        ]);
+    }
+
+    /** @test */
+    public function 管理者以外のログインユーザーは更新できない(): void
+    {
+        $user = User::factory()->create(['role' => 1]);
+        $this->actingAs($user);
+
+        // 入力データ生成
+
+        $objData = $this->model->factory()->create();
+
+        // 入力データ整形
+
+        $path = $this->path . '?id=' . $objData->id;
+
+        $response = $this->patch($path, [$this->column => $this->data]);
+        $response->assertStatus(403);
+
+        $this->assertDatabaseMissing('inquiries', [
+            $this->column => $this->data,
         ]);
     }
 }

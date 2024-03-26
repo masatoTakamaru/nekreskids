@@ -9,7 +9,7 @@
           <div>
             <a href="/admin/notice/edit?id={{ $objData->id }}"
               class="edit__link">編集する</a>  
-            <form action="/admin/notice/detail?id={{ $objData->id }}"
+            <form action="/admin/notice/show?id={{ $objData->id }}"
               method="post">
               @method('delete')
               @csrf

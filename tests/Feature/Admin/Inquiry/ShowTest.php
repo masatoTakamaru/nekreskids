@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Admin\Inquiry;
 
+use App\Models\Inquiry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\User;
@@ -11,8 +12,8 @@ class ShowTest extends TestCase
     /************************* 設定項目 *************************/
 
     // テストする画面のルート相対パス
-    private $path = '/admin/instructor/show';
-    private $redirectPath = '/admin/instructor/index';
+    private $path = '/admin/inquiry/show';
+    private $redirectPath = '/admin/inquiry/index';
 
     // レコード件数をテストするモデルの変数名
     private $objData = 'objData';
@@ -30,23 +31,20 @@ class ShowTest extends TestCase
     {
         parent::setUp();
 
-        $this->model = new User();
+        $this->model = new Inquiry();
 
         // 管理者ユーザーでログイン
 
-        $user = $this->model->factory()->create(['role' => 3]);
+        $user = User::factory()->create(['role' => 3]);
         $this->actingAs($user);
     }
 
     /** @test */
     public function 表示テスト(): void
     {
-        $objData = $this->model->factory()
-            ->hasInstructor()->create(['role' => 1]);
+        $objData = $this->model->factory()->create();
 
-        $path = $this->path . '?id=' . $objData->id;
-
-        $response = $this->get($path);
+        $response = $this->get($this->path . '?id=' . $objData->id);
         $response->assertOK();
     }
 
@@ -61,31 +59,45 @@ class ShowTest extends TestCase
     /** @test */
     public function 管理者ユーザー以外表示できない(): void
     {
-        $user = $this->model->factory()->hasInstructor()->create(['role' => 1]);
+        $user = User::factory()->hasInstructor()->create(['role' => 1]);
         $this->actingAs($user);
 
-        $response = $this->get($this->path . '?id=' . $user->id);
+        $objData = $this->model->factory()->create();
+
+        $response = $this->get($this->path . '?id=' . $objData->id);
         $response->assertStatus(403);
     }
 
     /** @test */
     public function IDが存在しない場合404エラーが表示される(): void
     {
-        $user = $this->model->factory()->hasInstructor()->create(['role' => 1]);
-
         $response = $this->get($this->path . '?id=10000');
         $response->assertStatus(404);
     }
 
     /** @test */
-    public function 削除テスト(): void
+    public function 管理者はデータを削除できる(): void
     {
-        $objData = $this->model->factory()
-            ->hasInstructor()->create(['role' => 1]);
+        $objData = $this->model->factory()->create();
 
         $path = $this->path . '?id=' . $objData->id;
 
         $response = $this->delete($path);
-        $this->assertSoftDeleted('users', ['id' => $objData->id]);
+        $this->assertSoftDeleted('inquiries', ['id' => $objData->id]);
+    }
+
+    /** @test */
+    public function 管理者以外はデータを削除できない(): void
+    {
+        $user = User::factory()->create(['role' => 1]);
+        $this->actingAs($user);
+
+        $objData = $this->model->factory()->create();
+
+        $path = $this->path . '?id=' . $objData->id;
+
+        $response = $this->delete($path);
+        $response->assertStatus(403);
+        $this->assertDatabaseHas('inquiries', ['id' => $objData->id]);
     }
 }

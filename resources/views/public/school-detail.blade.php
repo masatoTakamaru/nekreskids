@@ -58,7 +58,7 @@
                   <td class="index__value">{{ $item->end_date }}</td>
                   <td class="index__value">
                     <a
-                      href="/public/recruit-detail?id={{ $item->id }}">{{ $item->header }}</a>
+                      href="/public/recruit-show?id={{ $item->id }}">{{ $item->header }}</a>
                   </td>
                 </tr>
               @endforeach

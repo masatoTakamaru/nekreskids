@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin\Inquiry;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Models\Inquiry;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
@@ -12,10 +11,13 @@ use Illuminate\Support\Facades\Gate;
 
 class EditController extends Controller
 {
+    public function __construct()
+    {
+        Gate::authorize('isAdmin');   
+    }
+
     public function edit(Request $request): View
     {
-        if (Gate::denies('isAdmin')) abort(403);
-
         $objData = $this->getEntity($request->id);
         if (empty($objData)) abort(404);
 

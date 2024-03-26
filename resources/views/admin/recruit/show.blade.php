@@ -7,7 +7,7 @@
       <section>
         <div>
           <a href="/admin/recruit/edit?id={{ $objData->id }}" class="edit__link">編集する</a>
-          <form action="/admin/recruit/detail?id={{ $objData->id }}" method="post">
+          <form action="/admin/recruit/show?id={{ $objData->id }}" method="post">
             @method('delete')
             @csrf
             <button type="submit" id="deleteButton" class="edit__submit">削除する</button>

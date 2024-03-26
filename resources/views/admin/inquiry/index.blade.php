@@ -6,9 +6,14 @@
       </header>
       <div class="search__wrapper">
         <form action="/admin/inquiry/index" method="get">
-          <span>絞り込み検索：</span><input type="search" class="search__input"
-            name="keyword" value="{{ $keyword }}">
-          <button type="submit" class="search__submit">検索</button>
+          <div class="d-flex mb-3">
+            <div class="input-group">
+              <input type="search" class="form-control col-4" id="search"
+                name="keyword" value="{{ $keyword }}">
+              <button type="submit" class="btn btn-primary col-2">検索</button>
+            </div>
+            <div class="col-6"></div>
+          </div>
         </form>
         @if (session('flash'))
           <div class="alert alert-success">
@@ -28,7 +33,7 @@
             @foreach ($objData as $item)
               <tr class="index_item">
                 <td class="index__value"><a
-                    href="/admin/inquiry/detail?id={{ $item->id }}">{{ $item->id }}</a>
+                    href="/admin/inquiry/show?id={{ $item->id }}">{{ $item->id }}</a>
                 </td>
                 <td class="index__value">{{ $item->email }}</td>
                 <td class="index__value">{{ $item->message }}</td>

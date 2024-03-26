@@ -6,10 +6,20 @@
       </header>
       <div class="search__wrapper">
         <form action="/admin/recruit/index" method="get">
-          <span>絞り込み検索：</span><input type="search" name="keyword"
-            class="search__input" value="{{ $keyword }}">
-          <button type="submit" class="search__submit">検索</button>
+          <div class="d-flex mb-3">
+            <div class="input-group">
+              <input type="search" class="form-control col-4" id="search"
+                name="keyword" value="{{ $keyword }}">
+              <button type="submit" class="btn btn-primary col-2">検索</button>
+            </div>
+            <div class="col-6"></div>
+          </div>
         </form>
+        @if (session('flash'))
+          <div class="alert alert-success">
+            {{ session('flash') }}
+          </div>
+        @endif
         <a href="/admin/recruit/schoolIndex">新規登録</a>
       </div>
       @if ($objData->count())
@@ -30,11 +40,11 @@
                 <td class="index__value">{{ $item->id }}</td>
                 <td class="index__value">
                   <a
-                    href="/admin/recruit/detail?id={{ $item->id }}">{{ $item->header }}</a>
+                    href="/admin/recruit/show?id={{ $item->id }}">{{ $item->header }}</a>
                 </td>
                 <td class="index__value">
                   <a
-                    href="/admin/school/detail?id={{ $item->user_id }}">{{ $item->name }}</a>
+                    href="/admin/school/show?id={{ $item->user_id }}">{{ $item->name }}</a>
                 </td>
                 <td class="index__value">{{ $item->address }}</td>
                 <td class="index__value">{{ $item->activities }}</td>

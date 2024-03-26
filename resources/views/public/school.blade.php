@@ -42,7 +42,7 @@
                   <td class="index__value">{{ $item->id }}</td>
                   <td class="index__value">
                     <a
-                      href="/public/school-detail?id={{ $item->id }}">{{ $item->name }}</a>
+                      href="/public/school-show?id={{ $item->id }}">{{ $item->name }}</a>
                   </td>
                   <td class="index__value">{{ $item->address }}</td>
                 </tr>

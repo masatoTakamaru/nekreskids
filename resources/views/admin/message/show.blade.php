@@ -7,7 +7,7 @@
       @if ($objData->count())
         <section>
           <div>
-            <form action="/admin/message/detail?id={{ $objData->id }}" method="post">
+            <form action="/admin/message/show?id={{ $objData->id }}" method="post">
               @method('delete')
               @csrf
               <button type="submit" id="deleteButton" class="edit__submit">削除する</button>

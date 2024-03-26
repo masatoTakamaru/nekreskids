@@ -62,7 +62,7 @@ class IndexTest extends TestCase
 
         $this->model = new Inquiry();
 
-        // 管理者ユーザーでログイン
+        // 管理者でログイン
 
         $admin = User::factory()->create(['role' => 3]);
         $this->actingAs($admin);
@@ -93,7 +93,7 @@ class IndexTest extends TestCase
     }
 
     /** @test */
-    public function 管理者ユーザー以外表示できない(): void
+    public function 管理者以外のログインユーザーは表示できない(): void
     {
         $user = User::factory()->create(['role' => 1]);
         $this->actingAs($user);

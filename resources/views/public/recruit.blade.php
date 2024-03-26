@@ -45,7 +45,7 @@
                 <td class="index__value__nowrap">
                   {{ $item->end_date->format('Y-m-d') }}</td>
                 <td class="index__value">
-                  <a href="/public/recruit-detail?id={{ $item->id }}">
+                  <a href="/public/recruit-show?id={{ $item->id }}">
                     {{ $item->header }}
                   </a>
                 </td>

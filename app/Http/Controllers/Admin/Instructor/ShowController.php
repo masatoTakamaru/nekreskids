@@ -18,8 +18,6 @@ class ShowController extends Controller
 
     public function show(Request $request)
     {
-        if (Gate::denies('isAdmin')) abort(403);
-
         $objData = $this->getEntity($request->id);
         if (empty($objData)) abort(404);
 

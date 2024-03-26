@@ -5,14 +5,15 @@ namespace Tests\Feature\Admin\Inquiry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\User;
+use App\Models\Inquiry;
 
 class CreateTest extends TestCase
 {
     /************************* 設定項目 *************************/
 
     // テストする画面のルート相対パス
-    private $path = '/admin/instructor/create';
-    private $redirectPath = '/admin/instructor/index';
+    private $path = '/admin/inquiry/create';
+    private $redirectPath = '/admin/inquiry/index';
 
     // レコード件数をテストするモデルの変数名
     private $objData = 'objData';
@@ -33,16 +34,16 @@ class CreateTest extends TestCase
     {
         parent::setUp();
 
-        $this->model = new User();
+        $this->model = new Inquiry();
 
         // 管理者ユーザーでログイン
 
-        $user = $this->model->factory()->create(['role' => 3]);
+        $user = User::factory()->create(['role' => 3]);
         $this->actingAs($user);
     }
 
     /** @test */
-    public function 表示テスト(): void
+    public function 管理者は表示できる(): void
     {
         $response = $this->get($this->path);
         $response->assertOK();
@@ -57,9 +58,9 @@ class CreateTest extends TestCase
     }
 
     /** @test */
-    public function 管理者ユーザー以外表示できない(): void
+    public function 管理者以外のログインユーザーは表示できない(): void
     {
-        $user = $this->model->factory()->create(['role' => 1]);
+        $user = User::factory()->create(['role' => 1]);
         $this->actingAs($user);
 
         $response = $this->get($this->path);
@@ -67,20 +68,15 @@ class CreateTest extends TestCase
     }
 
     /** @test */
-    public function 登録テスト(): void
+    public function 管理者はデータを登録できる(): void
     {
         // 入力データ生成
 
-        $objData = $this->model->factory()
-            ->hasInstructor()->create(['role' => 1]);
+        $objData = $this->model->factory()->create();
 
         // 入力データ整形
 
-        $arrUser = $objData->toArray();
-        $arrInstructor = $objData->instructor->toArray();
-        $arrData = array_merge($arrUser, $arrInstructor);
-        $arrData['email'] = 'test@example.net';
-        $arrData['password'] = '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'; // password
+        $arrData = $objData->toArray();
 
         // postしたらリダイレクトされる
 
@@ -89,12 +85,51 @@ class CreateTest extends TestCase
 
         // データベースに登録したレコードが存在する
 
-        $this->assertDatabaseHas('users', [
+        $this->assertDatabaseHas('inquiries', [
             $this->column => $arrData[$this->column],
         ]);
+    }
 
-        $this->assertDatabaseHas('instructors', [
-            'name' => $arrData['name'],
+    /** @test */
+    public function 未ログインユーザーは登録できない(): void
+    {
+        auth()->logout();
+
+        // 入力データ生成
+
+        $objData = $this->model->factory()->make();
+
+        // 入力データ整形
+
+        $arrData = $objData->toArray();
+
+        $response = $this->post($this->path, $arrData);
+        $response->assertRedirect('/login');
+
+        $this->assertDatabaseMissing('inquiries', [
+            $this->column => $arrData[$this->column],
+        ]);
+    }
+
+    /** @test */
+    public function 管理者以外のログインユーザーは登録できない(): void
+    {
+        $user = User::factory()->create(['role' => 1]);
+        $this->actingAs($user);
+
+        // 入力データ生成
+
+        $objData = $this->model->factory()->make();
+
+        // 入力データ整形
+
+        $arrData = $objData->toArray();
+
+        $response = $this->post($this->path, $arrData);
+        $response->assertStatus(403);
+
+        $this->assertDatabaseMissing('inquiries', [
+            $this->column => $arrData[$this->column],
         ]);
     }
 }

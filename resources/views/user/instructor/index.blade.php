@@ -33,7 +33,7 @@
             @foreach ($objData as $item)
               <tr class="index_item">
                 <td class="index__value">
-                  <a href="/public/recruit-detail?id={{ $item->id }}">
+                  <a href="/public/recruit-show?id={{ $item->id }}">
                     {{ $item->id }}
                   </a>
                 </td>

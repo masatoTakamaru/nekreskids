@@ -72,95 +72,95 @@ Route::prefix('public/')->group(function () {
     Route::get('recruit-detail', [$dir . '\RecruitShowController', 'index']);
 });
 
-Route::prefix('admin/')
+Route::prefix('admin')
     ->middleware(['auth', 'verified'])
     ->group(function () {
 
-        Route::prefix('application/')->group(function () {
+        Route::prefix('/application')->group(function () {
             $dir = 'App\Http\Controllers\Admin\Application';
-            Route::get('index', [$dir . '\IndexController', 'index']);
-            Route::get('create', [$dir . '\CreateController', 'create']);
-            Route::post('create', [$dir . '\CreateController', 'store']);
-            Route::get('show', [$dir . '\ShowController', 'show']);
-            Route::delete('show', [$dir . '\ShowController', 'destroy']);
-            Route::get('edit', [$dir . '\EditController', 'edit']);
-            Route::patch('edit', [$dir . '\EditController', 'update']);
+            Route::get('/index', [$dir . '\IndexController', 'index']);
+            Route::get('/create', [$dir . '\CreateController', 'create']);
+            Route::post('/create', [$dir . '\CreateController', 'store']);
+            Route::get('/show', [$dir . '\ShowController', 'show']);
+            Route::delete('/show', [$dir . '\ShowController', 'destroy']);
+            Route::get('/edit', [$dir . '\EditController', 'edit']);
+            Route::patch('/edit', [$dir . '\EditController', 'update']);
         });
 
-        Route::prefix('instructor/')->group(function () {
+        Route::prefix('/instructor')->group(function () {
             $dir = 'App\Http\Controllers\Admin\Instructor';
-            Route::get('index', [$dir . '\IndexController', 'index']);
-            Route::get('create', [$dir . '\CreateController', 'create']);
-            Route::post('create', [$dir . '\CreateController', 'store']);
-            Route::get('show', [$dir . '\ShowController', 'show']);
-            Route::delete('show', [$dir . '\ShowController', 'destroy']);
-            Route::get('edit', [$dir . '\EditController', 'edit']);
-            Route::patch('edit', [$dir . '\EditController', 'update']);
+            Route::get('/index', [$dir . '\IndexController', 'index']);
+            Route::get('/create', [$dir . '\CreateController', 'create']);
+            Route::post('/create', [$dir . '\CreateController', 'store']);
+            Route::get('/show', [$dir . '\ShowController', 'show']);
+            Route::delete('/show', [$dir . '\ShowController', 'destroy']);
+            Route::get('/edit', [$dir . '\EditController', 'edit']);
+            Route::patch('/edit', [$dir . '\EditController', 'update']);
         });
 
-        Route::prefix('school/')->group(function () {
+        Route::prefix('/school')->group(function () {
             $dir = 'App\Http\Controllers\Admin\School';
-            Route::get('index', [$dir . '\IndexController', 'index']);
-            Route::get('create', [$dir . '\CreateController', 'create']);
-            Route::post('create', [$dir . '\CreateController', 'store']);
-            Route::get('show', [$dir . '\ShowController', 'show']);
-            Route::delete('show', [$dir . '\ShowController', 'destroy']);
-            Route::get('edit', [$dir . '\EditController', 'edit']);
-            Route::patch('edit', [$dir . '\EditController', 'update']);
+            Route::get('/index', [$dir . '\IndexController', 'index']);
+            Route::get('/create', [$dir . '\CreateController', 'create']);
+            Route::post('/create', [$dir . '\CreateController', 'store']);
+            Route::get('/show', [$dir . '\ShowController', 'show']);
+            Route::delete('/show', [$dir . '\ShowController', 'destroy']);
+            Route::get('/edit', [$dir . '\EditController', 'edit']);
+            Route::patch('/edit', [$dir . '\EditController', 'update']);
         });
 
-        Route::prefix('recruit/')->group(function () {
+        Route::prefix('/recruit')->group(function () {
             $dir = 'App\Http\Controllers\Admin\Recruit';
-            Route::get('index', [$dir . '\IndexController', 'index']);
-            Route::get('schoolIndex', [$dir . '\SchoolIndexController', 'index']);
-            Route::get('create', [$dir . '\CreateController', 'create']);
-            Route::post('create', [$dir . '\CreateController', 'store']);
-            Route::get('show', [$dir . '\ShowController', 'show']);
-            Route::delete('show', [$dir . '\ShowController', 'destroy']);
-            Route::get('edit', [$dir . '\EditController', 'edit']);
-            Route::patch('edit', [$dir . '\EditController', 'update']);
+            Route::get('/index', [$dir . '\IndexController', 'index']);
+            Route::get('/schoolIndex', [$dir . '\SchoolIndexController', 'index']);
+            Route::get('/create', [$dir . '\CreateController', 'create']);
+            Route::post('/create', [$dir . '\CreateController', 'store']);
+            Route::get('/show', [$dir . '\ShowController', 'show']);
+            Route::delete('/show', [$dir . '\ShowController', 'destroy']);
+            Route::get('/edit', [$dir . '\EditController', 'edit']);
+            Route::patch('/edit', [$dir . '\EditController', 'update']);
         });
 
-        Route::prefix('inquiry/')->group(function () {
+        Route::prefix('/inquiry')->group(function () {
             $dir = 'App\Http\Controllers\Admin\Inquiry';
-            Route::get('index', [$dir . '\IndexController', 'index']);
-            Route::get('create', [$dir . '\CreateController', 'create']);
-            Route::post('create', [$dir . '\CreateController', 'store']);
-            Route::get('show', [$dir . '\ShowController', 'show']);
-            Route::delete('show', [$dir . '\ShowController', 'destroy']);
-            Route::get('edit', [$dir . '\EditController', 'edit']);
-            Route::patch('edit', [$dir . '\EditController', 'update']);
+            Route::get('/index', [$dir . '\IndexController', 'index']);
+            Route::get('/create', [$dir . '\CreateController', 'create']);
+            Route::post('/create', [$dir . '\CreateController', 'store']);
+            Route::get('/show', [$dir . '\ShowController', 'show']);
+            Route::delete('/show', [$dir . '\ShowController', 'destroy']);
+            Route::get('/edit', [$dir . '\EditController', 'edit']);
+            Route::patch('/edit', [$dir . '\EditController', 'update']);
         });
 
-        Route::prefix('notice/')->group(function () {
+        Route::prefix('/notice')->group(function () {
             $dir = 'App\Http\Controllers\Admin\Notice';
-            Route::get('index', [$dir . '\IndexController', 'index']);
-            Route::get('create', [$dir . '\CreateController', 'create']);
-            Route::post('create', [$dir . '\CreateController', 'store']);
-            Route::get('show', [$dir . '\ShowController', 'show']);
-            Route::delete('show', [$dir . '\ShowController', 'destroy']);
-            Route::get('edit', [$dir . '\EditController', 'edit']);
-            Route::patch('edit', [$dir . '\EditController', 'update']);
+            Route::get('/index', [$dir . '\IndexController', 'index']);
+            Route::get('/create', [$dir . '\CreateController', 'create']);
+            Route::post('/create', [$dir . '\CreateController', 'store']);
+            Route::get('/show', [$dir . '\ShowController', 'show']);
+            Route::delete('/show', [$dir . '\ShowController', 'destroy']);
+            Route::get('/edit', [$dir . '\EditController', 'edit']);
+            Route::patch('/edit', [$dir . '\EditController', 'update']);
         });
 
-        Route::prefix('message/')->group(function () {
+        Route::prefix('/message')->group(function () {
             $dir = 'App\Http\Controllers\Admin\Message';
-            Route::get('index', [$dir . '\IndexController', 'index']);
-            Route::get('show', [$dir . '\ShowController', 'show']);
-            Route::delete('show', [$dir . '\ShowController', 'destroy']);
+            Route::get('/index', [$dir . '\IndexController', 'index']);
+            Route::get('/show', [$dir . '\ShowController', 'show']);
+            Route::delete('/show', [$dir . '\ShowController', 'destroy']);
         });
 
-        Route::prefix('keepInstructor/')->group(function () {
+        Route::prefix('/keepInstructor')->group(function () {
             $dir = 'App\Http\Controllers\Admin\KeepInstructor';
-            Route::get('index', [$dir . '\IndexController', 'index']);
+            Route::get('/index', [$dir . '\IndexController', 'index']);
         });
 
-        Route::prefix('keepRecruit/')->group(function () {
+        Route::prefix('/keepRecruit')->group(function () {
             $dir = 'App\Http\Controllers\Admin\KeepRecruit';
-            Route::get('index', [$dir . '\IndexController', 'index']);
+            Route::get('/index', [$dir . '\IndexController', 'index']);
         });
 
-        Route::get('dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index']);
+        Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index']);
     });
 
 Route::middleware('auth')->group(function () {

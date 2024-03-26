@@ -11,10 +11,13 @@ use Illuminate\Support\Facades\Gate;
 
 class ShowController extends Controller
 {
+    public function __construct()
+    {
+        Gate::authorize('isAdmin');   
+    }
+
     public function show(Request $request): View
     {
-        if (Gate::denies('isAdmin')) abort(403);
-
         $objData = $this->getEntity($request->id);
 
         return view("admin.inquiry.show", [

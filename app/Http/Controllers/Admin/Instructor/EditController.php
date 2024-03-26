@@ -13,7 +13,6 @@ use App\Traits\InstructorTrait;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Gate;
 
 class EditController extends Controller
 {
@@ -21,7 +20,6 @@ class EditController extends Controller
 
     public function edit(Request $request): View
     {
-        if (Gate::denies('isAdmin')) abort(403);
 
         $arrCity = AddressConst::CITY;
 
