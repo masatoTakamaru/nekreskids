@@ -207,16 +207,16 @@
 </x-admin-layout>
 <script src="/asset/js/sendResizedImg.js"></script>
 <script>
-  togglePassIcon('password');
+  sysCommon.togglePassIcon('password');
 
-  setDate({
+  sysCommon.setDate({
     yearId: 'birth1',
     monthId: 'birth2',
     dayId: 'birth3',
     dateId: 'birth',
   });
 
-  setPrefCity({
+  sysCommon.setPrefCity({
     prefElem: 'pref',
     cityElem: 'city',
     defaultPref: '{{ old('pref') }}',
@@ -226,7 +226,7 @@
   });
 
   @for ($i = 1; $i <= 5; $i++)
-    setPrefCity({
+    sysCommon.setPrefCity({
       prefElem: 'pref{{ $i }}',
       cityElem: 'city{{ $i }}',
       defaultPref: '{{ old("act_areas[$i]['pref']") }}',
@@ -236,7 +236,7 @@
     });
   @endfor
 
-  setCounter({
+  sysCommon.setCounter({
     textArea: 'pr__content',
     count: 'pr__count',
     limit: 200,

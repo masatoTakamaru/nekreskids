@@ -9,6 +9,7 @@
   <title>{{ config('app.name', 'Laravel') }}</title>
   <link rel="stylesheet" href="/asset/bootstrap-5.0.2-dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="/asset/css/common.css">
+  <link rel="stylesheet" href="/asset/css/admin.css">
   <script src="/asset/js/jquery-3.6.4.min.js"></script>
 </head>
 
@@ -63,7 +64,6 @@
   <script type="text/javascript"
     src="//jpostal-1006.appspot.com/jquery.jpostal.js"></script>
   <script src="/asset/js/common.js"></script>
-  <script src="/asset/js/admin.js"></script>
 </body>
 
 </html>

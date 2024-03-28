@@ -30,19 +30,22 @@ body {
   padding-left: 20px;
 }
 
-.password__icon {
-  height: 24px;
-  width: 24px;
-  margin-top: 3px;
-  margin-left: -24px;
+.password-icon {
+  height: 20px;
+  width: 20px;
+  position: absolute;
+  margin-top: 8px;
+  margin-left: -30px;
   cursor: pointer;
   z-index: 100;
   background-repeat: no-repeat;
   background-size: cover;
+  border: 0px;
+  background-color: transparent;
 }
-.password__eye {
+.password-eye {
   background-image: url(image/eye.svg);
 }
-.password__eye-slash {
+.password-eyeslash {
   background-image: url(image/eye-slash.svg);
 }/*# sourceMappingURL=common.css.map */
