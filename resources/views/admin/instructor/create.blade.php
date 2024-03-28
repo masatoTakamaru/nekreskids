@@ -19,7 +19,7 @@
           <div class="">
             <label for="password" class="form-label">パスワード</label>
             <input type="password" name="password" id="password"
-              class="form-control edit__password" value="{{ old('password') }}">
+              class="form-control" value="{{ old('password') }}">
             @error('password')
               <p class="text-danger">{{ $message }}</p>
             @enderror
@@ -69,8 +69,8 @@
           </div>
 
           <div class="">
-            <label for="avatar_preview" class="form-label">アバター画像</label>
-            <div id="avatar_preview"></div>
+            <label for="avatarPreview" class="form-label">アバター画像</label>
+            <div id="avatarPreview"></div>
           </div>
 
           <div class="">
@@ -120,10 +120,10 @@
 
           <div class="">
             <span class="form-label">指導できる活動</span>
-            <div class="edit__checkboxWrapper" id="checkboxWrapper">
-              <div class="edit__checkbox">
+            <div class="" id="checkboxWrapper">
+              <div class="row">
                 @foreach ($arrActivities as $key => $value)
-                  <div class="edit__checkboxItem">
+                  <div class="edit__checkboxItem col-4">
                     <input type="checkbox" name="activities[]"
                       id="{{ $key }}" class="form-check-input"
                       value="{{ $key }}"
@@ -154,7 +154,7 @@
 
           <div class=" d-flex">
             <label for="actAreas" class="form-label">指導できる地域</label>
-            <div class="edit__actPrefCities ms-1" id="actAreas">
+            <div class="ms-1" id="actAreas">
               @for ($i = 1; $i <= 5; $i++)
                 <div>
                   <select id="pref{{ $i }}"
@@ -174,12 +174,12 @@
               value="{{ old('cert') }}">
           </div>
 
-          <div class="">
-            <label for="pr" class="form-label">自己紹介</label>
-            <div>
-              <textarea name="pr" class="pr__content form-control" id="pr__content"
+          <div class="d-flex">
+            <label for="prtext" class="form-label">自己紹介</label>
+            <div class="">
+              <textarea name="pr" class="prtext form-control" id="prtext"
                 cols="50" rows="10">{{ old('pr_content') }}</textarea>
-              <p class="edit__prCount" id="pr__count"></p>
+              <p class="prcount" id="prcount"></p>
             </div>
           </div>
 
@@ -237,12 +237,12 @@
   @endfor
 
   sysCommon.setCounter({
-    textArea: 'pr__content',
-    count: 'pr__count',
+    textArea: 'prtext',
+    count: 'prcount',
     limit: 200,
   });
 
-  const sri = new sendResizedImg('avatar_preview', 'avatar');
+  const sri = new sendResizedImg('avatarPreview', 'avatar');
   sri.create({
     mode: "crop", //モード(nocrop|crop|original)
     preview: {
