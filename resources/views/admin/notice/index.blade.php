@@ -20,10 +20,10 @@
             {{ session('flash') }}
           </div>
         @endif
-        <a href="/admin/notice/create">新規登録</a>
+        <a class="btn btn-primary mb-3" href="/admin/notice/create">新規登録</a>
       </div>
       @if ($objData->count())
-        <table class="index__table">
+        <table class="table table-striped">
           <tbody>
             <tr>
               <th class="index__label">ID</th>

@@ -112,6 +112,7 @@ class sendResizedImg {
 
         const fileEl = previewWrapperEl.appendChild(document.createElement("input"));
         fileEl.type = "file";
+        fileEl.className = "form-control";
         fileEl.style.margin = "10px";
         fileEl.accept = ".jpg, .png, .gif";
 

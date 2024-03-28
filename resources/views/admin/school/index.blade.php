@@ -20,14 +20,14 @@
             {{ session('flash') }}
           </div>
         @endif
-        <a href="/admin/school/create">新規登録</a>
+        <a class="btn btn-primary mb-3" href="/admin/school/create">新規登録</a>
       </div>
       @if (session('flash'))
         <div class="alert alert-success">
           {{ session('flash') }}
         </div>
       @endif
-      <table class="index__table">
+      <table class="table table-striped">
         <tbody>
           <tr>
             <th class="index__label">ID</th>

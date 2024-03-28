@@ -28,3 +28,30 @@ h2 {
         }
     }
 }
+
+.form-label {
+    display: inline-block;
+    width: 200px;
+}
+
+.form-control {
+    display: inline-block;
+    width: 400px;
+
+    &-half {
+        width: 200px;
+    }
+}
+
+.form-select {
+    display: inline-block;
+    width: 300px;
+
+    &-half {
+        width: 200px;
+    }
+}
+
+.form-select {
+    display: inline;
+}

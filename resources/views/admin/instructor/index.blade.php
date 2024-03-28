@@ -27,7 +27,7 @@
       </div>
     @endif
     @if ($objData->count())
-      <table class="index__table">
+      <table class="table table-striped">
         <tbody>
           <tr>
             <th class="index__label">ID</th>

@@ -24,3 +24,28 @@ h2 {
 .index__value__nowrap {
   white-space: nowrap;
 }
+
+.form-label {
+  display: inline-block;
+  width: 200px;
+}
+
+.form-control {
+  display: inline-block;
+  width: 400px;
+}
+.form-control-half {
+  width: 200px;
+}
+
+.form-select {
+  display: inline-block;
+  width: 300px;
+}
+.form-select-half {
+  width: 200px;
+}
+
+.form-select {
+  display: inline;
+}/*# sourceMappingURL=admin.css.map */

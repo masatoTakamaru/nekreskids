@@ -8,7 +8,7 @@
 
   <title>{{ config('app.name', 'Laravel') }}</title>
   <link rel="stylesheet" href="/asset/bootstrap-5.0.2-dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="/asset/css/normalize.css">
+  <link rel="stylesheet" href="/asset/css/common.css">
   <link rel="stylesheet" href="/asset/css/front.css">
   <script src="/asset/js/jquery-3.6.4.min.js"></script>
 </head>
